@@ -1,153 +1,134 @@
-<script lang="jsx">
-  import { onLeftClick, isPromise } from '@/utils'
-  import SingleValue from '@/components/SingleValue.vue'
-  import MultiValue from '@/components/MultiValue.vue'
-  import DeleteIcon from '@/components/icons/Delete.vue'
-  import ArrowIcon from '@/components/icons/Arrow.vue'
+<template>
+  <div
+    ref="control"
+    class="vue-treeselect__control"
+    @mousedown="instance.handleMouseDown"
+  >
+    <div ref="value-container" class="vue-treeselect__value-container">
+      <SingleValue v-if="single" />
+      <MultiValue v-else />
+    </div>
 
-  export default {
-    name: 'vue-treeselect--control',
-    inject: [ 'instance' ],
+    <div
+      v-if="shouldShowX"
+      class="vue-treeselect__x-container"
+      :title="xTitle"
+      @mousedown="handleMouseDownOnX"
+    >
+      <DeleteIcon class="vue-treeselect__x" />
+    </div>
 
-    computed: {
-      /* eslint-disable valid-jsdoc */
-      /**
-       * Should show the "×" button that resets value?
-       * @return {boolean}
-       */
-      shouldShowX() {
-        const { instance } = this
+    <div
+      v-if="shouldShowArrow"
+      class="vue-treeselect__control-arrow-container"
+      @mousedown="handleMouseDownOnArrow"
+    >
+      <ArrowIcon :class="arrowClass" />
+    </div>
+  </div>
+</template>
 
-        return (
-          instance.clearable &&
-          !instance.disabled &&
-          instance.hasValue &&
-          (this.hasUndisabledValue || instance.allowClearingDisabled)
-        )
-      },
+<script setup lang="ts">
+import { computed, inject } from 'vue'
+import { onLeftClick, isPromise } from '@/utils'
+import SingleValue from '@/components/SingleValue.vue'
+import MultiValue from '@/components/MultiValue.vue'
+import DeleteIcon from '@/components/icons/Delete.vue'
+import ArrowIcon from '@/components/icons/Arrow.vue'
 
-      /**
-       * Should show the arrow button that toggles menu?
-       * @return {boolean}
-       */
-      shouldShowArrow() {
-        const { instance } = this
+// ============================================================================
+// Inject treeselect instance
+// ============================================================================
 
-        if (!instance.alwaysOpen) return true
-        // Even with `alwaysOpen: true`, sometimes the menu is still closed,
-        // e.g. when the control is disabled.
-        return !instance.menu.isOpen
-      },
+const treeselect = inject<any>('treeselect')!
+const instance = inject<any>('instance')!
 
-      /**
-       * Has any undisabled option been selected?
-       * @type {boolean}
-       */
-      hasUndisabledValue() {
-        const { instance } = this
+// ============================================================================
+// Computed
+// ============================================================================
 
-        return (
-          instance.hasValue &&
-          instance.internalValue.some(id => !instance.getNode(id).isDisabled)
-        )
-      },
-      /* eslint-enable valid-jsdoc */
-    },
+const single = computed(() => treeselect.single.value)
 
-    methods: {
-      renderX() {
-        const { instance } = this
-        const title = instance.multiple ? instance.clearAllText : instance.clearValueText
+/**
+ * Has any undisabled option been selected?
+ */
+const hasUndisabledValue = computed(() => {
+  return (
+    treeselect.hasValue.value &&
+    treeselect.internalValue.value.some((id: any) => {
+      const node = treeselect.getNode(id)
+      return node && !node.isDisabled
+    })
+  )
+})
 
-        if (!this.shouldShowX) return null
+/**
+ * Should show the "×" button that resets value?
+ */
+const shouldShowX = computed(() => {
+  return (
+    treeselect.clearable &&
+    !treeselect.disabled &&
+    treeselect.hasValue.value &&
+    (hasUndisabledValue.value || treeselect.allowClearingDisabled)
+  )
+})
 
-        return (
-          <div class="vue-treeselect__x-container" title={title} onMousedown={this.handleMouseDownOnX}>
-            <DeleteIcon class="vue-treeselect__x" />
-          </div>
-        )
-      },
+/**
+ * Should show the arrow button that toggles menu?
+ */
+const shouldShowArrow = computed(() => {
+  if (!treeselect.alwaysOpen) return true
+  // Even with alwaysOpen: true, sometimes the menu is still closed
+  // e.g. when the control is disabled
+  return !treeselect.menu.isOpen
+})
 
-      renderArrow() {
-        const { instance } = this
-        const arrowClass = {
-          'vue-treeselect__control-arrow': true,
-          'vue-treeselect__control-arrow--rotated': instance.menu.isOpen,
-        }
+const xTitle = computed(() => {
+  return treeselect.multiple
+    ? treeselect.clearAllText
+    : treeselect.clearValueText
+})
 
-        if (!this.shouldShowArrow) return null
+const arrowClass = computed(() => ({
+  'vue-treeselect__control-arrow': true,
+  'vue-treeselect__control-arrow--rotated': treeselect.menu.isOpen,
+}))
 
-        return (
-          <div class="vue-treeselect__control-arrow-container" onMousedown={this.handleMouseDownOnArrow}>
-            <ArrowIcon class={arrowClass} />
-          </div>
-        )
-      },
+// ============================================================================
+// Event handlers
+// ============================================================================
 
-      handleMouseDownOnX: onLeftClick(function handleMouseDownOnX(evt) {
-        /**
-         * We don't use async/await here because we don't want
-         * to rely on Babel polyfill or regenerator runtime.
-         * See: https://babeljs.io/docs/plugins/transform-regenerator/
-         * We also don't want to assume there is a global `Promise`
-         * class, since we are targeting to support IE9 without the
-         * need of any polyfill.
-         */
+/**
+ * Handle mouse down on X button (clear)
+ */
+const handleMouseDownOnX = onLeftClick(function (evt: MouseEvent) {
+  evt.stopPropagation()
+  evt.preventDefault()
 
-        evt.stopPropagation()
-        evt.preventDefault()
-
-        const { instance } = this
-        const result = instance.beforeClearAll()
-        const handler = shouldClear => {
-          if (shouldClear) instance.clear()
-        }
-
-        if (isPromise(result)) {
-          // The handler will be called async.
-          result.then(handler)
-        } else {
-          // Keep the same behavior here.
-          setTimeout(() => handler(result), 0)
-          // Also, note that IE9 requires:
-          //   setTimeout(() => fn(...args), delay)
-          // Instead of:
-          //   setTimeout(fn, delay, ...args)
-        }
-      }),
-
-      handleMouseDownOnArrow: onLeftClick(function handleMouseDownOnArrow(evt) {
-        evt.preventDefault()
-        evt.stopPropagation()
-
-        const { instance } = this
-
-        // Focus the input or prevent blurring.
-        instance.focusInput()
-        instance.toggleMenu()
-      }),
-
-      // This is meant to be called by child `<Value />` component.
-      renderValueContainer(children) {
-        return (
-          <div class="vue-treeselect__value-container">
-            {children}
-          </div>
-        )
-      },
-    },
-
-    render() {
-      const { instance } = this
-      const ValueContainer = instance.single ? SingleValue : MultiValue
-
-      return (
-        <div class="vue-treeselect__control" onMousedown={instance.handleMouseDown}>
-          <ValueContainer ref="value-container" />
-          {this.renderX()}
-          {this.renderArrow()}
-        </div>
-      )
-    },
+  const result = treeselect.beforeClearAll()
+  const handler = (shouldClear: boolean) => {
+    if (shouldClear) treeselect.clear()
   }
+
+  if (isPromise(result)) {
+    // Handle async beforeClearAll
+    result.then(handler)
+  } else {
+    // Keep same behavior - call async
+    setTimeout(() => handler(result), 0)
+  }
+})
+
+/**
+ * Handle mouse down on arrow button (toggle menu)
+ */
+const handleMouseDownOnArrow = onLeftClick(function (evt: MouseEvent) {
+  evt.preventDefault()
+  evt.stopPropagation()
+
+  // Focus the input or prevent blurring
+  instance.focusInput()
+  treeselect.toggleMenu()
+})
 </script>
