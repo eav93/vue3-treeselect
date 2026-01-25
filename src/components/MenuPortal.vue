@@ -3,13 +3,11 @@
 </template>
 
 <script setup lang="ts">
-import { createApp, onMounted, onUnmounted, inject, watch, nextTick, ref, computed } from 'vue'
+import { createApp, onMounted, onUnmounted, inject, watch, nextTick, h, defineComponent } from 'vue'
 import { watchSize, setupResizeAndScrollEventListeners, find } from '@/utils'
-// Used in template string below
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Menu from '@/components/Menu.vue'
 import type { TreeselectInstance } from '@/types'
-import type { App } from 'vue'
+import type { App as VueApp } from 'vue'
 
 // ============================================================================
 // Inject treeselect instance
@@ -18,186 +16,168 @@ import type { App } from 'vue'
 const treeselect = inject<TreeselectInstance>('treeselect')!
 
 // ============================================================================
-// Portal Target Component (will be mounted to body)
+// Portal Target Component (modern Composition API)
 // ============================================================================
 
-const PortalTarget = {
-  name: 'vue-treeselect--portal-target',
-  components: { Menu },
+const createPortalTargetComponent = (treeselectInstance: TreeselectInstance) => {
+  return defineComponent({
+    name: 'vue-treeselect--portal-target',
 
-  setup() {
-    const menuRef = ref()
-    let controlResizeAndScrollEventListeners: { remove: () => void } | null = null
-    let controlSizeWatcher: { remove: () => void } | null = null
+    setup() {
+      let controlResizeAndScrollEventListeners: { remove: () => void } | null = null
+      let controlSizeWatcher: { remove: () => void } | null = null
+      let portalElement: HTMLElement | null = null
 
-    const portalTargetClass = computed(() => [
-      'vue-treeselect__portal-target',
-      treeselect.wrapperClass,
-    ])
+      const updateWidth = (): void => {
+        if (!portalElement) return
+        const $control = treeselectInstance.getControl()
+        if (!$control) return
 
-    const portalTargetStyle = computed(() => ({
-      zIndex: treeselect.zIndex,
-    }))
-
-    const updateWidth = (el: HTMLElement): void => {
-      const $control = treeselect.getControl()
-      if (!$control) return
-
-      const controlRect = $control.getBoundingClientRect()
-      el.style.width = controlRect.width + 'px'
-    }
-
-    const updateMenuContainerOffset = (el: HTMLElement): void => {
-      const $control = treeselect.getControl()
-      if (!$control || !menuRef.value) return
-
-      const $menuContainer = menuRef.value.$refs?.['menu-container']
-      if (!$menuContainer) return
-
-      const controlRect = $control.getBoundingClientRect()
-      const portalTargetRect = el.getBoundingClientRect()
-      const offsetY = treeselect.menu.value.placement === 'bottom' ? controlRect.height : 0
-      const left = Math.round(controlRect.left - portalTargetRect.left) + 'px'
-      const top = Math.round(controlRect.top - portalTargetRect.top + offsetY) + 'px'
-      const menuContainerStyle = $menuContainer.style
-      const transformVariations = ['transform', 'webkitTransform', 'MozTransform', 'msTransform']
-      const transform = find(transformVariations, (t: string) => t in document.body.style)
-
-      if (menuContainerStyle && transform) {
-        menuContainerStyle[transform as any] = `translate(${left}, ${top})`
+        const controlRect = $control.getBoundingClientRect()
+        portalElement.style.width = controlRect.width + 'px'
       }
-    }
 
-    const setupControlResizeAndScrollEventListeners = (el: HTMLElement): void => {
-      const $control = treeselect.getControl()
-      if (controlResizeAndScrollEventListeners || !$control) return
+      const updateMenuContainerOffset = (): void => {
+        if (!portalElement) return
+        const $control = treeselectInstance.getControl()
+        if (!$control) return
 
-      controlResizeAndScrollEventListeners = {
-        remove: setupResizeAndScrollEventListeners($control, () => updateMenuContainerOffset(el)),
+        const menuContainer = portalElement.querySelector('.vue-treeselect__menu-container') as HTMLElement
+        if (!menuContainer) return
+
+        const controlRect = $control.getBoundingClientRect()
+        const portalTargetRect = portalElement.getBoundingClientRect()
+        const offsetY = treeselectInstance.menu.value.placement === 'bottom' ? controlRect.height : 0
+        const left = Math.round(controlRect.left - portalTargetRect.left) + 'px'
+        const top = Math.round(controlRect.top - portalTargetRect.top + offsetY) + 'px'
+        const transformVariations = ['transform', 'webkitTransform', 'MozTransform', 'msTransform']
+        const transform = find(transformVariations, (t: string) => t in document.body.style)
+
+        if (transform) {
+          (menuContainer.style as any)[transform] = `translate(${left}, ${top})`
+        }
       }
-    }
 
-    const setupControlSizeWatcher = (el: HTMLElement): void => {
-      const $control = treeselect.getControl()
-      if (controlSizeWatcher || !$control) return
+      const setupControlResizeAndScrollEventListeners = (): void => {
+        const $control = treeselectInstance.getControl()
+        if (controlResizeAndScrollEventListeners || !$control) return
 
-      controlSizeWatcher = {
-        remove: watchSize($control, () => {
-          updateWidth(el)
-          updateMenuContainerOffset(el)
-        }),
+        controlResizeAndScrollEventListeners = {
+          remove: setupResizeAndScrollEventListeners($control, updateMenuContainerOffset),
+        }
       }
-    }
 
-    const removeControlResizeAndScrollEventListeners = (): void => {
-      if (!controlResizeAndScrollEventListeners) return
-      controlResizeAndScrollEventListeners.remove()
-      controlResizeAndScrollEventListeners = null
-    }
+      const setupControlSizeWatcher = (): void => {
+        const $control = treeselectInstance.getControl()
+        if (controlSizeWatcher || !$control) return
 
-    const removeControlSizeWatcher = (): void => {
-      if (!controlSizeWatcher) return
-      controlSizeWatcher.remove()
-      controlSizeWatcher = null
-    }
+        controlSizeWatcher = {
+          remove: watchSize($control, () => {
+            updateWidth()
+            updateMenuContainerOffset()
+          }),
+        }
+      }
 
-    const setupHandlers = (el: HTMLElement): void => {
-      updateWidth(el)
-      updateMenuContainerOffset(el)
-      setupControlResizeAndScrollEventListeners(el)
-      setupControlSizeWatcher(el)
-    }
+      const removeControlResizeAndScrollEventListeners = (): void => {
+        if (!controlResizeAndScrollEventListeners) return
+        controlResizeAndScrollEventListeners.remove()
+        controlResizeAndScrollEventListeners = null
+      }
 
-    const removeHandlers = (): void => {
-      removeControlResizeAndScrollEventListeners()
-      removeControlSizeWatcher()
-    }
+      const removeControlSizeWatcher = (): void => {
+        if (!controlSizeWatcher) return
+        controlSizeWatcher.remove()
+        controlSizeWatcher = null
+      }
 
-    return {
-      menuRef,
-      portalTargetClass,
-      portalTargetStyle,
-      setupHandlers,
-      removeHandlers,
-      updateMenuContainerOffset,
-    }
-  },
+      const setupHandlers = (): void => {
+        updateWidth()
+        updateMenuContainerOffset()
+        setupControlResizeAndScrollEventListeners()
+        setupControlSizeWatcher()
+      }
 
-  template: `
-    <div :class="portalTargetClass" :style="portalTargetStyle" :data-instance-id="treeselect.getInstanceId()">
-      <Menu ref="menuRef" />
-    </div>
-  `,
+      const removeHandlers = (): void => {
+        removeControlResizeAndScrollEventListeners()
+        removeControlSizeWatcher()
+      }
+
+      // Watchers
+      watch(
+        () => treeselectInstance.menu.value.isOpen,
+        (newValue) => {
+          if (newValue) {
+            nextTick(setupHandlers)
+          } else {
+            removeHandlers()
+          }
+        }
+      )
+
+      watch(
+        () => treeselectInstance.menu.value.placement,
+        () => {
+          updateMenuContainerOffset()
+        }
+      )
+
+      // Lifecycle
+      onMounted(() => {
+        portalElement = document.body.lastElementChild as HTMLElement
+        if (treeselectInstance.menu.value.isOpen) {
+          nextTick(setupHandlers)
+        }
+      })
+
+      onUnmounted(() => {
+        removeHandlers()
+      })
+
+      return () => h('div', {
+        class: ['vue-treeselect__portal-target', treeselectInstance.wrapperClass],
+        style: { zIndex: treeselectInstance.zIndex },
+        'data-instance-id': treeselectInstance.getInstanceId(),
+      }, [
+        h(Menu)
+      ])
+    }
+  })
 }
 
 // ============================================================================
 // MenuPortal Component
 // ============================================================================
 
-let portalTarget: App | null = null
+let portalApp: VueApp | null = null
 let portalElement: HTMLElement | null = null
 
-const setup = (): void => {
+const setupPortal = (): void => {
   const el = document.createElement('div')
   document.body.appendChild(el)
   portalElement = el
 
-  portalTarget = createApp({
-    ...PortalTarget,
-    setup() {
-      const result = PortalTarget.setup()
+  const PortalTargetComponent = createPortalTargetComponent(treeselect)
 
-      watch(
-        () => treeselect.menu.value.isOpen,
-        (newValue) => {
-          if (newValue) {
-            nextTick(() => result.setupHandlers(el))
-          } else {
-            result.removeHandlers()
-          }
-        }
-      )
-
-      watch(
-        () => treeselect.menu.value.placement,
-        () => {
-          result.updateMenuContainerOffset(el)
-        }
-      )
-
-      onMounted(() => {
-        if (treeselect.menu.value.isOpen) {
-          nextTick(() => result.setupHandlers(el))
-        }
-      })
-
-      onUnmounted(() => {
-        result.removeHandlers()
-      })
-
-      return result
-    },
-  })
-
-  portalTarget.provide('treeselect', treeselect)
-  portalTarget.mount(el)
+  portalApp = createApp(PortalTargetComponent)
+  portalApp.provide('treeselect', treeselect)
+  portalApp.mount(el)
 }
 
-const teardown = (): void => {
-  if (portalTarget && portalElement) {
+const teardownPortal = (): void => {
+  if (portalApp && portalElement) {
     portalElement.parentNode?.removeChild(portalElement)
-    portalElement.innerHTML = ''
-    portalTarget.unmount()
-    portalTarget = null
+    portalApp.unmount()
+    portalApp = null
     portalElement = null
   }
 }
 
 onMounted(() => {
-  setup()
+  setupPortal()
 })
 
 onUnmounted(() => {
-  teardown()
+  teardownPortal()
 })
 </script>
