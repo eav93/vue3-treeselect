@@ -10,9 +10,7 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    },
-    "./dist/style.css": "./dist/vue3-treeselect.css",
-    "./dist/style.scss": "./dist/styles/style.scss"
+    }
   },
   "unpkg": "./dist/index.umd.js",
   "author": "megafetis",
