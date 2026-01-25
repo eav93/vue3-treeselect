@@ -3,6 +3,7 @@
   "version": "0.2.5",
   "description": "Tree select hierarchical component for vue 3 (next)",
   "main": "dist/vue3-treeselect.mjs",
+  "types": "dist/index.d.ts",
   "unpkg": "dist/vue3-treeselect.umd.js",
   "author": "megafetis",
   "scripts": {
@@ -57,8 +58,7 @@
   ],
   "homepage": "https://github.com/soda-nl/vue3-treeselect",
   "files": [
-    "dist/*.js",
-    "dist/*.css",
+    "dist",
     "styles"
   ],
   "keywords": [
