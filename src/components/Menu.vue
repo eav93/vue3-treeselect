@@ -1,4 +1,5 @@
 <script lang="jsx">
+  import { Transition } from 'vue'
   import { MENU_BUFFER } from '@/constants'
   import { watchSize, setupResizeAndScrollEventListeners } from '@/utils'
   import Option from '@/components/Option.vue'

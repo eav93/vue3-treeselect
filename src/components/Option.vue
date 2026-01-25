@@ -1,4 +1,5 @@
 <script lang="jsx">
+  import { Transition } from 'vue'
   import { UNCHECKED, INDETERMINATE, CHECKED } from '@/constants'
   import { onLeftClick } from '@/utils'
   import Tip from '@/components/Tip.vue'

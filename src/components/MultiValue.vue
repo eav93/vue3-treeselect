@@ -1,4 +1,5 @@
 <script lang="jsx">
+  import { TransitionGroup } from 'vue'
   import MultiValueItem from '@/components/MultiValueItem.vue'
   import Input from '@/components/Input.vue'
   import Placeholder from '@/components/Placeholder.vue'
