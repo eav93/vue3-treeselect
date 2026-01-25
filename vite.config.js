@@ -1,8 +1,19 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 export default defineConfig({
-    plugins: [vue()],
+    plugins: [
+        vue(),
+        viteStaticCopy({
+            targets: [
+                {
+                    src: 'styles/assets/*',
+                    dest: '.',
+                },
+            ],
+        }),
+    ],
 
     resolve: {
         alias: {
@@ -26,10 +37,12 @@ export default defineConfig({
             external: ['vue'],
             output: {
                 exports: 'named',
-                globals: { vue: 'Vue' }, // используется только UMD, для es/cjs просто игнорируется
+                globals: { vue: 'Vue' },
+                assetFileNames: 'assets/[name][extname]',
             },
         },
 
         sourcemap: 'hidden',
+        copyPublicDir: true,
     },
 })
