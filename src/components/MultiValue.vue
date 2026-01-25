@@ -1,57 +1,68 @@
-<script lang="jsx">
-  import { TransitionGroup } from 'vue'
-  import MultiValueItem from '@/components/MultiValueItem.vue'
-  import Input from '@/components/Input.vue'
-  import Placeholder from '@/components/Placeholder.vue'
+<template>
+  <TransitionGroup
+    class="vue-treeselect__multi-value"
+    tag="div"
+    name="vue-treeselect__multi-value-item--transition"
+    appear
+  >
+    <MultiValueItem
+      v-for="node in displayedNodes"
+      :key="`multi-value-item-${node.id}`"
+      :node="node"
+    />
+    <div
+      v-if="exceedLimit"
+      key="exceed-limit-tip"
+      class="vue-treeselect__limit-tip vue-treeselect-helper-zoom-effect-off"
+    >
+      <span class="vue-treeselect__limit-tip-text">
+        {{ limitText }}
+      </span>
+    </div>
+    <Placeholder key="placeholder" />
+    <Input ref="input" key="input" />
+  </TransitionGroup>
+</template>
 
-  export default {
-    name: 'vue-treeselect--multi-value',
-    inject: [ 'instance' ],
+<script setup lang="ts">
+import { computed, inject } from 'vue'
+import MultiValueItem from '@/components/MultiValueItem.vue'
+import Input from '@/components/Input.vue'
+import Placeholder from '@/components/Placeholder.vue'
+import type { TreeselectInstance, NormalizedNode } from '@/types'
 
-    methods: {
-      renderMultiValueItems() {
-        const { instance } = this
+// ============================================================================
+// Inject treeselect instance
+// ============================================================================
 
-        return instance.internalValue
-          .slice(0, instance.limit)
-          .map(instance.getNode)
-          .map(node => (
-            <MultiValueItem key={`multi-value-item-${node.id}`} node={node} />
-          ))
-      },
+const treeselect = inject<TreeselectInstance>('treeselect')!
 
-      renderExceedLimitTip() {
-        const { instance } = this
-        const count = instance.internalValue.length - instance.limit
+// ============================================================================
+// Computed
+// ============================================================================
 
-        if (count <= 0) return null
+/**
+ * Get nodes to display (up to limit)
+ */
+const displayedNodes = computed(() => {
+  return treeselect.internalValue.value
+    .slice(0, treeselect.limit)
+    .map(treeselect.getNode)
+    .filter((node): node is NormalizedNode => node !== null)
+})
 
-        return (
-          <div class="vue-treeselect__limit-tip vue-treeselect-helper-zoom-effect-off" key="exceed-limit-tip">
-            <span class="vue-treeselect__limit-tip-text">{ instance.limitText(count) }</span>
-          </div>
-        )
-      },
-    },
+/**
+ * Whether the limit has been exceeded
+ */
+const exceedLimit = computed(() => {
+  return treeselect.internalValue.value.length > treeselect.limit
+})
 
-    render() {
-      const { renderValueContainer } = this.$parent
-      // const transitionGroupProps = {
-      //   props: {
-      //     tag: 'div',
-      //     name: 'vue-treeselect__multi-value-item--transition',
-      //     appear: true,
-      //   },
-      // }
-
-      return renderValueContainer(
-        <TransitionGroup class="vue-treeselect__multi-value" tag="div" name="vue-treeselect__multi-value-item--transition" appear={true} >
-          {this.renderMultiValueItems()}
-          {this.renderExceedLimitTip()}
-          <Placeholder key="placeholder" />
-          <Input ref="input" key="input" />
-        </TransitionGroup>,
-      )
-    },
-  }
+/**
+ * Text to show when limit is exceeded
+ */
+const limitText = computed(() => {
+  const count = treeselect.internalValue.value.length - treeselect.limit
+  return treeselect.limitText(count)
+})
 </script>
