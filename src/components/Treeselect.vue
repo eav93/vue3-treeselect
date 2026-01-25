@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, ref, onMounted } from 'vue'
+import { computed, provide, ref } from 'vue'
 import { onLeftClick } from '@/utils'
 import { useTreeselect } from '@/composables'
 import HiddenFields from '@/components/HiddenFields.vue'
@@ -56,7 +56,7 @@ const props = withDefaults(defineProps<TreeselectProps>(), {
   limitText: (count: number) => `and ${count} more`,
   loading: false,
   loadingText: 'Loading...',
-  matchKeys: ['label'],
+  matchKeys: () => ['label'],
   maxHeight: 300,
   multiple: false,
   name: undefined,
@@ -111,8 +111,11 @@ const portal = ref<InstanceType<typeof MenuPortal>>()
 // Instance ID
 // ============================================================================
 
-const instanceId = computed(() => {
-  return props.instanceId ?? `vue-treeselect-${Math.random().toString(36).substr(2, 9)}`
+const instanceId = computed({
+  get: () => props.instanceId ?? `vue-treeselect-${Math.random().toString(36).substr(2, 9)}`,
+  set: () => {
+    // Read-only, set does nothing
+  }
 })
 
 // ============================================================================
@@ -120,17 +123,18 @@ const instanceId = computed(() => {
 // ============================================================================
 
 const getMenuElement = (): HTMLElement | null => {
-  const ref = props.appendToBody && portal.value ? portal.value.portalTarget : menu
-  const $menu = ref.value?.$refs?.menu?.$refs?.menu
-  return $menu && $menu.nodeName !== '#comment' ? $menu : null
+  const ref = props.appendToBody ? portal : menu
+  const $menu = ref.value?.$refs?.menu || (ref.value?.$refs?.['menu-container'] as HTMLElement | undefined)?.querySelector('.vue-treeselect__menu')
+  return $menu && ($menu as any).nodeName !== '#comment' ? ($menu as HTMLElement) : null
 }
 
-const getValueContainer = () => {
+const getValueContainer = (): any => {
   return control.value?.$refs?.['value-container']
 }
 
-const getInput = () => {
-  return getValueContainer().$refs.input
+const getInput = (): any => {
+  const container = getValueContainer()
+  return container?.$refs?.input
 }
 
 const focusInput = () => {

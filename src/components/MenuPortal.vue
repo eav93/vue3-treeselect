@@ -5,6 +5,8 @@
 <script setup lang="ts">
 import { createApp, onMounted, onUnmounted, inject, watch, nextTick, ref, computed } from 'vue'
 import { watchSize, setupResizeAndScrollEventListeners, find } from '@/utils'
+// Used in template string below
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import Menu from '@/components/Menu.vue'
 import type { TreeselectInstance } from '@/types'
 import type { App } from 'vue'
@@ -21,6 +23,7 @@ const treeselect = inject<TreeselectInstance>('treeselect')!
 
 const PortalTarget = {
   name: 'vue-treeselect--portal-target',
+  components: { Menu },
 
   setup() {
     const menuRef = ref()
@@ -53,7 +56,7 @@ const PortalTarget = {
 
       const controlRect = $control.getBoundingClientRect()
       const portalTargetRect = el.getBoundingClientRect()
-      const offsetY = treeselect.menu.placement === 'bottom' ? controlRect.height : 0
+      const offsetY = treeselect.menu.value.placement === 'bottom' ? controlRect.height : 0
       const left = Math.round(controlRect.left - portalTargetRect.left) + 'px'
       const top = Math.round(controlRect.top - portalTargetRect.top + offsetY) + 'px'
       const menuContainerStyle = $menuContainer.style
@@ -145,7 +148,7 @@ const setup = (): void => {
       const result = PortalTarget.setup()
 
       watch(
-        () => treeselect.menu.isOpen,
+        () => treeselect.menu.value.isOpen,
         (newValue) => {
           if (newValue) {
             nextTick(() => result.setupHandlers(el))
@@ -156,14 +159,14 @@ const setup = (): void => {
       )
 
       watch(
-        () => treeselect.menu.placement,
+        () => treeselect.menu.value.placement,
         () => {
           result.updateMenuContainerOffset(el)
         }
       )
 
       onMounted(() => {
-        if (treeselect.menu.isOpen) {
+        if (treeselect.menu.value.isOpen) {
           nextTick(() => result.setupHandlers(el))
         }
       })

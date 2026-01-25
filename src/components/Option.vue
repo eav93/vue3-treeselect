@@ -81,7 +81,7 @@
 
         <!-- Error tip -->
         <Tip v-if="showErrorTip" type="error" icon="error">
-          {{ node.childrenStates.loadingError }}
+          {{ node.childrenStates?.loadingError }}
           <a
             class="vue-treeselect__retry"
             :title="treeselect.retryTitle"
@@ -148,7 +148,7 @@ const optionClass = computed(() => ({
   'vue-treeselect__option--disabled': props.node.isDisabled,
   'vue-treeselect__option--selected': treeselect.isSelected(props.node),
   'vue-treeselect__option--highlight': props.node.isHighlighted,
-  'vue-treeselect__option--matched': treeselect.localSearch.active && props.node.isMatched,
+  'vue-treeselect__option--matched': treeselect.localSearch.value.active && props.node.isMatched,
   'vue-treeselect__option--hide': !shouldShow.value,
 }))
 
@@ -168,7 +168,7 @@ const shouldShowCheckbox = computed(() => {
 })
 
 const checkboxClass = computed(() => {
-  const checkedState = treeselect.forest.checkedStateMap[props.node.id]
+  const checkedState = treeselect.forest.value.checkedStateMap[props.node.id]
   return {
     'vue-treeselect__checkbox': true,
     'vue-treeselect__checkbox--checked': checkedState === CHECKED,
@@ -185,7 +185,7 @@ const checkboxClass = computed(() => {
 const shouldShowCount = computed(() => {
   return (
     props.node.isBranch &&
-    (treeselect.localSearch.active
+    (treeselect.localSearch.value.active
       ? treeselect.showCountOnSearchComputed
       : treeselect.showCount)
   )
@@ -194,9 +194,9 @@ const shouldShowCount = computed(() => {
 const count = computed(() => {
   if (!shouldShowCount.value) return NaN
 
-  return treeselect.localSearch.active
-    ? treeselect.localSearch.countMap[props.node.id][treeselect.showCountOf]
-    : props.node.count![treeselect.showCountOf]
+  return treeselect.localSearch.value.active
+    ? (treeselect.localSearch.value.countMap[props.node.id as any] as any)[treeselect.showCountOf]
+    : (props.node.count as any)![treeselect.showCountOf]
 })
 
 const labelClassName = 'vue-treeselect__label'

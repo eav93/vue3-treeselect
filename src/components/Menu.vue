@@ -6,7 +6,7 @@
   >
     <Transition name="vue-treeselect__menu--transition">
       <div
-        v-if="treeselect.menu.isOpen"
+        v-if="treeselect.menu.value.isOpen"
         ref="menu"
         class="vue-treeselect__menu"
         :style="menuStyle"
@@ -38,7 +38,7 @@
           </Tip>
           <div v-else class="vue-treeselect__list">
             <Option
-              v-for="rootNode in treeselect.forest.normalizedOptions"
+              v-for="rootNode in treeselect.forest.value.normalizedOptions"
               :key="rootNode.id"
               :node="rootNode"
             />
@@ -68,7 +68,7 @@
             {{ treeselect.noOptionsText }}
           </Tip>
           <Tip
-            v-else-if="treeselect.localSearch.active && treeselect.localSearch.noResults"
+            v-else-if="treeselect.localSearch.value.active && treeselect.localSearch.value.noResults"
             type="no-results"
             icon="warning"
           >
@@ -76,7 +76,7 @@
           </Tip>
           <div v-else class="vue-treeselect__list">
             <Option
-              v-for="rootNode in treeselect.forest.normalizedOptions"
+              v-for="rootNode in treeselect.forest.value.normalizedOptions"
               :key="rootNode.id"
               :node="rootNode"
             />
@@ -141,7 +141,7 @@ const menuContainerStyle = computed(() => ({
 const showNoOptions = computed(() => {
   return (
     treeselect.rootOptionsStates.isLoaded &&
-    treeselect.forest.normalizedOptions.length === 0
+    treeselect.forest.value.normalizedOptions.length === 0
   )
 })
 
@@ -162,7 +162,7 @@ const showAsyncNoResults = computed(() => {
 // ============================================================================
 
 const adjustMenuOpenDirection = (): void => {
-  if (!treeselect.menu.isOpen) return
+  if (!treeselect.menu.value.isOpen) return
 
   const $menu = treeselect.getMenu()
   const $control = treeselect.getControl()
@@ -183,11 +183,11 @@ const adjustMenuOpenDirection = (): void => {
   if (!isControlInViewport) {
     treeselect.closeMenu()
   } else if (treeselect.openDirection !== 'auto') {
-    treeselect.menu.placement = directionMap[treeselect.openDirection as keyof typeof directionMap]
+    treeselect.menu.value.placement = directionMap[treeselect.openDirection as keyof typeof directionMap]
   } else if (hasEnoughSpaceBelow || !hasEnoughSpaceAbove) {
-    treeselect.menu.placement = 'bottom'
+    treeselect.menu.value.placement = 'bottom'
   } else {
-    treeselect.menu.placement = 'top'
+    treeselect.menu.value.placement = 'top'
   }
 }
 
@@ -197,7 +197,7 @@ const adjustMenuOpenDirection = (): void => {
 
 const setupMenuSizeWatcher = (): void => {
   const $menu = treeselect.getMenu()
-  if (menuSizeWatcher) return
+  if (menuSizeWatcher || !$menu) return
 
   menuSizeWatcher = {
     remove: watchSize($menu, adjustMenuOpenDirection),
@@ -206,7 +206,7 @@ const setupMenuSizeWatcher = (): void => {
 
 const setupMenuResizeAndScrollEventListeners = (): void => {
   const $control = treeselect.getControl()
-  if (menuResizeAndScrollEventListeners) return
+  if (menuResizeAndScrollEventListeners || !$control) return
 
   menuResizeAndScrollEventListeners = {
     remove: setupResizeAndScrollEventListeners($control, adjustMenuOpenDirection),
@@ -245,7 +245,7 @@ const onMenuClose = (): void => {
 // ============================================================================
 
 watch(
-  () => treeselect.menu.isOpen,
+  () => treeselect.menu.value.isOpen,
   (newValue) => {
     if (newValue) {
       nextTick(onMenuOpen)
@@ -260,7 +260,7 @@ watch(
 // ============================================================================
 
 onMounted(() => {
-  if (treeselect.menu.isOpen) {
+  if (treeselect.menu.value.isOpen) {
     nextTick(onMenuOpen)
   }
 })
