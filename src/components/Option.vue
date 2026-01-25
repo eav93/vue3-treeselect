@@ -244,7 +244,8 @@ const handleMouseEnterOption = (evt: MouseEvent): void => {
   treeselect.setCurrentHighlightedOption(props.node, false)
 }
 
-const handleMouseDownOnArrow = onLeftClick(function () {
+const handleMouseDownOnArrow = onLeftClick(function (evt: MouseEvent) {
+  evt.stopPropagation()
   treeselect.toggleExpanded(props.node)
 })
 
