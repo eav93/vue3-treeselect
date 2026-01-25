@@ -209,10 +209,6 @@ const handleMouseDown = onLeftClick(function (evt: MouseEvent) {
     // Focus the input or prevent blurring
     focusInput()
   }
-
-  if (treeselect.resetFlags) {
-    treeselect.resetFlags()
-  }
 })
 
 // ============================================================================
