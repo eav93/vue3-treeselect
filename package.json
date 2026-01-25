@@ -2,9 +2,19 @@
   "name": "@eav93/vue3-treeselect",
   "version": "0.2.5",
   "description": "Tree select hierarchical component for vue 3 (next)",
-  "main": "dist/vue3-treeselect.mjs",
-  "types": "dist/index.d.ts",
-  "unpkg": "dist/vue3-treeselect.umd.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./dist/style.css": "./dist/vue3-treeselect.css",
+    "./dist/style.scss": "./dist/styles/style.scss"
+  },
+  "unpkg": "./dist/index.umd.js",
   "author": "megafetis",
   "scripts": {
     "build": "vite build",
@@ -56,8 +66,8 @@
     "hierarchy",
     "hierarchical"
   ],
-  "style": "dist/vue3-treeselect.css",
-  "sass": "dist/styles/style.scss",
+  "style": "./dist/vue3-treeselect.css",
+  "sass": "./dist/styles/style.scss",
   "sideEffects": [
     "*.css",
     "*.scss"

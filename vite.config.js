@@ -17,6 +17,10 @@ export default defineConfig({
                     dest: 'styles'
                 },
                 {
+                    src: 'styles/style.less',
+                    dest: 'styles'
+                },
+                {
                     src: 'styles/assets',
                     dest: 'styles'
                 }
@@ -40,8 +44,7 @@ export default defineConfig({
         lib: {
             entry: path.resolve(__dirname, 'src/index.ts'),
             name: 'Vue3Treeselect',
-            fileName: 'vue3-treeselect',
-            formats: ['es', 'cjs', 'umd']
+            fileName: 'vue3-treeselect'
         },
         rollupOptions: {
             external: ['vue'],
@@ -70,16 +73,6 @@ export default defineConfig({
         commonjsOptions: {
             requireReturnsDefault: 'preferred',
             transformMixedEsModules: true,
-        },
-        rollupOptions: {
-            external: ['vue'],
-            output: {
-                // Provide global variables to use in the UMD build
-                // Add external deps here
-                globals: {
-                    vue: 'Vue',
-                },
-            },
         },
         sourcemap: 'hidden',
     },
