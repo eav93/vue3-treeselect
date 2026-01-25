@@ -202,8 +202,9 @@ const handleMouseDown = onLeftClick(function (evt: MouseEvent) {
     treeselect.openMenu()
   }
 
-  const blurOnSelectFlag = treeselect.resetFlags ? treeselect.resetFlags() : false
-  if (blurOnSelectFlag) {
+  // Check if we should blur on select, and reset the flag
+  const shouldBlur = treeselect.resetFlags ? treeselect.resetFlags() : false
+  if (shouldBlur) {
     blurInput()
   } else {
     // Focus the input or prevent blurring
