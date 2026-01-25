@@ -175,7 +175,7 @@ const handleMouseDown = onLeftClick(function (evt: MouseEvent) {
   if (props.disabled) return
 
   const $valueContainer = getValueContainer()
-  const isClickedOnValueContainer = $valueContainer.$el.contains(evt.target as Node)
+  const isClickedOnValueContainer = $valueContainer?.$el?.contains(evt.target as Node)
 
   if (isClickedOnValueContainer && !treeselect.menu.value.isOpen && (props.openOnClick || treeselect.trigger.isFocused)) {
     treeselect.openMenu()

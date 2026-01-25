@@ -2120,7 +2120,7 @@ const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
       s.value && !s.value.contains(m.target) && (v(), c.closeMenu());
     }, E = oe(function(m) {
       if (m.preventDefault(), m.stopPropagation(), r.disabled) return;
-      i().$el.contains(m.target) && !c.menu.value.isOpen && (r.openOnClick || c.trigger.isFocused) && c.openMenu(), (c.resetFlags ? c.resetFlags() : !1) ? v() : _(), c.resetFlags && c.resetFlags();
+      i()?.$el?.contains(m.target) && !c.menu.value.isOpen && (r.openOnClick || c.trigger.isFocused) && c.openMenu(), (c.resetFlags ? c.resetFlags() : !1) ? v() : _(), c.resetFlags && c.resetFlags();
     }), c = vr(
       r,
       o,
