@@ -1170,7 +1170,7 @@ function vr(e, n, t, r, o) {
   }), W(() => e.branchNodesFirst, () => {
     m();
   }), W(() => e.disabled, (w) => {
-    w && V.menu.isOpen ? V.closeMenu() : !w && !V.menu.isOpen && e.alwaysOpen && V.openMenu();
+    w && V.menu.value.isOpen ? V.closeMenu() : !w && !V.menu.value.isOpen && e.alwaysOpen && V.openMenu();
   }), W(() => e.flat, () => {
     m();
   }), W(k, (w, P) => {
@@ -2120,7 +2120,7 @@ const rn = /* @__PURE__ */ tn(Ar, [["render", Mr]]), kr = {
       s.value && !s.value.contains(m.target) && (v(), c.closeMenu());
     }, E = oe(function(m) {
       if (m.preventDefault(), m.stopPropagation(), r.disabled) return;
-      i().$el.contains(m.target) && !c.menu.isOpen && (r.openOnClick || c.trigger.isFocused) && c.openMenu(), (c.resetFlags ? c.resetFlags() : !1) ? v() : _(), c.resetFlags && c.resetFlags();
+      i().$el.contains(m.target) && !c.menu.value.isOpen && (r.openOnClick || c.trigger.isFocused) && c.openMenu(), (c.resetFlags ? c.resetFlags() : !1) ? v() : _(), c.resetFlags && c.resetFlags();
     }), c = vr(
       r,
       o,
@@ -2143,9 +2143,9 @@ const rn = /* @__PURE__ */ tn(Ar, [["render", Mr]]), kr = {
       "vue-treeselect--disabled": r.disabled,
       "vue-treeselect--focused": c.trigger.isFocused,
       "vue-treeselect--has-value": c.hasValue.value,
-      "vue-treeselect--open": c.menu.isOpen,
-      "vue-treeselect--open-above": c.menu.placement === "top",
-      "vue-treeselect--open-below": c.menu.placement === "bottom",
+      "vue-treeselect--open": c.menu.value.isOpen,
+      "vue-treeselect--open-above": c.menu.value.placement === "top",
+      "vue-treeselect--open-below": c.menu.value.placement === "bottom",
       "vue-treeselect--branch-nodes-disabled": r.disableBranchNodes,
       "vue-treeselect--append-to-body": r.appendToBody
     }));

@@ -316,8 +316,8 @@ export function useTreeselect(
   })
 
   watch(() => props.disabled, (newValue) => {
-    if (newValue && menu.menu.isOpen) menu.closeMenu()
-    else if (!newValue && !menu.menu.isOpen && props.alwaysOpen) menu.openMenu()
+    if (newValue && menu.menu.value.isOpen) menu.closeMenu()
+    else if (!newValue && !menu.menu.value.isOpen && props.alwaysOpen) menu.openMenu()
   })
 
   watch(() => props.flat, () => {

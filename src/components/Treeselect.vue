@@ -177,7 +177,7 @@ const handleMouseDown = onLeftClick(function (evt: MouseEvent) {
   const $valueContainer = getValueContainer()
   const isClickedOnValueContainer = $valueContainer.$el.contains(evt.target as Node)
 
-  if (isClickedOnValueContainer && !treeselect.menu.isOpen && (props.openOnClick || treeselect.trigger.isFocused)) {
+  if (isClickedOnValueContainer && !treeselect.menu.value.isOpen && (props.openOnClick || treeselect.trigger.isFocused)) {
     treeselect.openMenu()
   }
 
@@ -231,9 +231,9 @@ const wrapperClass = computed(() => ({
   'vue-treeselect--disabled': props.disabled,
   'vue-treeselect--focused': treeselect.trigger.isFocused,
   'vue-treeselect--has-value': treeselect.hasValue.value,
-  'vue-treeselect--open': treeselect.menu.isOpen,
-  'vue-treeselect--open-above': treeselect.menu.placement === 'top',
-  'vue-treeselect--open-below': treeselect.menu.placement === 'bottom',
+  'vue-treeselect--open': treeselect.menu.value.isOpen,
+  'vue-treeselect--open-above': treeselect.menu.value.placement === 'top',
+  'vue-treeselect--open-below': treeselect.menu.value.placement === 'bottom',
   'vue-treeselect--branch-nodes-disabled': props.disableBranchNodes,
   'vue-treeselect--append-to-body': props.appendToBody,
 }))
