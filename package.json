@@ -17,6 +17,8 @@
     "vite": "^6.0.3"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.23",
+    "@types/node": "^25.0.10",
     "@types/ts-nameof": "4.2.5",
     "@vue/compiler-sfc": "3.5.13",
     "clean-webpack-plugin": "^4.0.0",

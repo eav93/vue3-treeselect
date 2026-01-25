@@ -57,7 +57,7 @@ export function useMenu(
    * Should a branch node be expanded?
    */
   const shouldExpand = (node: NormalizedNode): boolean => {
-    return localSearch.active ? node.isExpandedOnSearch : node.isExpanded
+    return localSearch.active ? (node.isExpandedOnSearch || false) : (node.isExpanded || false)
   }
 
   /**
@@ -99,6 +99,7 @@ export function useMenu(
       if (node.isBranch && !shouldExpand(node)) {
         return false
       }
+      return undefined
     })
 
     return ids
@@ -193,6 +194,7 @@ export function useMenu(
     if (!hasVisibleOptions.value) return
 
     const last = getLast(visibleOptionIds.value)
+    if (!last) return
     const node = getNode(last)
     if (node) setCurrentHighlightedOption(node)
   }

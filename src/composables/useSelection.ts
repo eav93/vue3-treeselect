@@ -284,6 +284,7 @@ export function useSelection(
     if (single()) return clear()
 
     const lastValue = getLast(internalValue())
+    if (!lastValue) return
     const lastSelectedNode = getNode(lastValue)
     if (lastSelectedNode) {
       select(lastSelectedNode) // This will deselect it
