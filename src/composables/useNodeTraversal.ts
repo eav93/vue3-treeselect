@@ -72,9 +72,10 @@ export function useNodeTraversal() {
     normalizedOptions: NormalizedNode[],
     callback: (node: NormalizedNode) => boolean | void
   ): void => {
-    const walk = (parentNode: { children: NormalizedNode[] }): void => {
+    const walk = (parentNode: { children?: NormalizedNode[] }): void => {
+      if (!parentNode.children) return
       parentNode.children.forEach(child => {
-        if (callback(child) !== false && child.isBranch) {
+        if (callback(child) !== false && child.isBranch && child.children) {
           walk(child)
         }
       })

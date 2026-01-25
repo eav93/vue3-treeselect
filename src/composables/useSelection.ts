@@ -6,6 +6,7 @@ import type {
   TreeselectProps,
   TreeselectEmits,
   NodeId,
+  LocalSearchState,
 } from '@/types'
 
 // Constants - will be imported from constants.ts later
@@ -30,6 +31,7 @@ const CHECKED = 2
  * @param internalValue - Computed for internal value
  * @param single - Computed for single mode
  * @param instanceId - Instance ID
+ * @param localSearch - Local search state
  * @returns Selection methods
  */
 export function useSelection(
@@ -46,7 +48,8 @@ export function useSelection(
   hasValue: () => boolean,
   internalValue: () => NodeId[],
   single: () => boolean,
-  instanceId: string | number
+  instanceId: string | number,
+  localSearch: LocalSearchState
 ) {
   /**
    * Flags for internal state
@@ -259,7 +262,7 @@ export function useSelection(
     })
 
     // Reset search if needed
-    if (props.localSearch?.active && nextState && (single() || props.clearOnSelect)) {
+    if (localSearch.active && nextState && (single() || props.clearOnSelect)) {
       resetSearchQuery()
     }
 

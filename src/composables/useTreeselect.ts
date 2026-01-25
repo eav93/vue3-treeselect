@@ -200,10 +200,15 @@ export function useTreeselect(
 
   // 7. Build forest state helper
   buildForestState = () => {
+    // Wrap traverseAllNodesByIndex to match expected signature
+    const wrappedTraverse = (callback: (node: NormalizedNode) => void) => {
+      traversal.traverseAllNodesByIndex(forest.normalizedOptions, callback)
+    }
+
     forestState.buildForestState(
       props,
       selectedNodes.value,
-      traversal.traverseAllNodesByIndex,
+      wrappedTraverse,
       isSelected
     )
   }
@@ -254,22 +259,30 @@ export function useTreeselect(
   const { handleRemoteSearch } = remoteSearch
 
   // 10. Local search (needs trigger, traverseAllNodesDFS, resetHighlightedOptionWhenNecessary placeholder)
+  const wrappedTraverseAllNodesDFS = (callback: (node: NormalizedNode) => void) => {
+    traversal.traverseAllNodesDFS(forest.normalizedOptions, callback)
+  }
+
   const localSearch = useLocalSearch(
     props,
     trigger,
-    traversal.traverseAllNodesDFS,
+    wrappedTraverseAllNodesDFS,
     (forceReset) => resetHighlightedOptionWhenNecessary(forceReset)
   )
   const { handleLocalSearch } = localSearch
 
   // 11. Menu (needs many things)
+  const wrappedTraverseAllNodesByIndex = (callback: (node: NormalizedNode) => boolean | void) => {
+    traversal.traverseAllNodesByIndex(forest.normalizedOptions, callback)
+  }
+
   const menu = useMenu(
     props,
     emit,
     forest,
     localSearch.localSearch,
     getNode,
-    traversal.traverseAllNodesByIndex,
+    wrappedTraverseAllNodesByIndex,
     getValue,
     instanceId.value,
     resetSearchQuery,
@@ -295,7 +308,8 @@ export function useTreeselect(
     () => hasValue.value,
     () => internalValue.value,
     () => single.value,
-    instanceId.value
+    instanceId.value,
+    localSearch.localSearch
   )
 
   // ============================================================================

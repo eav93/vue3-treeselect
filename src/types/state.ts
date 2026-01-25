@@ -1,5 +1,8 @@
 import type { NodeId, NodeMap, NormalizedNode, AsyncOptionsStates, CountMap } from './node'
 
+// Re-export for external use
+export type { AsyncOptionsStates }
+
 /**
  * Checked state for multi-select mode
  * 0 = UNCHECKED, 1 = INDETERMINATE, 2 = CHECKED
