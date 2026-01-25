@@ -66,9 +66,11 @@
   ],
   "style": "./dist/vue3-treeselect.css",
   "sass": "./dist/styles/style.scss",
+  "less": "./dist/styles/style.less",
   "sideEffects": [
     "*.css",
-    "*.scss"
+    "*.scss",
+    "*.less"
   ],
   "license": "MIT",
   "repository": {
