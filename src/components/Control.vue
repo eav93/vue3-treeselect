@@ -113,10 +113,10 @@ const handleMouseDownOnX = onLeftClick(function (evt: MouseEvent) {
 
   if (isPromise(result)) {
     // Handle async beforeClearAll
-    result.then(handler)
+    result.then((value) => handler(value as boolean))
   } else {
     // Keep same behavior - call async
-    setTimeout(() => handler(result), 0)
+    setTimeout(() => handler(result as boolean), 0)
   }
 })
 
