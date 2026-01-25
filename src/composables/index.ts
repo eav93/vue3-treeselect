@@ -3,7 +3,7 @@
  */
 
 export * from './useNodeTraversal'
-// export * from './useForestState'
+export * from './useForestState'
 // export * from './useNodeNormalization'
 // export * from './useValue'
 // export * from './useSelection'
