@@ -96,7 +96,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject } from 'vue'
+import { computed, inject, useSlots } from 'vue'
 import { UNCHECKED, INDETERMINATE, CHECKED } from '@/constants'
 import { onLeftClick } from '@/utils'
 import Tip from '@/components/Tip.vue'
@@ -112,6 +112,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const slots = useSlots()
 
 // ============================================================================
 // Inject treeselect instance
@@ -203,7 +204,7 @@ const labelClassName = 'vue-treeselect__label'
 const countClassName = 'vue-treeselect__count'
 
 const customLabelRenderer = computed(() => {
-  return (treeselect as any).$slots?.['option-label']
+  return slots['option-label']
 })
 
 // ============================================================================

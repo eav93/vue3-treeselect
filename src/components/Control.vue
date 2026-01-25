@@ -35,12 +35,13 @@ import SingleValue from '@/components/SingleValue.vue'
 import MultiValue from '@/components/MultiValue.vue'
 import DeleteIcon from '@/components/icons/Delete.vue'
 import ArrowIcon from '@/components/icons/Arrow.vue'
+import type { TreeselectInstance } from '@/types'
 
 // ============================================================================
 // Inject treeselect instance
 // ============================================================================
 
-const treeselect = inject<any>('treeselect')!
+const treeselect = inject<TreeselectInstance>('treeselect')!
 // Used in template @mousedown="instance.handleMouseDown"
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const instance = inject<any>('instance')!
@@ -83,7 +84,7 @@ const shouldShowArrow = computed(() => {
   if (!treeselect.alwaysOpen) return true
   // Even with alwaysOpen: true, sometimes the menu is still closed
   // e.g. when the control is disabled
-  return !treeselect.menu.isOpen
+  return !treeselect.menu.value.isOpen
 })
 
 const xTitle = computed(() => {
@@ -94,7 +95,7 @@ const xTitle = computed(() => {
 
 const arrowClass = computed(() => ({
   'vue-treeselect__control-arrow': true,
-  'vue-treeselect__control-arrow--rotated': treeselect.menu.isOpen,
+  'vue-treeselect__control-arrow--rotated': treeselect.menu.value.isOpen,
 }))
 
 // ============================================================================

@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject } from 'vue'
+import { computed, inject, useSlots } from 'vue'
 import { onLeftClick } from '@/utils'
 import DeleteIcon from '@/components/icons/Delete.vue'
 import type { TreeselectInstance, NormalizedNode } from '@/types'
@@ -30,6 +30,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const slots = useSlots()
 
 const treeselect = inject<TreeselectInstance>('treeselect')!
 
@@ -40,7 +41,7 @@ const itemClass = computed(() => ({
 }))
 
 const customValueLabelRenderer = computed(() => {
-  return (treeselect as any).$slots?.['value-label']
+  return slots['value-label']
 })
 
 const handleMouseDown = onLeftClick(function () {

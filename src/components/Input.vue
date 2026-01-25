@@ -41,12 +41,13 @@
 import { ref, computed, watch, inject, nextTick } from 'vue'
 import { debounce, includes } from '@/utils'
 import { MIN_INPUT_WIDTH, KEY_CODES, INPUT_DEBOUNCE_DELAY } from '@/constants'
+import type { TreeselectInstance } from '@/types'
 
 // ============================================================================
 // Inject treeselect instance
 // ============================================================================
 
-const treeselect = inject<any>('treeselect')!
+const treeselect = inject<TreeselectInstance>('treeselect')!
 
 // ============================================================================
 // Refs
@@ -169,7 +170,7 @@ const onKeyDown = (evt: KeyboardEvent): void => {
     return
   }
 
-  if (!treeselect.menu.isOpen && includes(keysThatRequireMenuBeingOpen, key)) {
+  if (!treeselect.menu.value.isOpen && includes(keysThatRequireMenuBeingOpen, key)) {
     evt.preventDefault()
     return treeselect.openMenu()
   }
@@ -183,8 +184,8 @@ const onKeyDown = (evt: KeyboardEvent): void => {
     }
     case KEY_CODES.ENTER: {
       evt.preventDefault()
-      if (treeselect.menu.current === null) return
-      const current = treeselect.getNode(treeselect.menu.current)
+      if (treeselect.menu.value.current === null) return
+      const current = treeselect.getNode(treeselect.menu.value.current)
       if (!current) return
       if (current.isBranch && treeselect.disableBranchNodes) return
       treeselect.select(current)
@@ -193,7 +194,7 @@ const onKeyDown = (evt: KeyboardEvent): void => {
     case KEY_CODES.ESCAPE: {
       if (value.value.length) {
         clear()
-      } else if (treeselect.menu.isOpen) {
+      } else if (treeselect.menu.value.isOpen) {
         treeselect.closeMenu()
       }
       break
@@ -209,7 +210,9 @@ const onKeyDown = (evt: KeyboardEvent): void => {
       break
     }
     case KEY_CODES.ARROW_LEFT: {
-      const current = treeselect.getNode(treeselect.menu.current)
+      const currentId = treeselect.menu.value.current
+      if (currentId === null) break
+      const current = treeselect.getNode(currentId)
       if (current) {
         if (current.isBranch && treeselect.shouldExpand(current)) {
           evt.preventDefault()
@@ -230,7 +233,9 @@ const onKeyDown = (evt: KeyboardEvent): void => {
       break
     }
     case KEY_CODES.ARROW_RIGHT: {
-      const current = treeselect.getNode(treeselect.menu.current)
+      const currentId = treeselect.menu.value.current
+      if (currentId === null) break
+      const current = treeselect.getNode(currentId)
       if (current) {
         if (current.isBranch && !treeselect.shouldExpand(current)) {
           evt.preventDefault()

@@ -16,12 +16,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject } from 'vue'
+import { computed, inject, useSlots } from 'vue'
 import Input from '@/components/Input.vue'
 import Placeholder from '@/components/Placeholder.vue'
 import type { TreeselectInstance } from '@/types'
 
 const treeselect = inject<TreeselectInstance>('treeselect')!
+const slots = useSlots()
 
 const shouldShowValue = computed(() => {
   return treeselect.hasValue.value && !treeselect.trigger.searchQuery
@@ -32,6 +33,6 @@ const selectedNode = computed(() => {
 })
 
 const customValueLabelRenderer = computed(() => {
-  return (treeselect as any).$slots?.['value-label']
+  return slots['value-label']
 })
 </script>
