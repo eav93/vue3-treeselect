@@ -79,7 +79,7 @@ export interface TreeselectInstance {
   openMenu: () => void
   /** Close the menu */
   closeMenu: () => void
-  /** Toggle menu open/close */
+  /** Toggle the menu open/close */
   toggleMenu: () => void
   /** Toggle expanded state of a branch node */
   toggleExpanded: (node: NormalizedNode) => void

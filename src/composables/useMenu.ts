@@ -79,10 +79,8 @@ export function useMenu(
    * Should an option be shown in menu?
    */
   const shouldShowOptionInMenu = (node: NormalizedNode): boolean => {
-    if (localSearch.active && !shouldOptionBeIncludedInSearchResult(node)) {
-      return false
-    }
-    return true
+    return !(localSearch.active && !shouldOptionBeIncludedInSearchResult(node));
+
   }
 
   /**
@@ -143,7 +141,7 @@ export function useMenu(
       if ($menu) {
         scrollToOption()
       } else {
-        nextTick(scrollToOption)
+        void nextTick(scrollToOption)
       }
     }
   }
@@ -236,7 +234,7 @@ export function useMenu(
   }
 
   /**
-   * Close menu
+   * Close the menu
    */
   const closeMenu = (): void => {
     if (!menu.isOpen || (!props.disabled && props.alwaysOpen)) return
@@ -249,14 +247,14 @@ export function useMenu(
   }
 
   /**
-   * Open menu
+   * Open the menu
    */
   const openMenu = (): void => {
     if (props.disabled || menu.isOpen) return
 
     menu.isOpen = true
-    nextTick(resetHighlightedOptionWhenNecessary)
-    nextTick(restoreMenuScrollPosition)
+    void nextTick(resetHighlightedOptionWhenNecessary)
+    void nextTick(restoreMenuScrollPosition)
 
     if (!props.options && !props.async) {
       loadRootOptions()
@@ -267,7 +265,7 @@ export function useMenu(
   }
 
   /**
-   * Toggle menu open/close
+   * Toggle the menu open/close
    */
   const toggleMenu = (): void => {
     if (menu.isOpen) {

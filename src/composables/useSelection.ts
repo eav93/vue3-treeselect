@@ -25,7 +25,7 @@ const UNCHECKED = 0
  * @param traverseDescendantsDFS - Function to traverse descendants depth-first
  * @param buildForestState - Function to rebuild forest state maps
  * @param resetSearchQuery - Function to reset search query
- * @param closeMenu - Function to close menu
+ * @param closeMenu - Function to close the menu
  * @param hasValue - Computed for whether any value is selected
  * @param internalValue - Computed for internal value
  * @param single - Computed for single mode
@@ -265,7 +265,7 @@ export function useSelection(
       resetSearchQuery()
     }
 
-    // Close menu if single select
+    // Close the menu if single select
     if (single() && props.closeOnSelect) {
       closeMenu()
 

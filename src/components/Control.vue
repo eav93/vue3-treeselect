@@ -124,7 +124,7 @@ const handleMouseDownOnX = onLeftClick(function (evt: MouseEvent) {
 })
 
 /**
- * Handle mouse down on arrow button (toggle menu)
+ * Handle mouse down on arrow button (toggle the menu)
  */
 const handleMouseDownOnArrow = onLeftClick(function (evt: MouseEvent) {
   evt.preventDefault()

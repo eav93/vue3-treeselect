@@ -89,7 +89,7 @@ export interface TreeselectProps {
   clearOnSelect?: boolean
   /** Title for clear value button */
   clearValueText?: string
-  /** Close menu after selecting (multi-select) */
+  /** Close the menu after selecting (multi-select) */
   closeOnSelect?: boolean
   /** How many levels of branch nodes to expand by default */
   defaultExpandLevel?: number
@@ -139,9 +139,9 @@ export interface TreeselectProps {
   normalizer?: NormalizerFunction
   /** Menu open direction */
   openDirection?: OpenDirection
-  /** Open menu on click */
+  /** Open the menu on click */
   openOnClick?: boolean
-  /** Open menu on focus */
+  /** Open the menu on focus */
   openOnFocus?: boolean
   /** Options array */
   options?: RawNode[]

@@ -1,22 +1,15 @@
-import { computed, reactive, watch, onMounted, onUnmounted, readonly, toRef } from 'vue'
-import { warning, quickDiff, createMap, find } from '@/utils'
-import { useNodeTraversal } from './useNodeTraversal'
-import { useForestState } from './useForestState'
-import { useNodeNormalization } from './useNodeNormalization'
-import { useValue } from './useValue'
-import { useSelection } from './useSelection'
-import { useMenu } from './useMenu'
-import { useLocalSearch } from './useLocalSearch'
-import { useRemoteSearch } from './useRemoteSearch'
-import { useAsyncOptions } from './useAsyncOptions'
-import type {
-  TreeselectProps,
-  TreeselectEmits,
-  TriggerState,
-  NormalizedNode,
-  NodeId,
-  RawNode,
-} from '@/types'
+import {computed, onMounted, onUnmounted, reactive, readonly, toRef, watch} from 'vue'
+import {createMap, find, quickDiff, warning} from '@/utils'
+import {useNodeTraversal} from './useNodeTraversal'
+import {useForestState} from './useForestState'
+import {useNodeNormalization} from './useNodeNormalization'
+import {useValue} from './useValue'
+import {useSelection} from './useSelection'
+import {useMenu} from './useMenu'
+import {useLocalSearch} from './useLocalSearch'
+import {useRemoteSearch} from './useRemoteSearch'
+import {useAsyncOptions} from './useAsyncOptions'
+import type {NodeId, NormalizedNode, RawNode, TreeselectEmits, TreeselectProps, TriggerState,} from '@/types'
 
 // Constants - will be imported from constants.ts later
 const NO_PARENT_NODE = null
@@ -218,11 +211,10 @@ export function useTreeselect(
     // Keep data of selected nodes that are not in new options
     forest.selectedNodeIds.forEach(id => {
       if (!prevNodeMap[id]) return
-      const node = {
+      forest.nodeMap[id] = {
         ...prevNodeMap[id],
         isFallbackNode: true,
       }
-      forest.nodeMap[id] = node
     })
   }
 

@@ -248,7 +248,7 @@ watch(
   () => treeselect.menu.value.isOpen,
   (newValue) => {
     if (newValue) {
-      nextTick(onMenuOpen)
+      void nextTick(onMenuOpen)
     } else {
       onMenuClose()
     }
@@ -261,7 +261,7 @@ watch(
 
 onMounted(() => {
   if (treeselect.menu.value.isOpen) {
-    nextTick(onMenuOpen)
+    void nextTick(onMenuOpen)
   }
 })
 

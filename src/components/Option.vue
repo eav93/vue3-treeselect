@@ -164,8 +164,8 @@ const arrowClass = computed(() => ({
 
 const shouldShowCheckbox = computed(() => {
   if (treeselect.single) return false
-  if (treeselect.disableBranchNodes && props.node.isBranch) return false
-  return true
+  return !(treeselect.disableBranchNodes && props.node.isBranch);
+
 })
 
 const checkboxClass = computed(() => {

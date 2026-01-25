@@ -49,21 +49,21 @@ export const INDEX = 'INDEX' as const
 
 export type SortValueBy = typeof ORDER_SELECTED | typeof LEVEL | typeof INDEX
 
-// Key codes look-up table.
-export const KEY_CODES = {
-  BACKSPACE: 8,
-  ENTER: 13,
-  ESCAPE: 27,
-  END: 35,
-  HOME: 36,
-  ARROW_LEFT: 37,
-  ARROW_UP: 38,
-  ARROW_RIGHT: 39,
-  ARROW_DOWN: 40,
-  DELETE: 46,
+// Keyboard keys (modern evt.key values)
+export const KEYS = {
+  BACKSPACE: 'Backspace',
+  ENTER: 'Enter',
+  ESCAPE: 'Escape',
+  END: 'End',
+  HOME: 'Home',
+  ARROW_LEFT: 'ArrowLeft',
+  ARROW_UP: 'ArrowUp',
+  ARROW_RIGHT: 'ArrowRight',
+  ARROW_DOWN: 'ArrowDown',
+  DELETE: 'Delete',
 } as const
 
-export type KeyCode = typeof KEY_CODES[keyof typeof KEY_CODES]
+export type Key = typeof KEYS[keyof typeof KEYS]
 
 // Other constants.
 export const INPUT_DEBOUNCE_DELAY = process.env.NODE_ENV === 'testing'

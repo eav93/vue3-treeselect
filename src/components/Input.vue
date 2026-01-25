@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, inject, nextTick } from 'vue'
 import { debounce, includes } from '@/utils'
-import { MIN_INPUT_WIDTH, KEY_CODES, INPUT_DEBOUNCE_DELAY } from '@/constants'
+import { MIN_INPUT_WIDTH, KEYS, INPUT_DEBOUNCE_DELAY } from '@/constants'
 import type { TreeselectInstance } from '@/types'
 
 // ============================================================================
@@ -82,13 +82,13 @@ const inputStyle = computed(() => ({
 // ============================================================================
 
 const keysThatRequireMenuBeingOpen = [
-  KEY_CODES.ENTER,
-  KEY_CODES.END,
-  KEY_CODES.HOME,
-  KEY_CODES.ARROW_LEFT,
-  KEY_CODES.ARROW_UP,
-  KEY_CODES.ARROW_RIGHT,
-  KEY_CODES.ARROW_DOWN,
+  KEYS.ENTER,
+  KEYS.END,
+  KEYS.HOME,
+  KEYS.ARROW_LEFT,
+  KEYS.ARROW_UP,
+  KEYS.ARROW_RIGHT,
+  KEYS.ARROW_DOWN,
 ]
 
 // ============================================================================
@@ -139,7 +139,7 @@ const onFocus = (): void => {
 const onBlur = (): void => {
   const menu = treeselect.getMenu?.()
 
-  // Prevent blur if menu has focus
+  // Prevent blur if a menu has focus
   if (menu && document.activeElement === menu) {
     return focus()
   }
@@ -164,7 +164,7 @@ const onInput = (): void => {
 }
 
 const onKeyDown = (evt: KeyboardEvent): void => {
-  const key = evt.which || evt.keyCode
+  const key = evt.key
 
   if (evt.ctrlKey || evt.shiftKey || evt.altKey || evt.metaKey) {
     return
@@ -176,13 +176,13 @@ const onKeyDown = (evt: KeyboardEvent): void => {
   }
 
   switch (key) {
-    case KEY_CODES.BACKSPACE: {
+    case KEYS.BACKSPACE: {
       if (treeselect.backspaceRemoves && !value.value.length) {
         treeselect.removeLastValue()
       }
       break
     }
-    case KEY_CODES.ENTER: {
+    case KEYS.ENTER: {
       evt.preventDefault()
       if (treeselect.menu.value.current === null) return
       const current = treeselect.getNode(treeselect.menu.value.current)
@@ -191,7 +191,7 @@ const onKeyDown = (evt: KeyboardEvent): void => {
       treeselect.select(current)
       break
     }
-    case KEY_CODES.ESCAPE: {
+    case KEYS.ESCAPE: {
       if (value.value.length) {
         clear()
       } else if (treeselect.menu.value.isOpen) {
@@ -199,17 +199,17 @@ const onKeyDown = (evt: KeyboardEvent): void => {
       }
       break
     }
-    case KEY_CODES.END: {
+    case KEYS.END: {
       evt.preventDefault()
       treeselect.highlightLastOption()
       break
     }
-    case KEY_CODES.HOME: {
+    case KEYS.HOME: {
       evt.preventDefault()
       treeselect.highlightFirstOption()
       break
     }
-    case KEY_CODES.ARROW_LEFT: {
+    case KEYS.ARROW_LEFT: {
       const currentId = treeselect.menu.value.current
       if (currentId === null) break
       const current = treeselect.getNode(currentId)
@@ -227,12 +227,12 @@ const onKeyDown = (evt: KeyboardEvent): void => {
       }
       break
     }
-    case KEY_CODES.ARROW_UP: {
+    case KEYS.ARROW_UP: {
       evt.preventDefault()
       treeselect.highlightPrevOption()
       break
     }
-    case KEY_CODES.ARROW_RIGHT: {
+    case KEYS.ARROW_RIGHT: {
       const currentId = treeselect.menu.value.current
       if (currentId === null) break
       const current = treeselect.getNode(currentId)
@@ -244,12 +244,12 @@ const onKeyDown = (evt: KeyboardEvent): void => {
       }
       break
     }
-    case KEY_CODES.ARROW_DOWN: {
+    case KEYS.ARROW_DOWN: {
       evt.preventDefault()
       treeselect.highlightNextOption()
       break
     }
-    case KEY_CODES.DELETE: {
+    case KEYS.DELETE: {
       if (treeselect.deleteRemoves && !value.value.length) {
         treeselect.removeLastValue()
       }
@@ -278,7 +278,7 @@ watch(() => treeselect.trigger.searchQuery, (newValue: string) => {
 
 watch(value, () => {
   if (needAutoSize.value) {
-    nextTick(updateInputWidth)
+    void nextTick(updateInputWidth)
   }
 })
 

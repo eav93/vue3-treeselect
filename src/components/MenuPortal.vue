@@ -108,7 +108,7 @@ const createPortalTargetComponent = (treeselectInstance: TreeselectInstance) => 
         () => treeselectInstance.menu.value.isOpen,
         (newValue) => {
           if (newValue) {
-            nextTick(setupHandlers)
+            void nextTick(setupHandlers)
           } else {
             removeHandlers()
           }
@@ -126,7 +126,7 @@ const createPortalTargetComponent = (treeselectInstance: TreeselectInstance) => 
       onMounted(() => {
         portalElement = document.body.lastElementChild as HTMLElement
         if (treeselectInstance.menu.value.isOpen) {
-          nextTick(setupHandlers)
+          void nextTick(setupHandlers)
         }
       })
 

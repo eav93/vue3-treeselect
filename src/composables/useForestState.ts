@@ -35,6 +35,7 @@ export function useForestState(
    * @param props - Component props
    * @param selectedNodes - Array of selected nodes
    * @param traverseAllNodesByIndex - Function to traverse all nodes
+   * @param isSelected - Function to check if a node is selected
    */
   const buildForestState = (
     props: TreeselectProps,
