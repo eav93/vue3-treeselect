@@ -1,4 +1,4 @@
-export function quickDiff(arrA, arrB) {
+export function quickDiff<T>(arrA: T[], arrB: T[]): boolean {
   if (arrA.length !== arrB.length) return true
 
   for (let i = 0; i < arrA.length; i++) {

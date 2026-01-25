@@ -1,22 +1,31 @@
 import watchSizeForBrowsersOtherThanIE9 from 'watch-size'
 import { removeFromArray } from './removeFromArray'
 
-let intervalId
-const registered = []
+interface SizeWatchItem {
+  $el: HTMLElement
+  listener: (size: { width: number; height: number }) => void
+  lastWidth: number | null
+  lastHeight: number | null
+}
+
+let intervalId: ReturnType<typeof setInterval> | null
+const registered: SizeWatchItem[] = []
 const INTERVAL_DURATION = 100
 
-function run() {
+function run(): void {
   intervalId = setInterval(() => {
     registered.forEach(test)
   }, INTERVAL_DURATION)
 }
 
-function stop() {
-  clearInterval(intervalId)
-  intervalId = null
+function stop(): void {
+  if (intervalId) {
+    clearInterval(intervalId)
+    intervalId = null
+  }
 }
 
-function test(item) {
+function test(item: SizeWatchItem): void {
   const { $el, listener, lastWidth, lastHeight } = item
   const width = $el.offsetWidth
   const height = $el.offsetHeight
@@ -29,14 +38,17 @@ function test(item) {
   }
 }
 
-function watchSizeForIE9($el, listener) {
-  const item = {
+function watchSizeForIE9(
+  $el: HTMLElement,
+  listener: (size: { width: number; height: number }) => void
+): () => void {
+  const item: SizeWatchItem = {
     $el,
     listener,
     lastWidth: null,
     lastHeight: null,
   }
-  const unwatch = () => {
+  const unwatch = (): void => {
     removeFromArray(registered, item)
     if (!registered.length) stop()
   }
@@ -50,13 +62,18 @@ function watchSizeForIE9($el, listener) {
   return unwatch
 }
 
-export function watchSize($el, listener) {
+export function watchSize(
+  $el: HTMLElement,
+  listener: (size: { width: number; height: number }) => void
+): () => void {
   // See: https://stackoverflow.com/a/31293352
-  const isIE9 = document.documentMode === 9
+  const isIE9 = (document as any).documentMode === 9
   // watch-size will call the listener on initialization.
   // Disable this behavior with a lock to achieve a clearer code logic.
   let locked = true
-  const wrappedListener = (...args) => locked || listener(...args)
+  const wrappedListener = (...args: [{ width: number; height: number }]): void => {
+    if (!locked) listener(...args)
+  }
   const implementation = isIE9
     ? watchSizeForIE9
     : watchSizeForBrowsersOtherThanIE9
