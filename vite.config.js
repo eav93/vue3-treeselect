@@ -1,63 +1,35 @@
-import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
-import { fileURLToPath } from 'url';
-import path from 'path';
-
-const filename = fileURLToPath(import.meta.url);
-const pathSegments = path.dirname(filename);
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
-    plugins: [
-        vue()
-    ],
+    plugins: [vue()],
+
     resolve: {
         alias: {
-            '@': path.resolve(pathSegments, './src'),
+            '@': new URL('./src', import.meta.url).pathname,
         },
-        extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json'],
     },
-    css: {
-        preprocessorOptions: {
-            scss: {
-                api: 'modern-compiler'
-            }
-        }
-    },
+
     build: {
         lib: {
-            entry: path.resolve(__dirname, 'src/index.ts'),
+            entry: new URL('./src/index.ts', import.meta.url).pathname,
             name: 'Vue3Treeselect',
-            fileName: 'vue3-treeselect'
+            formats: ['es', 'cjs', 'umd'],
+            fileName: (format) => {
+                if (format === 'es') return 'index.mjs'
+                if (format === 'cjs') return 'index.js'
+                return 'index.umd.js'
+            },
         },
+
         rollupOptions: {
             external: ['vue'],
-            output: [
-                {
-                    format: 'es',
-                    exports: 'named',
-                    entryFileNames: '[name].mjs'
-                },
-                {
-                    format: 'cjs',
-                    exports: 'named',
-                    entryFileNames: '[name].js'
-                },
-                {
-                    format: 'umd',
-                    exports: 'named',
-                    entryFileNames: '[name].umd.js',
-                    name: 'Vue3Treeselect',
-                    globals: {
-                        vue: 'Vue'
-                    }
-                }
-            ]
+            output: {
+                exports: 'named',
+                globals: { vue: 'Vue' }, // используется только UMD, для es/cjs просто игнорируется
+            },
         },
-        commonjsOptions: {
-            requireReturnsDefault: 'preferred',
-            transformMixedEsModules: true,
-        },
+
         sourcemap: 'hidden',
     },
 })

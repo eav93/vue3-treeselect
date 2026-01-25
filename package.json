@@ -2,9 +2,33 @@
   "name": "@eav93/vue3-treeselect",
   "version": "0.2.5",
   "description": "Tree select hierarchical component for vue 3 (next)",
+  "author": "megafetis",
+  "license": "MIT",
+  "homepage": "https://github.com/eav93/vue3-treeselect",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eav93/vue3-treeselect"
+  },
+  "keywords": [
+    "vue",
+    "vue3",
+    "next",
+    "vue next",
+    "tree",
+    "treeselect",
+    "select",
+    "tree select",
+    "hierarchy",
+    "hierarchical"
+  ],
+  "files": [
+    "dist",
+    "styles"
+  ],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "unpkg": "./dist/index.umd.js",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -15,18 +39,34 @@
     "./styles/*.less": "./styles/*.less",
     "./styles/assets/*": "./styles/assets/*"
   },
-  "unpkg": "./dist/index.umd.js",
-  "author": "megafetis",
+  "style": "./dist/vue3-treeselect.css",
+  "sass": "./styles/style.scss",
+  "less": "./styles/style.less",
+  "sideEffects": [
+    "*.css",
+    "*.scss",
+    "*.less",
+    "*.png"
+  ],
   "scripts": {
-    "build": "vite build",
     "dev": "vite",
+    "build": "vite build",
     "type-check": "vue-tsc --noEmit",
+    "prepublishOnly": "npm run type-check && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "fuzzysearch": "1.0.3",
     "is-promise": "4.0.0",
     "lodash": "^4.17.23"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "peerDependenciesMeta": {
+    "vue": {
+      "optional": false
+    }
   },
   "devDependencies": {
     "@types/lodash": "^4.17.23",
@@ -41,43 +81,9 @@
     "vue-tsc": "^3.2.3",
     "watch-size": "2.0.0"
   },
-  "peerDependencies": {
-    "vue": "^3.5.0"
-  },
   "browserslist": [
     "Android >= 6.0",
     "iOS >= 9",
     "not dead"
-  ],
-  "homepage": "https://github.com/eav93/vue3-treeselect",
-  "files": [
-    "dist",
-    "styles"
-  ],
-  "keywords": [
-    "vue",
-    "vue3",
-    "next",
-    "vue next",
-    "tree",
-    "treeselect",
-    "select",
-    "tree select",
-    "hierarchy",
-    "hierarchical"
-  ],
-  "style": "./dist/vue3-treeselect.css",
-  "sass": "./styles/style.scss",
-  "less": "./styles/style.less",
-  "sideEffects": [
-    "*.css",
-    "*.scss",
-    "*.less",
-    "*.png"
-  ],
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/eav93/vue3-treeselect"
-  }
+  ]
 }
