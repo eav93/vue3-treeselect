@@ -186,15 +186,23 @@ export function useNodeNormalization(
         }
 
         // Update ancestor counts
-        normalized.ancestors.forEach(ancestor => ancestor.count![ALL_DESCENDANTS]++)
+        normalized.ancestors.forEach(ancestor => {
+          if (ancestor.count) {
+            ancestor.count[ALL_DESCENDANTS]++
+          }
+        })
         if (isLeaf) {
-          normalized.ancestors.forEach(ancestor => ancestor.count![LEAF_DESCENDANTS]++)
+          normalized.ancestors.forEach(ancestor => {
+            if (ancestor.count) {
+              ancestor.count[LEAF_DESCENDANTS]++
+            }
+          })
         }
 
         // Update parent counts
-        if (!isRootNode) {
-          parentNode!.count![ALL_CHILDREN] += 1
-          if (isLeaf) parentNode!.count![LEAF_CHILDREN] += 1
+        if (!isRootNode && parentNode!.count) {
+          parentNode!.count[ALL_CHILDREN] += 1
+          if (isLeaf) parentNode!.count[LEAF_CHILDREN] += 1
           if (isDisabled) parentNode!.hasDisabledDescendants = true
         }
 
