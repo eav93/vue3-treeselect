@@ -245,11 +245,15 @@ const handleMouseEnterOption = (evt: MouseEvent): void => {
 }
 
 const handleMouseDownOnArrow = onLeftClick(function (evt: MouseEvent) {
+  evt.preventDefault()
   evt.stopPropagation()
   treeselect.toggleExpanded(props.node)
 })
 
-const handleMouseDownOnLabelContainer = onLeftClick(function () {
+const handleMouseDownOnLabelContainer = onLeftClick(function (evt: MouseEvent) {
+  evt.preventDefault()
+  evt.stopPropagation()
+
   if (props.node.isBranch && treeselect.disableBranchNodes) {
     treeselect.toggleExpanded(props.node)
   } else {
