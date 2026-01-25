@@ -11,8 +11,9 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./styles/style.scss": "./styles/style.scss",
-    "./styles/style.less": "./styles/style.less"
+    "./styles/*.scss": "./styles/*.scss",
+    "./styles/*.less": "./styles/*.less",
+    "./styles/assets/*": "./styles/assets/*"
   },
   "unpkg": "./dist/index.umd.js",
   "author": "megafetis",
@@ -71,7 +72,8 @@
   "sideEffects": [
     "*.css",
     "*.scss",
-    "*.less"
+    "*.less",
+    "*.png"
   ],
   "license": "MIT",
   "repository": {
