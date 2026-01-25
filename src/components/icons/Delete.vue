@@ -4,8 +4,8 @@
   </svg>
 </template>
 
-<script>
-  export default {
-    name: 'vue-treeselect--x',
-  }
+<script lang="ts">
+export default {
+  name: 'vue-treeselect--x',
+}
 </script>

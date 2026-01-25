@@ -1,21 +1,18 @@
-<script lang="jsx">
-  export default {
-    name: 'vue-treeselect--placeholder',
-    inject: [ 'instance' ],
+<template>
+  <div :class="placeholderClass">
+    {{ treeselect.placeholder }}
+  </div>
+</template>
 
-    render() {
-      const { instance } = this
-      const placeholderClass = {
-        'vue-treeselect__placeholder': true,
-        'vue-treeselect-helper-zoom-effect-off': true,
-        'vue-treeselect-helper-hide': instance.hasValue || instance.trigger.searchQuery,
-      }
+<script setup lang="ts">
+import { computed, inject } from 'vue'
+import type { TreeselectInstance } from '@/types'
 
-      return (
-        <div class={placeholderClass}>
-          { instance.placeholder }
-        </div>
-      )
-    },
-  }
+const treeselect = inject<TreeselectInstance>('treeselect')!
+
+const placeholderClass = computed(() => ({
+  'vue-treeselect__placeholder': true,
+  'vue-treeselect-helper-zoom-effect-off': true,
+  'vue-treeselect-helper-hide': treeselect.hasValue.value || treeselect.trigger.searchQuery,
+}))
 </script>

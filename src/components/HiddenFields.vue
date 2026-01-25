@@ -1,38 +1,37 @@
-<script lang="jsx">
-  import { isNaN } from '@/utils'
-  import { defineComponent } from 'vue';
+<template>
+  <input
+    v-for="(stringifiedValue, i) in stringifiedValues"
+    :key="`hidden-field-${i}`"
+    type="hidden"
+    :name="treeselect.name"
+    :value="stringifiedValue"
+  />
+</template>
 
-  function stringifyValue(value) {
-    if (typeof value === 'string') return value
-    // istanbul ignore else
-    if (value != null && !isNaN(value)) return JSON.stringify(value)
-    // istanbul ignore next
-    return ''
+<script setup lang="ts">
+import { computed, inject } from 'vue'
+import { isNaN } from '@/utils'
+import type { TreeselectInstance } from '@/types'
+
+const treeselect = inject<TreeselectInstance>('treeselect')!
+
+function stringifyValue(value: any): string {
+  if (typeof value === 'string') return value
+  if (value != null && !isNaN(value)) return JSON.stringify(value)
+  return ''
+}
+
+const stringifiedValues = computed(() => {
+  if (!treeselect.name || treeselect.disabled || !treeselect.hasValue.value) {
+    return []
   }
 
-  export default defineComponent({
-    name: 'vue-treeselect--hidden-fields',
-    inject: [ 'instance' ],
-    functional: true,
+  let values = treeselect.internalValue.value.map(stringifyValue)
 
-    render(context) {
-      const instance = context.instance
+  if (treeselect.multiple && treeselect.joinValues) {
+    values = [values.join(treeselect.delimiter)]
+  }
 
-      if (!instance || !instance.name || instance.disabled || !instance.hasValue) return null
-
-      let stringifiedValues = instance.internalValue.map(stringifyValue)
-
-      if (instance.multiple && instance.joinValues) stringifiedValues = [
-        stringifiedValues.join(instance.delimiter),
-      ]
-
-      return stringifiedValues.map((stringifiedValue, i) => (
-        <input type="hidden"
-          name={instance.name}
-          value={stringifiedValue}
-          key={'hidden-field-' + i}
-        />
-      ))
-    },
-  })
+  return values
+})
 </script>

@@ -1,45 +1,50 @@
-<script lang="jsx">
-  import { onLeftClick } from '@/utils'
-  import DeleteIcon from '@/components/icons/Delete.vue'
+<template>
+  <div class="vue-treeselect__multi-value-item-container">
+    <div :class="itemClass" @mousedown="handleMouseDown">
+      <!-- Custom value label renderer -->
+      <component
+        v-if="customValueLabelRenderer"
+        :is="customValueLabelRenderer"
+        :node="node"
+        class="vue-treeselect__multi-value-label"
+      />
+      <!-- Default label -->
+      <span v-else class="vue-treeselect__multi-value-label">
+        {{ node.label }}
+      </span>
+      <span class="vue-treeselect__icon vue-treeselect__value-remove">
+        <DeleteIcon />
+      </span>
+    </div>
+  </div>
+</template>
 
-  export default {
-    name: 'vue-treeselect--multi-value-item',
-    inject: [ 'instance' ],
+<script setup lang="ts">
+import { computed, inject } from 'vue'
+import { onLeftClick } from '@/utils'
+import DeleteIcon from '@/components/icons/Delete.vue'
+import type { TreeselectInstance, NormalizedNode } from '@/types'
 
-    props: {
-      node: {
-        type: Object,
-        required: true,
-      },
-    },
+interface Props {
+  node: NormalizedNode
+}
 
-    methods: {
-      handleMouseDown: onLeftClick(function handleMouseDown() {
-        const { instance, node } = this
+const props = defineProps<Props>()
 
-        // Deselect this node.
-        instance.select(node)
-      }),
-    },
+const treeselect = inject<TreeselectInstance>('treeselect')!
 
-    render() {
-      const { instance, node } = this
-      const itemClass = {
-        'vue-treeselect__multi-value-item': true,
-        'vue-treeselect__multi-value-item-disabled': node.isDisabled,
-        'vue-treeselect__multi-value-item-new': node.isNew,
-      }
-      const customValueLabelRenderer = instance.$slots['value-label']
-      const labelRenderer = customValueLabelRenderer ? customValueLabelRenderer({ node }) : node.label
+const itemClass = computed(() => ({
+  'vue-treeselect__multi-value-item': true,
+  'vue-treeselect__multi-value-item-disabled': props.node.isDisabled,
+  'vue-treeselect__multi-value-item-new': props.node.isNew,
+}))
 
-      return (
-        <div class="vue-treeselect__multi-value-item-container">
-          <div class={itemClass} onMousedown={this.handleMouseDown}>
-            <span class="vue-treeselect__multi-value-label">{ labelRenderer }</span>
-            <span class="vue-treeselect__icon vue-treeselect__value-remove"><DeleteIcon /></span>
-          </div>
-        </div>
-      )
-    },
-  }
+const customValueLabelRenderer = computed(() => {
+  return (treeselect as any).$slots?.['value-label']
+})
+
+const handleMouseDown = onLeftClick(function () {
+  // Deselect this node
+  treeselect.select(props.node)
+})
 </script>
