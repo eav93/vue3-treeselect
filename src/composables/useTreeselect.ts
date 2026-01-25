@@ -393,9 +393,9 @@ export function useTreeselect(
     // State
     forest: readonly(toRef(() => forest)),
     trigger,
-    menu: menu.menu,
-    localSearch: localSearch.localSearch,
-    remoteSearch: remoteSearch.remoteSearch,
+    menu: readonly(toRef(() => menu.menu)),
+    localSearch: readonly(toRef(() => localSearch.localSearch)),
+    remoteSearch: readonly(toRef(() => remoteSearch.remoteSearch)),
     rootOptionsStates,
 
     // Computed
