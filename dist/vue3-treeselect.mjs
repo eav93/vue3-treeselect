@@ -2169,11 +2169,6 @@ const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
           return R.value;
         }
       },
-      zIndex: {
-        get() {
-          return r.zIndex;
-        }
-      },
       getInstanceId: {
         value: () => c.value
       }

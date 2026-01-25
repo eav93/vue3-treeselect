@@ -261,13 +261,10 @@ propNames.forEach(propName => {
   })
 })
 
-// Add additional computed properties
+// Add additional computed properties (not in props)
 Object.defineProperties(treeselect, {
   wrapperClass: {
     get() { return wrapperClass.value },
-  },
-  zIndex: {
-    get() { return props.zIndex },
   },
   getInstanceId: {
     value: () => instanceId.value,
