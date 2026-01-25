@@ -215,13 +215,12 @@ const handleMouseDown = onLeftClick(function (evt: MouseEvent) {
   // Check if we should blur on select, and reset the flag
   const shouldBlur = treeselect.resetFlags ? treeselect.resetFlags() : false
 
-  // Only focus/blur input when clicking on input area
-  if (isClickedOnInput) {
-    if (shouldBlur) {
-      blurInput()
-    } else {
-      focusInput()
-    }
+  // Always focus/blur input when clicking on control (not on menu options)
+  // This ensures the focused class is applied for correct styling
+  if (shouldBlur) {
+    blurInput()
+  } else {
+    focusInput()
   }
 })
 
