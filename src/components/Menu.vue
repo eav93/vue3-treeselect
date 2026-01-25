@@ -1,318 +1,271 @@
-<script lang="jsx">
-  import { Transition } from 'vue'
-  import { MENU_BUFFER } from '@/constants'
-  import { watchSize, setupResizeAndScrollEventListeners } from '@/utils'
-  import Option from '@/components/Option.vue'
-  import Tip from '@/components/Tip.vue'
+<template>
+  <div
+    ref="menu-container"
+    class="vue-treeselect__menu-container"
+    :style="menuContainerStyle"
+  >
+    <Transition name="vue-treeselect__menu--transition">
+      <div
+        v-if="treeselect.menu.isOpen"
+        ref="menu"
+        class="vue-treeselect__menu"
+        :style="menuStyle"
+        @mousedown="treeselect.handleMouseDown"
+      >
+        <!-- Before list slot -->
+        <slot name="before-list" />
 
-  const directionMap = {
-    top: 'top',
-    bottom: 'bottom',
-    above: 'top',
-    below: 'bottom',
-  }
-
-  export default {
-    name: 'vue-treeselect--menu',
-    inject: [ 'instance' ],
-
-    computed: {
-      menuStyle() {
-        const { instance } = this
-
-        return {
-          maxHeight: instance.maxHeight + 'px',
-        }
-      },
-
-      menuContainerStyle() {
-        const { instance } = this
-
-        return {
-          zIndex: instance.appendToBody ? null : instance.zIndex,
-        }
-      },
-    },
-
-    watch: {
-      'instance.menu.isOpen'(newValue) {
-        if (newValue) {
-          // In case `openMenu()` is just called and the menu is not rendered yet.
-          this.$nextTick(this.onMenuOpen)
-        } else {
-          this.onMenuClose()
-        }
-      },
-    },
-
-    created() {
-      this.menuSizeWatcher = null
-      this.menuResizeAndScrollEventListeners = null
-    },
-
-    mounted() {
-      const { instance } = this
-
-      if (instance.menu.isOpen) this.$nextTick(this.onMenuOpen)
-    },
-
-    unmounted() {
-      this.onMenuClose()
-    },
-
-    methods: {
-      renderMenu() {
-        const { instance } = this
-
-        if (!instance.menu.isOpen) return null
-
-        return (
-          <div key={instance.key} ref="menu" class="vue-treeselect__menu" onMousedown={instance.handleMouseDown} style={this.menuStyle}>
-            {this.renderBeforeList()}
-            {instance.async
-              ? this.renderAsyncSearchMenuInner()
-              : instance.localSearch.active
-                ? this.renderLocalSearchMenuInner()
-                : this.renderNormalMenuInner()}
-            {this.renderAfterList()}
-          </div>
-        )
-      },
-
-      renderBeforeList() {
-        const { instance } = this
-        const beforeListRenderer = instance.$slots['before-list']
-
-        return beforeListRenderer
-          ? beforeListRenderer()
-          : null
-      },
-
-      renderAfterList() {
-        const { instance } = this
-        const afterListRenderer = instance.$slots['after-list']
-
-        return afterListRenderer
-          ? afterListRenderer()
-          : null
-      },
-
-      renderNormalMenuInner() {
-        const { instance } = this
-
-        if (instance.rootOptionsStates.isLoading) {
-          return this.renderLoadingOptionsTip()
-        } else if (instance.rootOptionsStates.loadingError) {
-          return this.renderLoadingRootOptionsErrorTip()
-        } else if (instance.rootOptionsStates.isLoaded && instance.forest.normalizedOptions.length === 0) {
-          return this.renderNoAvailableOptionsTip()
-        } else {
-          return this.renderOptionList()
-        }
-      },
-
-      renderLocalSearchMenuInner() {
-        const { instance } = this
-
-        if (instance.rootOptionsStates.isLoading) {
-          return this.renderLoadingOptionsTip()
-        } else if (instance.rootOptionsStates.loadingError) {
-          return this.renderLoadingRootOptionsErrorTip()
-        } else if (instance.rootOptionsStates.isLoaded && instance.forest.normalizedOptions.length === 0) {
-          return this.renderNoAvailableOptionsTip()
-        } else if (instance.localSearch.noResults) {
-          return this.renderNoResultsTip()
-        } else {
-          return this.renderOptionList()
-        }
-      },
-
-      renderAsyncSearchMenuInner() {
-        const { instance } = this
-        const entry = instance.getRemoteSearchEntry()
-        const shouldShowSearchPromptTip = instance.trigger.searchQuery === '' && !instance.defaultOptions
-        const shouldShowNoResultsTip = shouldShowSearchPromptTip
-          ? false
-          : entry.isLoaded && entry.options.length === 0
-
-        if (shouldShowSearchPromptTip) {
-          return this.renderSearchPromptTip()
-        } else if (entry.isLoading) {
-          return this.renderLoadingOptionsTip()
-        } else if (entry.loadingError) {
-          return this.renderAsyncSearchLoadingErrorTip()
-        } else if (shouldShowNoResultsTip) {
-          return this.renderNoResultsTip()
-        } else {
-          return this.renderOptionList()
-        }
-      },
-
-      renderOptionList() {
-        const { instance } = this
-
-        return (
-          <div class="vue-treeselect__list">
-            {instance.forest.normalizedOptions.map(rootNode => (
-              <Option node={rootNode} key={rootNode.id} />
-            ))}
-          </div>
-        )
-      },
-
-      renderSearchPromptTip() {
-        const { instance } = this
-
-        return (
-          <Tip type="search-prompt" icon="warning">{ instance.searchPromptText }</Tip>
-        )
-      },
-
-      renderLoadingOptionsTip() {
-        const { instance } = this
-
-        return (
-          <Tip type="loading" icon="loader">{ instance.loadingText }</Tip>
-        )
-      },
-
-      renderLoadingRootOptionsErrorTip() {
-        const { instance } = this
-
-        return (
-          <Tip type="error" icon="error">
-            { instance.rootOptionsStates.loadingError }
-            <a class="vue-treeselect__retry" onClick={instance.loadRootOptions} title={instance.retryTitle}>
-              { instance.retryText }
+        <!-- Async search menu -->
+        <template v-if="treeselect.async">
+          <Tip v-if="showSearchPrompt" type="search-prompt" icon="warning">
+            {{ treeselect.searchPromptText }}
+          </Tip>
+          <Tip v-else-if="asyncEntry.isLoading" type="loading" icon="loader">
+            {{ treeselect.loadingText }}
+          </Tip>
+          <Tip v-else-if="asyncEntry.loadingError" type="error" icon="error">
+            {{ asyncEntry.loadingError }}
+            <a
+              class="vue-treeselect__retry"
+              :title="treeselect.retryTitle"
+              @click="treeselect.handleRemoteSearch"
+            >
+              {{ treeselect.retryText }}
             </a>
           </Tip>
-        )
-      },
+          <Tip v-else-if="showAsyncNoResults" type="no-results" icon="warning">
+            {{ treeselect.noResultsText }}
+          </Tip>
+          <div v-else class="vue-treeselect__list">
+            <Option
+              v-for="rootNode in treeselect.forest.normalizedOptions"
+              :key="rootNode.id"
+              :node="rootNode"
+            />
+          </div>
+        </template>
 
-      renderAsyncSearchLoadingErrorTip() {
-        const { instance } = this
-        const entry = instance.getRemoteSearchEntry()
-
-        // TODO: retryTitle?
-
-        return (
-          <Tip type="error" icon="error">
-            { entry.loadingError }
-            <a class="vue-treeselect__retry" onClick={instance.handleRemoteSearch} title={instance.retryTitle}>
-              { instance.retryText }
+        <!-- Local search / normal menu -->
+        <template v-else>
+          <Tip v-if="treeselect.rootOptionsStates.isLoading" type="loading" icon="loader">
+            {{ treeselect.loadingText }}
+          </Tip>
+          <Tip v-else-if="treeselect.rootOptionsStates.loadingError" type="error" icon="error">
+            {{ treeselect.rootOptionsStates.loadingError }}
+            <a
+              class="vue-treeselect__retry"
+              :title="treeselect.retryTitle"
+              @click="treeselect.loadRootOptions"
+            >
+              {{ treeselect.retryText }}
             </a>
           </Tip>
-        )
-      },
+          <Tip
+            v-else-if="showNoOptions"
+            type="no-options"
+            icon="warning"
+          >
+            {{ treeselect.noOptionsText }}
+          </Tip>
+          <Tip
+            v-else-if="treeselect.localSearch.active && treeselect.localSearch.noResults"
+            type="no-results"
+            icon="warning"
+          >
+            {{ treeselect.noResultsText }}
+          </Tip>
+          <div v-else class="vue-treeselect__list">
+            <Option
+              v-for="rootNode in treeselect.forest.normalizedOptions"
+              :key="rootNode.id"
+              :node="rootNode"
+            />
+          </div>
+        </template>
 
-      renderNoAvailableOptionsTip() {
-        const { instance } = this
+        <!-- After list slot -->
+        <slot name="after-list" />
+      </div>
+    </Transition>
+  </div>
+</template>
 
-        return (
-          <Tip type="no-options" icon="warning">{ instance.noOptionsText }</Tip>
-        )
-      },
+<script setup lang="ts">
+import { computed, watch, onMounted, onUnmounted, nextTick, inject } from 'vue'
+import { MENU_BUFFER } from '@/constants'
+import { watchSize, setupResizeAndScrollEventListeners } from '@/utils'
+import Option from '@/components/Option.vue'
+import Tip from '@/components/Tip.vue'
+import type { TreeselectInstance } from '@/types'
 
-      renderNoResultsTip() {
-        const { instance } = this
-        return (
-          <Tip type="no-results" icon="warning">{ instance.noResultsText }</Tip>
-        )
-      },
+// ============================================================================
+// Constants
+// ============================================================================
 
-      onMenuOpen() {
-        this.adjustMenuOpenDirection()
-        this.setupMenuSizeWatcher()
-        this.setupMenuResizeAndScrollEventListeners()
-      },
+const directionMap = {
+  top: 'top',
+  bottom: 'bottom',
+  above: 'top',
+  below: 'bottom',
+} as const
 
-      onMenuClose() {
-        this.removeMenuSizeWatcher()
-        this.removeMenuResizeAndScrollEventListeners()
-      },
+// ============================================================================
+// Inject treeselect instance
+// ============================================================================
 
-      adjustMenuOpenDirection() {
-        const { instance } = this
-        if (!instance.menu.isOpen) {
-          return
-        }
+const treeselect = inject<TreeselectInstance>('treeselect')!
 
-        const $menu = instance.getMenu()
-        const $control = instance.getControl()
-        if (!$menu || !$control) {
-          return
-        }
-        const menuRect = $menu.getBoundingClientRect()
-        const controlRect = $control.getBoundingClientRect()
-        const menuHeight = menuRect.height
-        const viewportHeight = window.innerHeight
-        const spaceAbove = controlRect.top
-        const spaceBelow = window.innerHeight - controlRect.bottom
-        const isControlInViewport = (
-          (controlRect.top >= 0 && controlRect.top <= viewportHeight) ||
-          (controlRect.top < 0 && controlRect.bottom > 0)
-        )
-        const hasEnoughSpaceBelow = spaceBelow > menuHeight + MENU_BUFFER
-        const hasEnoughSpaceAbove = spaceAbove > menuHeight + MENU_BUFFER
+// ============================================================================
+// State
+// ============================================================================
 
-        if (!isControlInViewport) {
-          instance.closeMenu()
-        } else if (instance.openDirection !== 'auto') {
-          instance.menu.placement = directionMap[instance.openDirection]
-        } else if (hasEnoughSpaceBelow || !hasEnoughSpaceAbove) {
-          instance.menu.placement = 'bottom'
-        } else {
-          instance.menu.placement = 'top'
-        }
-      },
+let menuSizeWatcher: { remove: () => void } | null = null
+let menuResizeAndScrollEventListeners: { remove: () => void } | null = null
 
-      setupMenuSizeWatcher() {
-        const { instance } = this
-        const $menu = instance.getMenu()
+// ============================================================================
+// Computed - Styles
+// ============================================================================
 
-        // istanbul ignore next
-        if (this.menuSizeWatcher) return
+const menuStyle = computed(() => ({
+  maxHeight: treeselect.maxHeight + 'px',
+}))
 
-        this.menuSizeWatcher = {
-          remove: watchSize($menu, this.adjustMenuOpenDirection),
-        }
-      },
+const menuContainerStyle = computed(() => ({
+  zIndex: treeselect.appendToBody ? null : treeselect.zIndex,
+}))
 
-      setupMenuResizeAndScrollEventListeners() {
-        const { instance } = this
-        const $control = instance.getControl()
+// ============================================================================
+// Computed - Menu content states
+// ============================================================================
 
-        // istanbul ignore next
-        if (this.menuResizeAndScrollEventListeners) return
+const showNoOptions = computed(() => {
+  return (
+    treeselect.rootOptionsStates.isLoaded &&
+    treeselect.forest.normalizedOptions.length === 0
+  )
+})
 
-        this.menuResizeAndScrollEventListeners = {
-          remove: setupResizeAndScrollEventListeners($control, this.adjustMenuOpenDirection),
-        }
-      },
+const asyncEntry = computed(() => treeselect.getRemoteSearchEntry())
 
-      removeMenuSizeWatcher() {
-        if (!this.menuSizeWatcher) return
+const showSearchPrompt = computed(() => {
+  return treeselect.trigger.searchQuery === '' && !treeselect.defaultOptions
+})
 
-        this.menuSizeWatcher.remove()
-        this.menuSizeWatcher = null
-      },
+const showAsyncNoResults = computed(() => {
+  if (showSearchPrompt.value) return false
+  const entry = asyncEntry.value
+  return entry.isLoaded && entry.options.length === 0
+})
 
-      removeMenuResizeAndScrollEventListeners() {
-        if (!this.menuResizeAndScrollEventListeners) return
+// ============================================================================
+// Methods - Menu positioning
+// ============================================================================
 
-        this.menuResizeAndScrollEventListeners.remove()
-        this.menuResizeAndScrollEventListeners = null
-      },
-    },
+const adjustMenuOpenDirection = (): void => {
+  if (!treeselect.menu.isOpen) return
 
-    render() {
-      return (
-        <div ref="menu-container" class="vue-treeselect__menu-container" style={this.menuContainerStyle}>
-          <Transition name="vue-treeselect__menu--transition">
-            {this.renderMenu()}
-          </Transition>
-        </div>
-      )
-    },
+  const $menu = treeselect.getMenu()
+  const $control = treeselect.getControl()
+  if (!$menu || !$control) return
+
+  const menuRect = $menu.getBoundingClientRect()
+  const controlRect = $control.getBoundingClientRect()
+  const menuHeight = menuRect.height
+  const viewportHeight = window.innerHeight
+  const spaceAbove = controlRect.top
+  const spaceBelow = window.innerHeight - controlRect.bottom
+  const isControlInViewport =
+    (controlRect.top >= 0 && controlRect.top <= viewportHeight) ||
+    (controlRect.top < 0 && controlRect.bottom > 0)
+  const hasEnoughSpaceBelow = spaceBelow > menuHeight + MENU_BUFFER
+  const hasEnoughSpaceAbove = spaceAbove > menuHeight + MENU_BUFFER
+
+  if (!isControlInViewport) {
+    treeselect.closeMenu()
+  } else if (treeselect.openDirection !== 'auto') {
+    treeselect.menu.placement = directionMap[treeselect.openDirection as keyof typeof directionMap]
+  } else if (hasEnoughSpaceBelow || !hasEnoughSpaceAbove) {
+    treeselect.menu.placement = 'bottom'
+  } else {
+    treeselect.menu.placement = 'top'
   }
+}
+
+// ============================================================================
+// Methods - Watchers setup/cleanup
+// ============================================================================
+
+const setupMenuSizeWatcher = (): void => {
+  const $menu = treeselect.getMenu()
+  if (menuSizeWatcher) return
+
+  menuSizeWatcher = {
+    remove: watchSize($menu, adjustMenuOpenDirection),
+  }
+}
+
+const setupMenuResizeAndScrollEventListeners = (): void => {
+  const $control = treeselect.getControl()
+  if (menuResizeAndScrollEventListeners) return
+
+  menuResizeAndScrollEventListeners = {
+    remove: setupResizeAndScrollEventListeners($control, adjustMenuOpenDirection),
+  }
+}
+
+const removeMenuSizeWatcher = (): void => {
+  if (!menuSizeWatcher) return
+  menuSizeWatcher.remove()
+  menuSizeWatcher = null
+}
+
+const removeMenuResizeAndScrollEventListeners = (): void => {
+  if (!menuResizeAndScrollEventListeners) return
+  menuResizeAndScrollEventListeners.remove()
+  menuResizeAndScrollEventListeners = null
+}
+
+// ============================================================================
+// Methods - Menu lifecycle
+// ============================================================================
+
+const onMenuOpen = (): void => {
+  adjustMenuOpenDirection()
+  setupMenuSizeWatcher()
+  setupMenuResizeAndScrollEventListeners()
+}
+
+const onMenuClose = (): void => {
+  removeMenuSizeWatcher()
+  removeMenuResizeAndScrollEventListeners()
+}
+
+// ============================================================================
+// Watchers
+// ============================================================================
+
+watch(
+  () => treeselect.menu.isOpen,
+  (newValue) => {
+    if (newValue) {
+      nextTick(onMenuOpen)
+    } else {
+      onMenuClose()
+    }
+  }
+)
+
+// ============================================================================
+// Lifecycle
+// ============================================================================
+
+onMounted(() => {
+  if (treeselect.menu.isOpen) {
+    nextTick(onMenuOpen)
+  }
+})
+
+onUnmounted(() => {
+  onMenuClose()
+})
 </script>
