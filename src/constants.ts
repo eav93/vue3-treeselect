@@ -23,11 +23,6 @@ export const BRANCH_PRIORITY = 'BRANCH_PRIORITY' as const
 export const LEAF_PRIORITY = 'LEAF_PRIORITY' as const
 export const ALL_WITH_INDETERMINATE = 'ALL_WITH_INDETERMINATE' as const
 
-// Acceptable values of `sortValueBy` prop.
-export const ORDER_SELECTED = 'ORDER_SELECTED' as const
-export const LEVEL = 'LEVEL' as const
-export const INDEX = 'INDEX' as const
-
 // Keyboard keys (modern evt.key values)
 export const KEYS = {
   BACKSPACE: 'Backspace',

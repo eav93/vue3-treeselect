@@ -116,7 +116,7 @@ export function useAsyncOptions(
       succeed: () => {
         rootOptionsStates.isLoaded = true
         // Wait for options being re-initialized
-        nextTick(() => {
+        void nextTick(() => {
           resetHighlightedOptionWhenNecessary(true)
         })
       },
