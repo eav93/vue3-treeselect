@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
@@ -9,23 +8,7 @@ const pathSegments = path.dirname(filename);
 
 export default defineConfig({
     plugins: [
-        vue(),
-        viteStaticCopy({
-            targets: [
-                {
-                    src: 'styles/style.scss',
-                    dest: 'styles'
-                },
-                {
-                    src: 'styles/style.less',
-                    dest: 'styles'
-                },
-                {
-                    src: 'styles/assets',
-                    dest: 'styles'
-                }
-            ]
-        })
+        vue()
     ],
     resolve: {
         alias: {
