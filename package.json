@@ -12,8 +12,8 @@
       "require": "./dist/index.js"
     },
     "./dist/style.css": "./dist/vue3-treeselect.css",
-    "./dist/style.scss": "./dist/styles/style.scss",
-    "./dist/style.less": "./dist/styles/style.less"
+    "./dist/style.scss": "./dist/style.scss",
+    "./dist/style.less": "./dist/style.less"
   },
   "unpkg": "./dist/index.umd.js",
   "author": "megafetis",
@@ -67,8 +67,8 @@
     "hierarchical"
   ],
   "style": "./dist/vue3-treeselect.css",
-  "sass": "./dist/styles/style.scss",
-  "less": "./dist/styles/style.less",
+  "sass": "./dist/style.scss",
+  "less": "./dist/style.less",
   "sideEffects": [
     "*.css",
     "*.scss",

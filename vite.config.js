@@ -14,11 +14,11 @@ export default defineConfig({
             targets: [
                 {
                     src: 'styles/style.scss',
-                    dest: 'styles'
+                    dest: '.'
                 },
                 {
                     src: 'styles/style.less',
-                    dest: 'styles'
+                    dest: '.'
                 }
             ]
         })
