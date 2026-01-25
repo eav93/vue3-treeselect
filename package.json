@@ -10,6 +10,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "dev": "vite",
+    "type-check": "vue-tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
