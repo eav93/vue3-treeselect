@@ -140,12 +140,19 @@ const getControlElement = (): HTMLElement | null => {
 }
 
 const getValueContainer = (): any => {
+  // In the old JSX version, value-container ref was on the ValueContainer component
+  // In the current version, it's on a div, so we return the div directly
   return control.value?.$refs?.['value-container']
 }
 
 const getInput = (): any => {
+  // Get input from value-container refs if it's a component
   const container = getValueContainer()
-  return container?.$refs?.input
+  if (container && container.$refs) {
+    return container.$refs.input
+  }
+  // Otherwise try to find input in control DOM
+  return control.value?.$el?.querySelector('.vue-treeselect__input')
 }
 
 const focusInput = () => {
@@ -186,7 +193,10 @@ const handleMouseDown = onLeftClick(function (evt: MouseEvent) {
   if (props.disabled) return
 
   const $valueContainer = getValueContainer()
-  const isClickedOnValueContainer = $valueContainer?.$el?.contains(evt.target as Node)
+  // In the old JSX version, value-container was a component with $el
+  // In the current version, it's a div, so check if it has $el property
+  const valueContainerEl = $valueContainer?.$el || $valueContainer
+  const isClickedOnValueContainer = valueContainerEl?.contains(evt.target as Node)
 
   if (isClickedOnValueContainer && !treeselect.menu.value.isOpen && (props.openOnClick || treeselect.trigger.isFocused)) {
     treeselect.openMenu()
@@ -241,7 +251,17 @@ const wrapperClass = computed(() => ({
 // Add additional properties to treeselect instance
 // ============================================================================
 
-// Extend treeselect with props and computed access
+// Extend treeselect with props access for backward compatibility
+// In the old mixin version, all props were accessible via this.propName
+// We need to provide the same access pattern for child components
+const propNames = Object.keys(props) as (keyof typeof props)[]
+propNames.forEach(propName => {
+  Object.defineProperty(treeselect, propName, {
+    get() { return props[propName] },
+  })
+})
+
+// Add additional computed properties
 Object.defineProperties(treeselect, {
   wrapperClass: {
     get() { return wrapperClass.value },
