@@ -123,9 +123,20 @@ const instanceId = computed({
 // ============================================================================
 
 const getMenuElement = (): HTMLElement | null => {
-  const ref = props.appendToBody ? portal : menu
-  const $menu = ref.value?.$refs?.menu || (ref.value?.$refs?.['menu-container'] as HTMLElement | undefined)?.querySelector('.vue-treeselect__menu')
-  return $menu && ($menu as any).nodeName !== '#comment' ? ($menu as HTMLElement) : null
+  if (props.appendToBody) {
+    // For portal, find the menu in document.body
+    const $menu = document.body.querySelector('.vue-treeselect__menu') as HTMLElement
+    return $menu && $menu.nodeName !== '#comment' ? $menu : null
+  } else {
+    // For non-portal, get from menu component ref
+    const $menu = menu.value?.$refs?.menu || (menu.value?.$refs?.['menu-container'] as HTMLElement | undefined)?.querySelector('.vue-treeselect__menu')
+    return $menu && ($menu as any).nodeName !== '#comment' ? ($menu as HTMLElement) : null
+  }
+}
+
+const getControlElement = (): HTMLElement | null => {
+  const $control = control.value?.$el as HTMLElement
+  return $control && $control.nodeName !== '#comment' ? $control : null
 }
 
 const getValueContainer = (): any => {
@@ -203,21 +214,9 @@ const treeselect = useTreeselect(
   emit,
   instanceId,
   getMenuElement,
+  getControlElement,
   toggleClickOutsideEvent
 )
-
-// ============================================================================
-// Provide treeselect instance to child components
-// ============================================================================
-
-provide('treeselect', treeselect)
-provide('instance', {
-  getInput,
-  focusInput,
-  blurInput,
-  getValueContainer,
-  handleMouseDown,
-})
 
 // ============================================================================
 // Computed
@@ -237,6 +236,36 @@ const wrapperClass = computed(() => ({
   'vue-treeselect--branch-nodes-disabled': props.disableBranchNodes,
   'vue-treeselect--append-to-body': props.appendToBody,
 }))
+
+// ============================================================================
+// Add additional properties to treeselect instance
+// ============================================================================
+
+// Extend treeselect with props and computed access
+Object.defineProperties(treeselect, {
+  wrapperClass: {
+    get() { return wrapperClass.value },
+  },
+  zIndex: {
+    get() { return props.zIndex },
+  },
+  getInstanceId: {
+    value: () => instanceId.value,
+  },
+})
+
+// ============================================================================
+// Provide treeselect instance to child components
+// ============================================================================
+
+provide('treeselect', treeselect)
+provide('instance', {
+  getInput,
+  focusInput,
+  blurInput,
+  getValueContainer,
+  handleMouseDown,
+})
 
 // ============================================================================
 // Expose public API

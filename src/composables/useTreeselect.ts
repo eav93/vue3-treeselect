@@ -20,6 +20,7 @@ import type {NodeId, NormalizedNode, RawNode, TreeselectEmits, TreeselectProps, 
  * @param emit - Emit function
  * @param instanceId - Computed instance ID
  * @param getMenuElement - Function to get menu DOM element
+ * @param getControlElement - Function to get control DOM element
  * @param toggleClickOutsideEvent - Function to toggle click outside listener
  * @returns Complete Treeselect instance API
  */
@@ -28,6 +29,7 @@ export function useTreeselect(
   emit: TreeselectEmits,
   instanceId: ReturnType<typeof computed<string | number>>,
   getMenuElement: () => HTMLElement | null,
+  getControlElement: () => HTMLElement | null,
   toggleClickOutsideEvent: (enabled: boolean) => void
 ) {
   /**
@@ -456,5 +458,9 @@ export function useTreeselect(
     initialize,
     buildForestState,
     resetFlags: selection.resetFlags,
+
+    // DOM helpers
+    getMenu: getMenuElement,
+    getControl: getControlElement,
   }
 }
