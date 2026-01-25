@@ -176,7 +176,15 @@ const toggleClickOutsideEvent = (enabled: boolean): void => {
 }
 
 const handleClickOutside = (evt: MouseEvent): void => {
+  // Check if click is outside wrapper
   if (wrapper.value && !wrapper.value.contains(evt.target as Node)) {
+    // Also check if click is outside menu (for appendToBody mode)
+    const $menu = getMenuElement()
+    if ($menu && $menu.contains(evt.target as Node)) {
+      // Click was inside menu, don't close
+      return
+    }
+
     blurInput()
     treeselect.closeMenu()
   }
