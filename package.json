@@ -1,5 +1,5 @@
 {
-  "name": "@soda-nl/vue3-treeselect",
+  "name": "@eav93/vue3-treeselect",
   "version": "0.2.5",
   "description": "Tree select hierarchical component for vue 3 (next)",
   "main": "dist/vue3-treeselect.mjs",
@@ -8,7 +8,6 @@
   "author": "megafetis",
   "scripts": {
     "build": "vite build",
-    "preview": "vite preview",
     "dev": "vite",
     "type-check": "vue-tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -22,11 +21,12 @@
     "@types/lodash": "^4.17.23",
     "@types/node": "^25.0.10",
     "@vitejs/plugin-vue": "^6.0.3",
-    "easings-css": "^2.1.1",
-    "less": "^4.5.1",
     "material-colors": "^1.2.6",
+    "sass": "^1.97.3",
+    "sass-easing": "^1.0.3",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
+    "vite-plugin-static-copy": "^3.1.6",
     "vue": "^3.5.27",
     "vue-tsc": "^3.2.3",
     "watch-size": "2.0.0"
@@ -39,7 +39,7 @@
     "iOS >= 9",
     "not dead"
   ],
-  "homepage": "https://github.com/soda-nl/vue3-treeselect",
+  "homepage": "https://github.com/eav93/vue3-treeselect",
   "files": [
     "dist",
     "styles"
@@ -56,14 +56,15 @@
     "hierarchy",
     "hierarchical"
   ],
-  "style": "dist/style.css",
+  "style": "dist/vue3-treeselect.css",
+  "sass": "dist/styles/style.scss",
   "sideEffects": [
     "*.css",
-    "*.less"
+    "*.scss"
   ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/r2rka1/vue3-treeselect"
+    "url": "git+https://github.com/eav93/vue3-treeselect"
   }
 }

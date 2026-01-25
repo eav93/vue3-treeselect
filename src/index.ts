@@ -1,5 +1,5 @@
 import Treeselect from '@/components/Treeselect.vue'
-import '../styles/style.less'
+import '../styles/style.scss'
 
 export default Treeselect
 export { Treeselect }
