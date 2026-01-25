@@ -41,6 +41,8 @@ import ArrowIcon from '@/components/icons/Arrow.vue'
 // ============================================================================
 
 const treeselect = inject<any>('treeselect')!
+// Used in template @mousedown="instance.handleMouseDown"
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const instance = inject<any>('instance')!
 
 // ============================================================================

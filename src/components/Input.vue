@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, inject, nextTick, onMounted } from 'vue'
+import { ref, computed, watch, inject, nextTick } from 'vue'
 import { debounce, includes } from '@/utils'
 import { MIN_INPUT_WIDTH, KEY_CODES, INPUT_DEBOUNCE_DELAY } from '@/constants'
 
@@ -47,7 +47,6 @@ import { MIN_INPUT_WIDTH, KEY_CODES, INPUT_DEBOUNCE_DELAY } from '@/constants'
 // ============================================================================
 
 const treeselect = inject<any>('treeselect')!
-const instance = inject<any>('instance')!
 
 // ============================================================================
 // Refs
