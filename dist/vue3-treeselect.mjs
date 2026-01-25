@@ -1170,7 +1170,7 @@ function vr(e, n, t, r, o) {
   }), W(() => e.branchNodesFirst, () => {
     m();
   }), W(() => e.disabled, (w) => {
-    w && V.menu.value.isOpen ? V.closeMenu() : !w && !V.menu.value.isOpen && e.alwaysOpen && V.openMenu();
+    w && V.menu.isOpen ? V.closeMenu() : !w && !V.menu.isOpen && e.alwaysOpen && V.openMenu();
   }), W(() => e.flat, () => {
     m();
   }), W(k, (w, P) => {
