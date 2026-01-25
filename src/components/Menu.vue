@@ -10,7 +10,7 @@
         ref="menu"
         class="vue-treeselect__menu"
         :style="menuStyle"
-        @mousedown="treeselect.handleMouseDown"
+        @mousedown="handleMenuMouseDown"
       >
         <!-- Before list slot -->
         <slot name="before-list" />
@@ -121,6 +121,18 @@ const treeselect = inject<TreeselectInstance>('treeselect')!
 
 let menuSizeWatcher: { remove: () => void } | null = null
 let menuResizeAndScrollEventListeners: { remove: () => void } | null = null
+
+// ============================================================================
+// Event handlers
+// ============================================================================
+
+const handleMenuMouseDown = (evt: MouseEvent): void => {
+  console.log('[Menu handleMenuMouseDown]', evt.target)
+  // Call the original treeselect handleMouseDown
+  if (treeselect.handleMouseDown) {
+    treeselect.handleMouseDown(evt)
+  }
+}
 
 // ============================================================================
 // Computed - Styles

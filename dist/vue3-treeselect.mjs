@@ -1,4 +1,4 @@
-import { reactive as ce, computed as T, nextTick as ne, ref as te, watch as W, onMounted as Oe, onUnmounted as be, toRef as pe, defineComponent as K, inject as Z, openBlock as g, createElementBlock as M, Fragment as re, renderList as ue, unref as L, withDirectives as un, createElementVNode as z, normalizeStyle as Ge, vModelText as cn, toDisplayString as H, createCommentVNode as Y, normalizeClass as G, useSlots as Ze, createBlock as V, resolveDynamicComponent as et, createTextVNode as Q, createVNode as X, TransitionGroup as dn, withCtx as j, renderSlot as Ke, resolveComponent as fn, Transition as Xe, createApp as hn, h as lt, provide as at } from "vue";
+import { reactive as ce, computed as T, nextTick as ne, ref as te, watch as W, onMounted as Oe, onUnmounted as be, toRef as pe, defineComponent as K, inject as Z, openBlock as g, createElementBlock as k, Fragment as re, renderList as ue, unref as R, withDirectives as un, createElementVNode as z, normalizeStyle as Ge, vModelText as cn, toDisplayString as H, createCommentVNode as Y, normalizeClass as G, useSlots as Ze, createBlock as V, resolveDynamicComponent as et, createTextVNode as Q, createVNode as X, TransitionGroup as dn, withCtx as j, renderSlot as Ke, resolveComponent as fn, Transition as Xe, createApp as hn, h as lt, provide as at } from "vue";
 var me = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : typeof global < "u" ? global : typeof self < "u" ? self : {};
 function de(e) {
   return e && e.__esModule && Object.prototype.hasOwnProperty.call(e, "default") ? e.default : e;
@@ -66,9 +66,9 @@ function yn() {
   };
   return Ae = n, Ae;
 }
-var Ie, ht;
+var Me, ht;
 function On() {
-  if (ht) return Ie;
+  if (ht) return Me;
   ht = 1;
   var e = /\s/;
   function n(t) {
@@ -76,17 +76,17 @@ function On() {
       ;
     return r;
   }
-  return Ie = n, Ie;
+  return Me = n, Me;
 }
-var Me, vt;
+var Ie, vt;
 function bn() {
-  if (vt) return Me;
+  if (vt) return Ie;
   vt = 1;
   var e = On(), n = /^\s+/;
   function t(r) {
     return r && r.slice(0, e(r) + 1).replace(n, "");
   }
-  return Me = t, Me;
+  return Ie = t, Ie;
 }
 var ke, pt;
 function qt() {
@@ -100,17 +100,17 @@ function Sn() {
   if (mt) return Be;
   mt = 1;
   var e = qt(), n = Object.prototype, t = n.hasOwnProperty, r = n.toString, o = e ? e.toStringTag : void 0;
-  function a(i) {
-    var u = t.call(i, o), l = i[o];
+  function l(i) {
+    var f = t.call(i, o), a = i[o];
     try {
       i[o] = void 0;
       var c = !0;
     } catch {
     }
     var s = r.call(i);
-    return c && (u ? i[o] = l : delete i[o]), s;
+    return c && (f ? i[o] = a : delete i[o]), s;
   }
-  return Be = a, Be;
+  return Be = l, Be;
 }
 var $e, _t;
 function En() {
@@ -126,9 +126,9 @@ var Fe, gt;
 function Nn() {
   if (gt) return Fe;
   gt = 1;
-  var e = qt(), n = Sn(), t = En(), r = "[object Null]", o = "[object Undefined]", a = e ? e.toStringTag : void 0;
-  function i(u) {
-    return u == null ? u === void 0 ? o : r : a && a in Object(u) ? n(u) : t(u);
+  var e = qt(), n = Sn(), t = En(), r = "[object Null]", o = "[object Undefined]", l = e ? e.toStringTag : void 0;
+  function i(f) {
+    return f == null ? f === void 0 ? o : r : l && l in Object(f) ? n(f) : t(f);
   }
   return Fe = i, Fe;
 }
@@ -155,8 +155,8 @@ var ze, bt;
 function Wt() {
   if (bt) return ze;
   bt = 1;
-  var e = bn(), n = zt(), t = Tn(), r = NaN, o = /^[-+]0x[0-9a-f]+$/i, a = /^0b[01]+$/i, i = /^0o[0-7]+$/i, u = parseInt;
-  function l(c) {
+  var e = bn(), n = zt(), t = Tn(), r = NaN, o = /^[-+]0x[0-9a-f]+$/i, l = /^0b[01]+$/i, i = /^0o[0-7]+$/i, f = parseInt;
+  function a(c) {
     if (typeof c == "number")
       return c;
     if (t(c))
@@ -168,77 +168,77 @@ function Wt() {
     if (typeof c != "string")
       return c === 0 ? c : +c;
     c = e(c);
-    var h = a.test(c);
-    return h || i.test(c) ? u(c.slice(2), h ? 2 : 8) : o.test(c) ? r : +c;
+    var h = l.test(c);
+    return h || i.test(c) ? f(c.slice(2), h ? 2 : 8) : o.test(c) ? r : +c;
   }
-  return ze = l, ze;
+  return ze = a, ze;
 }
 var Pe, St;
 function xn() {
   if (St) return Pe;
   St = 1;
-  var e = zt(), n = yn(), t = Wt(), r = "Expected a function", o = Math.max, a = Math.min;
-  function i(u, l, c) {
-    var s, h, d, _, v, b, E = 0, S = !1, m = !1, f = !0;
-    if (typeof u != "function")
+  var e = zt(), n = yn(), t = Wt(), r = "Expected a function", o = Math.max, l = Math.min;
+  function i(f, a, c) {
+    var s, h, d, _, v, b, E = 0, S = !1, y = !1, u = !0;
+    if (typeof f != "function")
       throw new TypeError(r);
-    l = t(l) || 0, e(c) && (S = !!c.leading, m = "maxWait" in c, d = m ? o(t(c.maxWait) || 0, l) : d, f = "trailing" in c ? !!c.trailing : f);
-    function R(D) {
+    a = t(a) || 0, e(c) && (S = !!c.leading, y = "maxWait" in c, d = y ? o(t(c.maxWait) || 0, a) : d, u = "trailing" in c ? !!c.trailing : u);
+    function L(C) {
       var $ = s, w = h;
-      return s = h = void 0, E = D, _ = u.apply(w, $), _;
+      return s = h = void 0, E = C, _ = f.apply(w, $), _;
     }
-    function k(D) {
-      return E = D, v = setTimeout(p, l), S ? R(D) : _;
+    function D(C) {
+      return E = C, v = setTimeout(p, a), S ? L(C) : _;
     }
-    function y(D) {
-      var $ = D - b, w = D - E, B = l - $;
-      return m ? a(B, d - w) : B;
+    function m(C) {
+      var $ = C - b, w = C - E, B = a - $;
+      return y ? l(B, d - w) : B;
     }
-    function A(D) {
-      var $ = D - b, w = D - E;
-      return b === void 0 || $ >= l || $ < 0 || m && w >= d;
+    function I(C) {
+      var $ = C - b, w = C - E;
+      return b === void 0 || $ >= a || $ < 0 || y && w >= d;
     }
     function p() {
-      var D = n();
-      if (A(D))
-        return I(D);
-      v = setTimeout(p, y(D));
+      var C = n();
+      if (I(C))
+        return A(C);
+      v = setTimeout(p, m(C));
     }
-    function I(D) {
-      return v = void 0, f && s ? R(D) : (s = h = void 0, _);
+    function A(C) {
+      return v = void 0, u && s ? L(C) : (s = h = void 0, _);
     }
     function O() {
       v !== void 0 && clearTimeout(v), E = 0, s = b = h = v = void 0;
     }
     function N() {
-      return v === void 0 ? _ : I(n());
+      return v === void 0 ? _ : A(n());
     }
-    function C() {
-      var D = n(), $ = A(D);
-      if (s = arguments, h = this, b = D, $) {
+    function M() {
+      var C = n(), $ = I(C);
+      if (s = arguments, h = this, b = C, $) {
         if (v === void 0)
-          return k(b);
-        if (m)
-          return clearTimeout(v), v = setTimeout(p, l), R(b);
+          return D(b);
+        if (y)
+          return clearTimeout(v), v = setTimeout(p, a), L(b);
       }
-      return v === void 0 && (v = setTimeout(p, l)), _;
+      return v === void 0 && (v = setTimeout(p, a)), _;
     }
-    return C.cancel = O, C.flush = N, C;
+    return M.cancel = O, M.flush = N, M;
   }
   return Pe = i, Pe;
 }
 var Rn = xn();
 const Ln = /* @__PURE__ */ de(Rn);
 var Cn = (function(e, n) {
-  var t = document.createElement("_"), r = t.appendChild(document.createElement("_")), o = t.appendChild(document.createElement("_")), a = r.appendChild(document.createElement("_")), i = void 0, u = void 0;
-  return r.style.cssText = t.style.cssText = "height:100%;left:0;opacity:0;overflow:hidden;pointer-events:none;position:absolute;top:0;transition:0s;width:100%;z-index:-1", a.style.cssText = o.style.cssText = "display:block;height:100%;transition:0s;width:100%", a.style.width = a.style.height = "200%", e.appendChild(t), l(), s;
-  function l() {
+  var t = document.createElement("_"), r = t.appendChild(document.createElement("_")), o = t.appendChild(document.createElement("_")), l = r.appendChild(document.createElement("_")), i = void 0, f = void 0;
+  return r.style.cssText = t.style.cssText = "height:100%;left:0;opacity:0;overflow:hidden;pointer-events:none;position:absolute;top:0;transition:0s;width:100%;z-index:-1", l.style.cssText = o.style.cssText = "display:block;height:100%;transition:0s;width:100%", l.style.width = l.style.height = "200%", e.appendChild(t), a(), s;
+  function a() {
     c();
     var h = e.offsetWidth, d = e.offsetHeight;
-    (h !== i || d !== u) && (i = h, u = d, o.style.width = h * 2 + "px", o.style.height = d * 2 + "px", t.scrollLeft = t.scrollWidth, t.scrollTop = t.scrollHeight, r.scrollLeft = r.scrollWidth, r.scrollTop = r.scrollHeight, n({ width: h, height: d })), r.addEventListener("scroll", l), t.addEventListener("scroll", l);
+    (h !== i || d !== f) && (i = h, f = d, o.style.width = h * 2 + "px", o.style.height = d * 2 + "px", t.scrollLeft = t.scrollWidth, t.scrollTop = t.scrollHeight, r.scrollLeft = r.scrollWidth, r.scrollTop = r.scrollHeight, n({ width: h, height: d })), r.addEventListener("scroll", a), t.addEventListener("scroll", a);
   }
   function c() {
-    r.removeEventListener("scroll", l), t.removeEventListener("scroll", l);
+    r.removeEventListener("scroll", a), t.removeEventListener("scroll", a);
   }
   function s() {
     c(), e.removeChild(t);
@@ -255,29 +255,29 @@ function An() {
     ye.forEach(Yt);
   }, Dn);
 }
-function In() {
+function Mn() {
   ge && (clearInterval(ge), ge = null);
 }
 function Yt(e) {
-  const { $el: n, listener: t, lastWidth: r, lastHeight: o } = e, a = n.offsetWidth, i = n.offsetHeight;
-  (r !== a || o !== i) && (e.lastWidth = a, e.lastHeight = i, t({ width: a, height: i }));
+  const { $el: n, listener: t, lastWidth: r, lastHeight: o } = e, l = n.offsetWidth, i = n.offsetHeight;
+  (r !== l || o !== i) && (e.lastWidth = l, e.lastHeight = i, t({ width: l, height: i }));
 }
-function Mn(e, n) {
+function In(e, n) {
   const t = {
     $el: e,
     listener: n,
     lastWidth: null,
     lastHeight: null
   }, r = () => {
-    jt(ye, t), ye.length || In();
+    jt(ye, t), ye.length || Mn();
   };
   return ye.push(t), Yt(t), An(), r;
 }
 function Ut(e, n) {
   const t = document.documentMode === 9;
   let r = !0;
-  const i = (t ? Mn : Cn)(e, (...u) => {
-    r || n(...u);
+  const i = (t ? In : Cn)(e, (...f) => {
+    r || n(...f);
   });
   return r = !1, i;
 }
@@ -317,8 +317,8 @@ function Fn() {
     if (!o)
       return o === 0 ? o : 0;
     if (o = e(o), o === n || o === -n) {
-      var a = o < 0 ? -1 : 1;
-      return a * t;
+      var l = o < 0 ? -1 : 1;
+      return l * t;
     }
     return o === o ? o : 0;
   }
@@ -341,11 +341,11 @@ function Hn() {
   wt = 1;
   var e = Vn(), n = "Expected a function";
   function t(r, o) {
-    var a;
+    var l;
     if (typeof o != "function")
       throw new TypeError(n);
     return r = e(r), function() {
-      return --r > 0 && (a = o.apply(this, arguments)), r <= 1 && (o = void 0), a;
+      return --r > 0 && (l = o.apply(this, arguments)), r <= 1 && (o = void 0), l;
     };
   }
   return je = t, je;
@@ -388,30 +388,30 @@ function Je(e, n) {
   return !1;
 }
 function Yn() {
-  const e = (o, a) => {
+  const e = (o, l) => {
     if (!o.isBranch) return;
     const i = o.children.slice();
     for (; i.length; ) {
-      const u = i[0];
-      u.isBranch && i.push(...u.children), a(u), i.shift();
+      const f = i[0];
+      f.isBranch && i.push(...f.children), l(f), i.shift();
     }
-  }, n = (o, a) => {
+  }, n = (o, l) => {
     o.isBranch && o.children.forEach((i) => {
-      n(i, a), a(i);
+      n(i, l), l(i);
     });
   };
   return {
     traverseDescendantsBFS: e,
     traverseDescendantsDFS: n,
-    traverseAllNodesDFS: (o, a) => {
+    traverseAllNodesDFS: (o, l) => {
       o.forEach((i) => {
-        n(i, a), a(i);
+        n(i, l), l(i);
       });
     },
-    traverseAllNodesByIndex: (o, a) => {
-      const i = (u) => {
-        u.children && u.children.forEach((l) => {
-          a(l) !== !1 && l.isBranch && l.children && i(l);
+    traverseAllNodesByIndex: (o, l) => {
+      const i = (f) => {
+        f.children && f.children.forEach((a) => {
+          l(a) !== !1 && a.isBranch && a.children && i(a);
         });
       };
       i({ children: o });
@@ -446,17 +446,17 @@ function Qn(e) {
   });
   return {
     forest: n,
-    buildForestState: (o, a, i, u) => {
-      const l = ee();
+    buildForestState: (o, l, i, f) => {
+      const a = ee();
       n.selectedNodeIds.forEach((s) => {
-        l[s] = !0;
-      }), n.selectedNodeMap = l;
+        a[s] = !0;
+      }), n.selectedNodeMap = a;
       const c = ee();
       o.multiple && (i((s) => {
         c[s.id] = nt;
-      }), a.forEach((s) => {
+      }), l.forEach((s) => {
         c[s.id] = Zt, !o.flat && !o.disableBranchNodes && s.ancestors.forEach((h) => {
-          u(h) || (c[h.id] = Jt);
+          f(h) || (c[h.id] = Jt);
         });
       })), n.checkedStateMap = c;
     },
@@ -474,50 +474,50 @@ function Kn(e) {
   return typeof e == "string" ? e : typeof e == "number" && !isNaN(e) ? e + "" : "";
 }
 function Xn(e, n, t, r) {
-  const o = (l) => ({
-    ...l,
-    ...e.normalizer ? e.normalizer(l, t.value) : {}
-  }), a = (l) => {
+  const o = (a) => ({
+    ...a,
+    ...e.normalizer ? e.normalizer(a, t.value) : {}
+  }), l = (a) => {
     _e(
-      () => !(l.id in n.nodeMap && !n.nodeMap[l.id].isFallbackNode),
-      () => `Detected duplicate node id ${JSON.stringify(l.id)}. Their labels are "${n.nodeMap[l.id].label}" and "${l.label}" respectively.`
+      () => !(a.id in n.nodeMap && !n.nodeMap[a.id].isFallbackNode),
+      () => `Detected duplicate node id ${JSON.stringify(a.id)}. Their labels are "${n.nodeMap[a.id].label}" and "${a.label}" respectively.`
     );
-  }, i = (l) => {
+  }, i = (a) => {
     _e(
-      () => !(l.children === void 0 && l.isBranch === !0),
+      () => !(a.children === void 0 && a.isBranch === !0),
       () => "Are you meant to declare an unloaded branch node? `isBranch: true` is no longer supported, please use `children: null` instead."
     );
-  }, u = (l, c, s) => {
+  }, f = (a, c, s) => {
     let h = c.map((d) => [o(d), d]).map(([d, _], v) => {
-      a(d), i(d);
-      const { id: b, label: E, children: S, isDefaultExpanded: m } = d, f = l === se, R = f ? 0 : l.level + 1, k = Array.isArray(S) || S === null, y = !k, A = !!d.isDisabled || !e.flat && !f && l.isDisabled, p = !!d.isNew, I = (e.matchKeys || ["label"]).reduce((C, D) => ({
-        ...C,
-        [D]: Kn(d[D]).toLocaleLowerCase()
-      }), {}), O = f ? I.label : l.nestedSearchLabel + " " + I.label;
+      l(d), i(d);
+      const { id: b, label: E, children: S, isDefaultExpanded: y } = d, u = a === se, L = u ? 0 : a.level + 1, D = Array.isArray(S) || S === null, m = !D, I = !!d.isDisabled || !e.flat && !u && a.isDisabled, p = !!d.isNew, A = (e.matchKeys || ["label"]).reduce((M, C) => ({
+        ...M,
+        [C]: Kn(d[C]).toLocaleLowerCase()
+      }), {}), O = u ? A.label : a.nestedSearchLabel + " " + A.label;
       n.nodeMap[b] = ee();
       const N = n.nodeMap[b];
       if (Object.assign(N, {
         id: b,
         label: E,
-        level: R,
-        ancestors: f ? [] : [l].concat(l.ancestors),
-        index: (f ? [] : l.index).concat(v),
-        parentNode: l,
-        lowerCased: I,
+        level: L,
+        ancestors: u ? [] : [a].concat(a.ancestors),
+        index: (u ? [] : a.index).concat(v),
+        parentNode: a,
+        lowerCased: A,
         nestedSearchLabel: O,
-        isDisabled: A,
+        isDisabled: I,
         isNew: p,
         isMatched: !1,
         isHighlighted: !1,
-        isBranch: k,
-        isLeaf: y,
-        isRootNode: f,
+        isBranch: D,
+        isLeaf: m,
+        isRootNode: u,
         raw: _
-      }), k) {
-        const C = Array.isArray(S);
+      }), D) {
+        const M = Array.isArray(S);
         Object.assign(N, {
-          childrenStates: { ...Gn(), isLoaded: C },
-          isExpanded: typeof m == "boolean" ? m : R < (e.defaultExpandLevel || 0),
+          childrenStates: { ...Gn(), isLoaded: M },
+          isExpanded: typeof y == "boolean" ? y : L < (e.defaultExpandLevel || 0),
           hasMatchedDescendants: !1,
           hasDisabledDescendants: !1,
           isExpandedOnSearch: !1,
@@ -528,21 +528,21 @@ function Xn(e, n, t, r) {
             [Ne]: 0,
             [we]: 0
           },
-          children: C ? u(N, S, s) : []
-        }), m === !0 && N.ancestors.forEach((D) => {
-          D.isExpanded = !0;
-        }), !C && typeof e.loadOptions != "function" ? _e(
+          children: M ? f(N, S, s) : []
+        }), y === !0 && N.ancestors.forEach((C) => {
+          C.isExpanded = !0;
+        }), !M && typeof e.loadOptions != "function" ? _e(
           () => !1,
           () => 'Unloaded branch node detected. "loadOptions" prop is required to load its children.'
-        ) : !C && N.isExpanded && r(N);
+        ) : !M && N.isExpanded && r(N);
       }
-      if (N.ancestors.forEach((C) => {
-        C.count && C.count[Ee]++;
-      }), y && N.ancestors.forEach((C) => {
-        C.count && C.count[we]++;
-      }), !f && l.count && (l.count[Se] += 1, y && (l.count[Ne] += 1), A && (l.hasDisabledDescendants = !0)), s && s[b]) {
-        const C = s[b];
-        N.isMatched = C.isMatched, N.showAllChildrenOnSearch = C.showAllChildrenOnSearch, N.isHighlighted = C.isHighlighted, C.isBranch && N.isBranch && (N.isExpanded = C.isExpanded, N.isExpandedOnSearch = C.isExpandedOnSearch, C.childrenStates.isLoaded && !N.childrenStates.isLoaded ? N.isExpanded = !1 : N.childrenStates = { ...C.childrenStates });
+      if (N.ancestors.forEach((M) => {
+        M.count && M.count[Ee]++;
+      }), m && N.ancestors.forEach((M) => {
+        M.count && M.count[we]++;
+      }), !u && a.count && (a.count[Se] += 1, m && (a.count[Ne] += 1), I && (a.hasDisabledDescendants = !0)), s && s[b]) {
+        const M = s[b];
+        N.isMatched = M.isMatched, N.showAllChildrenOnSearch = M.showAllChildrenOnSearch, N.isHighlighted = M.isHighlighted, M.isBranch && N.isBranch && (N.isExpanded = M.isExpanded, N.isExpandedOnSearch = M.isExpandedOnSearch, M.childrenStates.isLoaded && !N.childrenStates.isLoaded ? N.isExpanded = !1 : N.childrenStates = { ...M.childrenStates });
       }
       return N;
     });
@@ -553,13 +553,13 @@ function Xn(e, n, t, r) {
     return h;
   };
   return {
-    normalize: u,
+    normalize: f,
     enhancedNormalizer: o,
-    checkDuplication: a,
+    checkDuplication: l,
     verifyNodeShape: i
   };
 }
-const Ct = "ALL", Dt = "BRANCH_PRIORITY", At = "LEAF_PRIORITY", It = "ALL_WITH_INDETERMINATE";
+const Ct = "ALL", Dt = "BRANCH_PRIORITY", At = "LEAF_PRIORITY", Mt = "ALL_WITH_INDETERMINATE";
 function en(e, n) {
   let t = 0;
   do {
@@ -572,17 +572,17 @@ function en(e, n) {
 function Jn(e, n) {
   return e.level === n.level ? en(e, n) : e.level - n.level;
 }
-function Mt(e, n, t) {
+function It(e, n, t) {
   const r = ee();
   for (; e.length; ) {
-    const o = e.shift(), a = t(o);
-    a && (n.push(o), !a.isRootNode && (a.parentNode.id in r || (r[a.parentNode.id] = a.parentNode.children.length), --r[a.parentNode.id] === 0 && e.push(a.parentNode.id)));
+    const o = e.shift(), l = t(o);
+    l && (n.push(o), !l.isRootNode && (l.parentNode.id in r || (r[l.parentNode.id] = l.parentNode.children.length), --r[l.parentNode.id] === 0 && e.push(l.parentNode.id)));
   }
 }
-function Zn(e, n, t, r, o, a) {
-  const i = T(() => n.selectedNodeIds.map((v) => t(v))), u = T(() => !e.multiple), l = T(() => {
+function Zn(e, n, t, r, o, l) {
+  const i = T(() => n.selectedNodeIds.map((v) => t(v))), f = T(() => !e.multiple), a = T(() => {
     let v;
-    if (u.value || e.flat || e.disableBranchNodes || e.valueConsistsOf === Ct)
+    if (f.value || e.flat || e.disableBranchNodes || e.valueConsistsOf === Ct)
       v = n.selectedNodeIds.slice();
     else if (e.valueConsistsOf === Dt)
       v = n.selectedNodeIds.filter((b) => {
@@ -594,7 +594,7 @@ function Zn(e, n, t, r, o, a) {
         const E = t(b);
         return E ? E.isLeaf ? !0 : E.children.length === 0 : !1;
       });
-    else if (e.valueConsistsOf === It) {
+    else if (e.valueConsistsOf === Mt) {
       const b = [];
       v = n.selectedNodeIds.slice(), i.value.forEach((E) => {
         E.ancestors.forEach((S) => {
@@ -604,19 +604,19 @@ function Zn(e, n, t, r, o, a) {
     } else
       v = [];
     return e.sortValueBy === "LEVEL" ? v.sort((b, E) => Jn(t(b), t(E))) : e.sortValueBy === "INDEX" && v.sort((b, E) => en(t(b), t(E))), v;
-  }), c = T(() => l.value.length > 0);
+  }), c = T(() => a.value.length > 0);
   return {
     selectedNodes: i,
-    single: u,
-    internalValue: l,
+    single: f,
+    internalValue: a,
     hasValue: c,
     getValue: () => {
       if (e.valueFormat === "id")
-        return e.multiple ? l.value.slice() : l.value[0];
-      const v = l.value.map((b) => t(b).raw);
+        return e.multiple ? a.value.slice() : a.value[0];
+      const v = a.value.map((b) => t(b).raw);
       return e.multiple ? v : v[0];
     },
-    extractCheckedNodeIdsFromValue: () => e.modelValue == null ? [] : e.valueFormat === "id" ? e.multiple ? e.modelValue.slice() : [e.modelValue] : (e.multiple ? e.modelValue : [e.modelValue]).map((v) => a(v)).map((v) => v.id),
+    extractCheckedNodeIdsFromValue: () => e.modelValue == null ? [] : e.valueFormat === "id" ? e.multiple ? e.modelValue.slice() : [e.modelValue] : (e.multiple ? e.modelValue : [e.modelValue]).map((v) => l(v)).map((v) => v.id),
     extractNodeFromValue: (v) => {
       const b = { id: v };
       if (e.valueFormat === "id")
@@ -624,113 +624,113 @@ function Zn(e, n, t, r, o, a) {
       const E = e.multiple ? Array.isArray(e.modelValue) ? e.modelValue : [] : e.modelValue ? [e.modelValue] : [];
       return tt(
         E,
-        (m) => m && a(m).id === v
+        (y) => y && l(y).id === v
       ) || b;
     },
     fixSelectedNodeIds: (v, b) => {
       let E = [];
-      if (u.value || e.flat || e.disableBranchNodes || e.valueConsistsOf === Ct)
+      if (f.value || e.flat || e.disableBranchNodes || e.valueConsistsOf === Ct)
         E = v;
       else if (e.valueConsistsOf === Dt)
-        v.forEach((m) => {
-          E.push(m);
-          const f = t(m);
-          f?.isBranch && o(f, (R) => {
-            E.push(R.id);
+        v.forEach((y) => {
+          E.push(y);
+          const u = t(y);
+          u?.isBranch && o(u, (L) => {
+            E.push(L.id);
           });
         });
       else if (e.valueConsistsOf === At)
-        Mt(v.slice(), E, t);
-      else if (e.valueConsistsOf === It) {
-        const m = v.filter((f) => {
-          const R = t(f);
-          return R && (R.isLeaf || R.children.length === 0);
+        It(v.slice(), E, t);
+      else if (e.valueConsistsOf === Mt) {
+        const y = v.filter((u) => {
+          const L = t(u);
+          return L && (L.isLeaf || L.children.length === 0);
         });
-        Mt(m, E, t);
+        It(y, E, t);
       }
       Je(n.selectedNodeIds, E) && (n.selectedNodeIds = E), b();
     }
   };
 }
-function er(e, n, t, r, o, a, i, u, l, c, s, h, d, _, v) {
+function er(e, n, t, r, o, l, i, f, a, c, s, h, d, _, v) {
   let b = !1;
   const E = () => {
     const p = b;
     return b = !1, p;
   }, S = (p) => {
     t.selectedNodeIds.push(p.id), t.selectedNodeMap[p.id] = !0;
-  }, m = (p) => {
+  }, y = (p) => {
     jt(t.selectedNodeIds, p.id), delete t.selectedNodeMap[p.id];
-  }, f = () => {
+  }, u = () => {
     s() && (d() || e.allowClearingDisabled ? t.selectedNodeIds = [] : t.selectedNodeIds = t.selectedNodeIds.filter((p) => {
-      const I = r(p);
-      return I ? I.isDisabled : !1;
-    }), u());
-  }, R = (p) => {
+      const A = r(p);
+      return A ? A.isDisabled : !1;
+    }), f());
+  }, L = (p) => {
     if (d() || e.disableBranchNodes)
       return S(p);
     if (e.flat) {
       S(p), e.autoSelectAncestors ? p.ancestors.forEach((O) => {
         !o(O) && !O.isDisabled && S(O);
-      }) : e.autoSelectDescendants && a(p, (O) => {
+      }) : e.autoSelectDescendants && l(p, (O) => {
         !o(O) && !O.isDisabled && S(O);
       });
       return;
     }
-    const I = p.isLeaf || !p.hasDisabledDescendants || e.allowSelectingDisabledDescendants;
-    if (I && S(p), p.isBranch && a(p, (O) => {
+    const A = p.isLeaf || !p.hasDisabledDescendants || e.allowSelectingDisabledDescendants;
+    if (A && S(p), p.isBranch && l(p, (O) => {
       (!O.isDisabled || e.allowSelectingDisabledDescendants) && S(O);
-    }), I) {
+    }), A) {
       let O = p;
       for (; (O = O.parentNode) !== se && (O && O.children.every(o)); )
         S(O);
     }
-  }, k = (p) => {
+  }, D = (p) => {
     if (e.disableBranchNodes)
-      return m(p);
+      return y(p);
     if (e.flat) {
-      m(p), e.autoDeselectAncestors ? p.ancestors.forEach((O) => {
-        o(O) && !O.isDisabled && m(O);
-      }) : e.autoDeselectDescendants && a(p, (O) => {
-        o(O) && !O.isDisabled && m(O);
+      y(p), e.autoDeselectAncestors ? p.ancestors.forEach((O) => {
+        o(O) && !O.isDisabled && y(O);
+      }) : e.autoDeselectDescendants && l(p, (O) => {
+        o(O) && !O.isDisabled && y(O);
       });
       return;
     }
-    let I = !1;
+    let A = !1;
     if (p.isBranch && i(p, (O) => {
-      (!O.isDisabled || e.allowSelectingDisabledDescendants) && (m(O), I = !0);
-    }), p.isLeaf || I || p.isBranch && p.children.length === 0) {
-      m(p);
+      (!O.isDisabled || e.allowSelectingDisabledDescendants) && (y(O), A = !0);
+    }), p.isLeaf || A || p.isBranch && p.children.length === 0) {
+      y(p);
       let O = p;
       for (; (O = O.parentNode) !== se && (O && o(O)); )
-        m(O);
+        y(O);
     }
-  }, y = (p) => {
+  }, m = (p) => {
     if (e.disabled || p.isDisabled)
       return;
-    d() && f();
-    const I = e.multiple && !e.flat ? t.checkedStateMap[p.id] === nt : !o(p);
-    I ? R(p) : k(p), u(), ne(() => {
-      n(I ? "select" : "deselect", p.raw, _);
-    }), v.active && I && (d() || e.clearOnSelect) && l(), d() && e.closeOnSelect && (c(), e.searchable && (b = !0));
+    d() && u();
+    const A = e.multiple && !e.flat ? t.checkedStateMap[p.id] === nt : !o(p);
+    A ? L(p) : D(p), f(), ne(() => {
+      n(A ? "select" : "deselect", p.raw, _);
+    }), v.active && A && (d() || e.clearOnSelect) && a(), d() && e.closeOnSelect && (c(), e.searchable && (b = !0));
   };
   return {
-    select: y,
-    clear: f,
+    select: m,
+    clear: u,
     addValue: S,
-    removeValue: m,
+    removeValue: y,
     removeLastValue: () => {
       if (!s()) return;
-      if (d()) return f();
+      if (d()) return u();
       const p = Kt(h());
       if (!p) return;
-      const I = r(p);
-      I && y(I);
+      const A = r(p);
+      A && m(A);
     },
     resetFlags: E
   };
 }
-function tr(e, n, t, r, o, a, i, u, l, c, s, h, d) {
+function tr(e, n, t, r, o, l, i, f, a, c, s, h, d) {
   const _ = ce({
     isOpen: !1,
     current: null,
@@ -738,11 +738,11 @@ function tr(e, n, t, r, o, a, i, u, l, c, s, h, d) {
     placement: "bottom"
   }), v = (w) => r.active ? w.isExpandedOnSearch || !1 : w.isExpanded || !1, b = (w) => !!(w.isMatched || w.isBranch && w.hasMatchedDescendants && !e.flattenSearchResults || !w.isRootNode && w.parentNode.showAllChildrenOnSearch), E = (w) => !(r.active && !b(w)), S = T(() => {
     const w = [];
-    return a((B) => {
+    return l((B) => {
       if ((!r.active || b(B)) && w.push(B.id), B.isBranch && !v(B))
         return !1;
     }), w;
-  }), m = T(() => S.value.length !== 0), f = (w, B = !0) => {
+  }), y = T(() => S.value.length !== 0), u = (w, B = !0) => {
     const U = _.current;
     if (U != null && U in t.nodeMap && (t.nodeMap[U].isHighlighted = !1), !w) {
       _.current = null;
@@ -757,64 +757,64 @@ function tr(e, n, t, r, o, a, i, u, l, c, s, h, d) {
       };
       h() ? le() : ne(le);
     }
-  }, R = () => {
-    if (!m.value) return;
+  }, L = () => {
+    if (!y.value) return;
     const w = S.value[0], B = o(w);
-    B && f(B);
-  }, k = () => {
-    if (!m.value) return;
+    B && u(B);
+  }, D = () => {
+    if (!y.value) return;
     const B = S.value.indexOf(_.current) - 1;
-    if (B === -1) return A();
+    if (B === -1) return I();
     const U = o(S.value[B]);
-    U && f(U);
-  }, y = () => {
-    if (!m.value) return;
+    U && u(U);
+  }, m = () => {
+    if (!y.value) return;
     const B = S.value.indexOf(_.current) + 1;
-    if (B === S.value.length) return R();
+    if (B === S.value.length) return L();
     const U = o(S.value[B]);
-    U && f(U);
-  }, A = () => {
-    if (!m.value) return;
+    U && u(U);
+  }, I = () => {
+    if (!y.value) return;
     const w = Kt(S.value);
     if (!w) return;
     const B = o(w);
-    B && f(B);
+    B && u(B);
   }, p = (w = !1) => {
     const { current: B } = _;
-    (w || B == null || !(B in t.nodeMap) || !E(o(B))) && R();
-  }, I = () => {
+    (w || B == null || !(B in t.nodeMap) || !E(o(B))) && L();
+  }, A = () => {
     const w = h();
     w && (_.lastScrollPosition = w.scrollTop);
   }, O = () => {
     const w = h();
     w && (w.scrollTop = _.lastScrollPosition);
   }, N = () => {
-    !_.isOpen || !e.disabled && e.alwaysOpen || (I(), _.isOpen = !1, d(!1), l(), n("close", i(), u));
-  }, C = () => {
-    e.disabled || _.isOpen || (_.isOpen = !0, ne(p), ne(O), !e.options && !e.async && c(), d(!0), n("open", u));
+    !_.isOpen || !e.disabled && e.alwaysOpen || (A(), _.isOpen = !1, d(!1), a(), n("close", i(), f));
+  }, M = () => {
+    e.disabled || _.isOpen || (_.isOpen = !0, ne(p), ne(O), !e.options && !e.async && c(), d(!0), n("open", f));
   };
   return {
     menu: _,
     visibleOptionIds: S,
-    hasVisibleOptions: m,
+    hasVisibleOptions: y,
     shouldExpand: v,
     shouldShowOptionInMenu: E,
-    openMenu: C,
+    openMenu: M,
     closeMenu: N,
     toggleMenu: () => {
-      _.isOpen ? N() : C();
+      _.isOpen ? N() : M();
     },
     toggleExpanded: (w) => {
       let B;
       r.active ? (B = w.isExpandedOnSearch = !w.isExpandedOnSearch, B && (w.showAllChildrenOnSearch = !0)) : B = w.isExpanded = !w.isExpanded, B && !w.childrenStates.isLoaded && s(w);
     },
-    setCurrentHighlightedOption: f,
+    setCurrentHighlightedOption: u,
     resetHighlightedOptionWhenNecessary: p,
-    highlightFirstOption: R,
-    highlightPrevOption: k,
-    highlightNextOption: y,
-    highlightLastOption: A,
-    saveMenuScrollPosition: I,
+    highlightFirstOption: L,
+    highlightPrevOption: D,
+    highlightNextOption: m,
+    highlightLastOption: I,
+    saveMenuScrollPosition: A,
     restoreMenuScrollPosition: O
   };
 }
@@ -828,9 +828,9 @@ function nr() {
       return !1;
     if (o === r)
       return n === t;
-    e: for (var a = 0, i = 0; a < o; a++) {
-      for (var u = n.charCodeAt(a); i < r; )
-        if (t.charCodeAt(i++) === u)
+    e: for (var l = 0, i = 0; l < o; l++) {
+      for (var f = n.charCodeAt(l); i < r; )
+        if (t.charCodeAt(i++) === f)
           continue e;
       return !1;
     }
@@ -852,9 +852,9 @@ function sr(e, n, t, r) {
   return {
     localSearch: o,
     handleLocalSearch: () => {
-      const { searchQuery: i } = n, u = () => r(!0);
+      const { searchQuery: i } = n, f = () => r(!0);
       if (!i)
-        return o.active = !1, u();
+        return o.active = !1, f();
       o.active = !0, o.noResults = !0, t((s) => {
         s.isBranch && (s.isExpandedOnSearch = !1, s.showAllChildrenOnSearch = !1, s.isMatched = !1, s.hasMatchedDescendants = !1, o.countMap[s.id] = {
           [Se]: 0,
@@ -863,18 +863,18 @@ function sr(e, n, t, r) {
           [we]: 0
         });
       });
-      const l = i.trim().toLocaleLowerCase(), c = l.replace(/\s+/g, " ").split(" ");
+      const a = i.trim().toLocaleLowerCase(), c = a.replace(/\s+/g, " ").split(" ");
       t((s) => {
         e.searchNested && c.length > 1 ? s.isMatched = c.every(
           (h) => Bt(!1, h, s.nestedSearchLabel)
         ) : s.isMatched = (e.matchKeys || ["label"]).some(
-          (h) => Bt(!e.disableFuzzyMatching, l, s.lowerCased[h])
+          (h) => Bt(!e.disableFuzzyMatching, a, s.lowerCased[h])
         ), s.isMatched && (o.noResults = !1, s.ancestors.forEach((h) => {
           o.countMap[h.id][Ee]++;
         }), s.isLeaf && s.ancestors.forEach((h) => {
           o.countMap[h.id][we]++;
         }), s.parentNode !== se && (o.countMap[s.parentNode.id][Se] += 1, s.isLeaf && (o.countMap[s.parentNode.id][Ne] += 1))), (s.isMatched || s.isBranch && s.isExpandedOnSearch) && s.parentNode !== se && (s.parentNode.isExpandedOnSearch = !0, s.parentNode.hasMatchedDescendants = !0);
-      }), u();
+      }), f();
     }
   };
 }
@@ -890,8 +890,8 @@ function ir() {
   };
 }
 function ur(e, n, t, r, o) {
-  const a = te(ee()), i = te(0), u = () => {
-    const { searchQuery: c } = n, s = a.value[c] || {
+  const l = te(ee()), i = te(0), f = () => {
+    const { searchQuery: c } = n, s = l.value[c] || {
       ...ir(),
       options: []
     };
@@ -907,14 +907,14 @@ function ur(e, n, t, r, o) {
       if (e.defaultOptions !== !0)
         return s.isLoaded = !0, s;
     }
-    return a.value[c] || (a.value[c] = s), s;
+    return l.value[c] || (l.value[c] = s), s;
   };
   return {
-    remoteSearch: a,
+    remoteSearch: l,
     key: i,
-    getRemoteSearchEntry: u,
+    getRemoteSearchEntry: f,
     handleRemoteSearch: () => {
-      const { searchQuery: c } = n, s = u(), h = () => {
+      const { searchQuery: c } = n, s = f(), h = () => {
         r(), o(!0);
       };
       if ((c === "" || e.cacheOptions) && s.isLoaded)
@@ -951,13 +951,13 @@ function fr() {
   };
 }
 function hr(e, n, t, r) {
-  const o = ce(fr()), a = (l) => {
-    const { action: c, args: s, isPending: h, start: d, succeed: _, fail: v, end: b } = l;
+  const o = ce(fr()), l = (a) => {
+    const { action: c, args: s, isPending: h, start: d, succeed: _, fail: v, end: b } = a;
     if (!e.loadOptions || h())
       return;
     d();
-    const E = qn((m, f) => {
-      m ? v(m) : _(f), b();
+    const E = qn((y, u) => {
+      y ? v(y) : _(u), b();
     }), S = e.loadOptions({
       id: t,
       instanceId: t,
@@ -967,17 +967,17 @@ function hr(e, n, t, r) {
     });
     Gt(S) && S.then(() => {
       E();
-    }).catch((m) => {
-      E(m);
-    }).catch((m) => {
-      console.error(m);
+    }).catch((y) => {
+      E(y);
+    }).catch((y) => {
+      console.error(y);
     });
   };
   return {
     rootOptionsStates: o,
-    callLoadOptionsProp: a,
+    callLoadOptionsProp: l,
     loadRootOptions: () => {
-      a({
+      l({
         action: cr,
         isPending: () => o.isLoading,
         start: () => {
@@ -988,17 +988,17 @@ function hr(e, n, t, r) {
             r(!0);
           });
         },
-        fail: (l) => {
-          o.loadingError = $t(l);
+        fail: (a) => {
+          o.loadingError = $t(a);
         },
         end: () => {
           o.isLoading = !1;
         }
       });
     },
-    loadChildrenOptions: (l) => {
-      const { id: c, raw: s } = l;
-      a({
+    loadChildrenOptions: (a) => {
+      const { id: c, raw: s } = a;
+      l({
         action: dr,
         args: {
           // We always pass the raw node instead of the normalized node
@@ -1030,20 +1030,20 @@ function hr(e, n, t, r) {
     }
   };
 }
-function vr(e, n, t, r, o, a) {
+function vr(e, n, t, r, o, l) {
   const i = ce({
     isFocused: !1,
     searchQuery: ""
-  }), u = () => {
+  }), f = () => {
     i.searchQuery = "";
-  }, l = (x) => ({
+  }, a = (x) => ({
     ...x,
     ...e.normalizer ? e.normalizer(x, t.value) : {}
-  }), c = () => e.modelValue == null ? [] : e.valueFormat === "id" ? e.multiple ? e.modelValue.slice() : [e.modelValue] : (e.multiple ? e.modelValue : [e.modelValue]).map((x) => l(x)).map((x) => x.id), s = Yn(), h = Qn(c), { forest: d, isSelected: _ } = h, v = (x) => (_e(
+  }), c = () => e.modelValue == null ? [] : e.valueFormat === "id" ? e.multiple ? e.modelValue.slice() : [e.modelValue] : (e.multiple ? e.modelValue : [e.modelValue]).map((x) => a(x)).map((x) => x.id), s = Yn(), h = Qn(c), { forest: d, isSelected: _ } = h, v = (x) => (_e(
     () => x != null,
     () => `Invalid node id: ${x}`
   ), x == null ? null : x in d.nodeMap ? d.nodeMap[x] : b(x)), b = (x) => {
-    const P = E(x), ve = l(P).label || `${x} (unknown)`, xe = {
+    const P = E(x), ve = a(P).label || `${x} (unknown)`, xe = {
       id: x,
       label: ve,
       ancestors: [],
@@ -1066,37 +1066,37 @@ function vr(e, n, t, r, o, a) {
     const ve = e.multiple ? Array.isArray(e.modelValue) ? e.modelValue : [] : e.modelValue ? [e.modelValue] : [];
     return tt(
       ve,
-      (st) => st && l(st).id === x
+      (st) => st && a(st).id === x
     ) || P;
   };
-  let S, m, f, R, k, y;
-  const A = hr(
+  let S, y, u, L, D, m;
+  const I = hr(
     e,
     v,
     t.value,
-    (x) => m(x)
+    (x) => y(x)
   );
-  f = A.loadRootOptions, S = A.loadChildrenOptions, R = A.callLoadOptionsProp;
-  const { rootOptionsStates: p } = A, I = Xn(
+  u = I.loadRootOptions, S = I.loadChildrenOptions, L = I.callLoadOptionsProp;
+  const { rootOptionsStates: p } = I, A = Xn(
     e,
     d,
     t,
     S
-  ), { normalize: O, enhancedNormalizer: N } = I, C = Zn(
+  ), { normalize: O, enhancedNormalizer: N } = A, M = Zn(
     e,
     d,
     v,
     _,
     s.traverseDescendantsBFS,
     N
-  ), { selectedNodes: D, single: $, internalValue: w, hasValue: B, getValue: U, fixSelectedNodeIds: le } = C;
-  y = () => {
+  ), { selectedNodes: C, single: $, internalValue: w, hasValue: B, getValue: U, fixSelectedNodeIds: le } = M;
+  m = () => {
     const x = (P) => {
       s.traverseAllNodesByIndex(d.normalizedOptions, P);
     };
     h.buildForestState(
       e,
-      D.value,
+      C.value,
       x,
       _
     );
@@ -1109,27 +1109,27 @@ function vr(e, n, t, r, o, a) {
       });
     });
   }, ae = () => (e.async, null);
-  k = () => {
+  D = () => {
     const x = e.async ? ae() || [] : e.options || [];
     if (Array.isArray(x)) {
       const P = d.nodeMap;
-      d.nodeMap = ee(), rt(P), d.normalizedOptions = O(se, x, P), le(w.value, y);
+      d.nodeMap = ee(), rt(P), d.normalizedOptions = O(se, x, P), le(w.value, m);
     } else
       d.normalizedOptions = [];
   };
   const ie = ur(
     e,
     i,
-    R,
-    k,
-    (x) => m(x)
+    L,
+    D,
+    (x) => y(x)
   ), { handleRemoteSearch: Te } = ie, fe = sr(
     e,
     i,
     (x) => {
       s.traverseAllNodesDFS(d.normalizedOptions, x);
     },
-    (x) => m(x)
+    (x) => y(x)
   ), { handleLocalSearch: ot } = fe, an = (x) => {
     s.traverseAllNodesByIndex(d.normalizedOptions, x);
   }, F = tr(
@@ -1141,13 +1141,13 @@ function vr(e, n, t, r, o, a) {
     an,
     U,
     t.value,
-    u,
     f,
+    u,
     S,
     r,
-    a
+    l
   );
-  m = F.resetHighlightedOptionWhenNecessary;
+  y = F.resetHighlightedOptionWhenNecessary;
   const he = er(
     e,
     n,
@@ -1156,8 +1156,8 @@ function vr(e, n, t, r, o, a) {
     _,
     s.traverseDescendantsBFS,
     s.traverseDescendantsDFS,
-    y,
-    u,
+    m,
+    f,
     F.closeMenu,
     () => B.value,
     () => w.value,
@@ -1168,28 +1168,28 @@ function vr(e, n, t, r, o, a) {
   return W(() => e.alwaysOpen, (x) => {
     x ? F.openMenu() : F.closeMenu();
   }), W(() => e.branchNodesFirst, () => {
-    k();
+    D();
   }), W(() => e.disabled, (x) => {
     x && F.menu.isOpen ? F.closeMenu() : !x && !F.menu.isOpen && e.alwaysOpen && F.openMenu();
   }), W(() => e.flat, () => {
-    k();
+    D();
   }), W(w, (x, P) => {
     Je(x, P) && n("update:modelValue", U(), t.value);
   }), W(() => e.matchKeys, () => {
-    k();
+    D();
   }), W(() => e.multiple, (x) => {
-    x && y();
+    x && m();
   }), W(() => e.options, () => {
-    e.async || (k(), p.isLoaded = Array.isArray(e.options));
+    e.async || (D(), p.isLoaded = Array.isArray(e.options));
   }, { deep: !0, immediate: !0 }), W(() => i.searchQuery, () => {
     e.async ? Te() : ot(), n("search-change", i.searchQuery, t.value);
   }), W(() => e.modelValue, () => {
     const x = c();
-    Je(x, w.value) && le(x, y);
+    Je(x, w.value) && le(x, m);
   }), Oe(() => {
-    e.autoFocus, !e.options && !e.async && e.autoLoadRootOptions && f(), e.alwaysOpen && F.openMenu(), e.async && e.defaultOptions && Te();
+    e.autoFocus, !e.options && !e.async && e.autoLoadRootOptions && u(), e.alwaysOpen && F.openMenu(), e.async && e.defaultOptions && Te();
   }), be(() => {
-    a(!1);
+    l(!1);
   }), {
     // State
     forest: pe(() => d),
@@ -1199,7 +1199,7 @@ function vr(e, n, t, r, o, a) {
     remoteSearch: pe(() => ie.remoteSearch),
     rootOptionsStates: p,
     // Computed
-    selectedNodes: D,
+    selectedNodes: C,
     single: $,
     internalValue: w,
     hasValue: B,
@@ -1239,13 +1239,13 @@ function vr(e, n, t, r, o, a) {
     // Search
     handleLocalSearch: ot,
     handleRemoteSearch: Te,
-    resetSearchQuery: u,
+    resetSearchQuery: f,
     // Async
-    loadRootOptions: f,
+    loadRootOptions: u,
     loadChildrenOptions: S,
     // Helpers
-    initialize: k,
-    buildForestState: y,
+    initialize: D,
+    buildForestState: m,
     resetFlags: he.resetFlags,
     // DOM helpers
     getMenu: r,
@@ -1265,10 +1265,10 @@ const pr = ["name", "value"], mr = /* @__PURE__ */ K({
       let o = n.internalValue.value.map(t);
       return n.multiple && n.joinValues && (o = [o.join(n.delimiter)]), o;
     });
-    return (o, a) => (g(!0), M(re, null, ue(r.value, (i, u) => (g(), M("input", {
-      key: `hidden-field-${u}`,
+    return (o, l) => (g(!0), k(re, null, ue(r.value, (i, f) => (g(), k("input", {
+      key: `hidden-field-${f}`,
       type: "hidden",
-      name: L(n).name,
+      name: R(n).name,
       value: i
     }, null, 8, pr))), 128));
   }
@@ -1278,8 +1278,8 @@ const pr = ["name", "value"], mr = /* @__PURE__ */ K({
 }, gr = ["tabindex", "required"], yr = ["tabindex"], tn = /* @__PURE__ */ K({
   __name: "Input",
   setup(e, { expose: n }) {
-    const t = Z("treeselect"), r = te(), o = te(), a = te(Rt), i = te(""), u = T(() => t.searchable), l = T(() => t.disabled), c = T(() => t.multiple), s = T(() => t.tabIndex), h = T(() => t.required), d = T(() => t.hasValue.value), _ = T(() => u.value && !l.value && c.value), v = T(() => ({
-      width: _.value ? `${a.value}px` : void 0
+    const t = Z("treeselect"), r = te(), o = te(), l = te(Rt), i = te(""), f = T(() => t.searchable), a = T(() => t.disabled), c = T(() => t.multiple), s = T(() => t.tabIndex), h = T(() => t.required), d = T(() => t.hasValue.value), _ = T(() => f.value && !a.value && c.value), v = T(() => ({
+      width: _.value ? `${l.value}px` : void 0
     })), b = [
       q.ENTER,
       q.END,
@@ -1289,50 +1289,50 @@ const pr = ["name", "value"], mr = /* @__PURE__ */ K({
       q.ARROW_RIGHT,
       q.ARROW_DOWN
     ], E = () => {
-      o.value && (a.value = Math.max(
+      o.value && (l.value = Math.max(
         Rt,
         o.value.scrollWidth + 15
       ));
     }, S = () => {
       t.trigger.searchQuery = i.value;
-    }, m = () => {
-      i.value = "", S();
-    }, f = () => {
-      !l.value && r.value && r.value.focus();
-    }, R = () => {
-      r.value && r.value.blur();
-    }, k = () => {
-      t.trigger.isFocused = !0, t.openOnFocus && t.openMenu();
     }, y = () => {
+      i.value = "", S();
+    }, u = () => {
+      !a.value && r.value && r.value.focus();
+    }, L = () => {
+      r.value && r.value.blur();
+    }, D = () => {
+      t.trigger.isFocused = !0, t.openOnFocus && t.openMenu();
+    }, m = () => {
       const N = t.getMenu?.();
       if (N && document.activeElement === N)
-        return f();
+        return u();
       t.trigger.isFocused = !1, t.closeMenu();
-    }, A = Ln(
+    }, I = Ln(
       S,
       Un,
       { leading: !0, trailing: !0 }
     ), p = () => {
-      i.value ? A() : (A.cancel(), S());
-    }, I = (N) => {
-      const C = N.key;
+      i.value ? I() : (I.cancel(), S());
+    }, A = (N) => {
+      const M = N.key;
       if (!(N.ctrlKey || N.shiftKey || N.altKey || N.metaKey)) {
-        if (!t.menu.value.isOpen && Xt(b, C))
+        if (!t.menu.value.isOpen && Xt(b, M))
           return N.preventDefault(), t.openMenu();
-        switch (C) {
+        switch (M) {
           case q.BACKSPACE: {
             t.backspaceRemoves && !i.value.length && t.removeLastValue();
             break;
           }
           case q.ENTER: {
             if (N.preventDefault(), t.menu.value.current === null) return;
-            const D = t.getNode(t.menu.value.current);
-            if (!D || D.isBranch && t.disableBranchNodes) return;
-            t.select(D);
+            const C = t.getNode(t.menu.value.current);
+            if (!C || C.isBranch && t.disableBranchNodes) return;
+            t.select(C);
             break;
           }
           case q.ESCAPE: {
-            i.value.length ? m() : t.menu.value.isOpen && t.closeMenu();
+            i.value.length ? y() : t.menu.value.isOpen && t.closeMenu();
             break;
           }
           case q.END: {
@@ -1344,9 +1344,9 @@ const pr = ["name", "value"], mr = /* @__PURE__ */ K({
             break;
           }
           case q.ARROW_LEFT: {
-            const D = t.menu.value.current;
-            if (D === null) break;
-            const $ = t.getNode(D);
+            const C = t.menu.value.current;
+            if (C === null) break;
+            const $ = t.getNode(C);
             $ && ($.isBranch && t.shouldExpand($) ? (N.preventDefault(), t.toggleExpanded($)) : !$.isRootNode && ($.isLeaf || $.isBranch && !t.shouldExpand($)) && (N.preventDefault(), t.setCurrentHighlightedOption($.parentNode)));
             break;
           }
@@ -1355,9 +1355,9 @@ const pr = ["name", "value"], mr = /* @__PURE__ */ K({
             break;
           }
           case q.ARROW_RIGHT: {
-            const D = t.menu.value.current;
-            if (D === null) break;
-            const $ = t.getNode(D);
+            const C = t.menu.value.current;
+            if (C === null) break;
+            const $ = t.getNode(C);
             $ && $.isBranch && !t.shouldExpand($) && (N.preventDefault(), t.toggleExpanded($));
             break;
           }
@@ -1381,10 +1381,10 @@ const pr = ["name", "value"], mr = /* @__PURE__ */ K({
     }), W(i, () => {
       _.value && ne(E);
     }), n({
-      clear: m,
-      focus: f,
-      blur: R
-    }), (N, C) => u.value && !l.value ? (g(), M("div", _r, [
+      clear: y,
+      focus: u,
+      blur: L
+    }), (N, M) => f.value && !a.value ? (g(), k("div", _r, [
       un(z("input", {
         ref_key: "inputRef",
         ref: r,
@@ -1393,31 +1393,31 @@ const pr = ["name", "value"], mr = /* @__PURE__ */ K({
         autocomplete: "off",
         tabindex: s.value,
         required: h.value && !d.value,
-        "onUpdate:modelValue": C[0] || (C[0] = (D) => i.value = D),
+        "onUpdate:modelValue": M[0] || (M[0] = (C) => i.value = C),
         style: Ge(v.value),
-        onFocus: k,
+        onFocus: D,
         onInput: p,
-        onBlur: y,
-        onKeydown: I,
+        onBlur: m,
+        onKeydown: A,
         onMousedown: O
       }, null, 44, gr), [
         [cn, i.value]
       ]),
-      _.value ? (g(), M("div", {
+      _.value ? (g(), k("div", {
         key: 0,
         ref_key: "sizerRef",
         ref: o,
         class: "vue-treeselect__sizer"
       }, H(i.value), 513)) : Y("", !0)
-    ])) : (g(), M("div", {
+    ])) : (g(), k("div", {
       key: 1,
       ref_key: "inputRef",
       ref: r,
       class: "vue-treeselect__input-container",
-      tabindex: l.value ? void 0 : s.value,
-      onFocus: k,
-      onBlur: y,
-      onKeydown: I
+      tabindex: a.value ? void 0 : s.value,
+      onFocus: D,
+      onBlur: m,
+      onKeydown: A
     }, null, 40, yr));
   }
 }), nn = /* @__PURE__ */ K({
@@ -1428,9 +1428,9 @@ const pr = ["name", "value"], mr = /* @__PURE__ */ K({
       "vue-treeselect-helper-zoom-effect-off": !0,
       "vue-treeselect-helper-hide": n.hasValue.value || n.trigger.searchQuery
     }));
-    return (r, o) => (g(), M("div", {
+    return (r, o) => (g(), k("div", {
       class: G(t.value)
-    }, H(L(n).placeholder), 3));
+    }, H(R(n).placeholder), 3));
   }
 }), Or = {
   key: 0,
@@ -1438,13 +1438,13 @@ const pr = ["name", "value"], mr = /* @__PURE__ */ K({
 }, br = /* @__PURE__ */ K({
   __name: "SingleValue",
   setup(e) {
-    const n = Z("treeselect"), t = Ze(), r = T(() => n.hasValue.value && !n.trigger.searchQuery), o = T(() => n.selectedNodes.value[0]), a = T(() => t["value-label"]);
-    return (i, u) => (g(), M(re, null, [
-      r.value ? (g(), M("div", Or, [
-        a.value ? (g(), V(et(a.value), {
+    const n = Z("treeselect"), t = Ze(), r = T(() => n.hasValue.value && !n.trigger.searchQuery), o = T(() => n.selectedNodes.value[0]), l = T(() => t["value-label"]);
+    return (i, f) => (g(), k(re, null, [
+      r.value ? (g(), k("div", Or, [
+        l.value ? (g(), V(et(l.value), {
           key: 0,
           node: o.value
-        }, null, 8, ["node"])) : (g(), M(re, { key: 1 }, [
+        }, null, 8, ["node"])) : (g(), k(re, { key: 1 }, [
           Q(H(o.value.label), 1)
         ], 64))
       ])) : Y("", !0),
@@ -1463,8 +1463,8 @@ const pr = ["name", "value"], mr = /* @__PURE__ */ K({
   xmlns: "http://www.w3.org/2000/svg",
   viewBox: "0 0 348.333 348.333"
 };
-function Nr(e, n, t, r, o, a) {
-  return g(), M("svg", Er, [...n[0] || (n[0] = [
+function Nr(e, n, t, r, o, l) {
+  return g(), k("svg", Er, [...n[0] || (n[0] = [
     z("path", { d: "M336.559 68.611L231.016 174.165l105.543 105.549c15.699 15.705 15.699 41.145 0 56.85-7.844 7.844-18.128 11.769-28.407 11.769-10.296 0-20.581-3.919-28.419-11.769L174.167 231.003 68.609 336.563c-7.843 7.844-18.128 11.769-28.416 11.769-10.285 0-20.563-3.919-28.413-11.769-15.699-15.698-15.699-41.139 0-56.85l105.54-105.549L11.774 68.611c-15.699-15.699-15.699-41.145 0-56.844 15.696-15.687 41.127-15.687 56.829 0l105.563 105.554L279.721 11.767c15.705-15.687 41.139-15.687 56.832 0 15.705 15.699 15.705 41.145.006 56.844z" }, null, -1)
   ])]);
 }
@@ -1481,20 +1481,20 @@ const on = /* @__PURE__ */ rn(Sr, [["render", Nr]]), wr = { class: "vue-treesele
       "vue-treeselect__multi-value-item": !0,
       "vue-treeselect__multi-value-item-disabled": n.node.isDisabled,
       "vue-treeselect__multi-value-item-new": n.node.isNew
-    })), a = T(() => t["value-label"]), i = oe(function() {
+    })), l = T(() => t["value-label"]), i = oe(function() {
       r.select(n.node);
     });
-    return (u, l) => (g(), M("div", wr, [
+    return (f, a) => (g(), k("div", wr, [
       z("div", {
         class: G(o.value),
-        onMousedown: l[0] || (l[0] = //@ts-ignore
-        (...c) => L(i) && L(i)(...c))
+        onMousedown: a[0] || (a[0] = //@ts-ignore
+        (...c) => R(i) && R(i)(...c))
       }, [
-        a.value ? (g(), V(et(a.value), {
+        l.value ? (g(), V(et(l.value), {
           key: 0,
           node: e.node,
           class: "vue-treeselect__multi-value-label"
-        }, null, 8, ["node"])) : (g(), M("span", Tr, H(e.node.label), 1)),
+        }, null, 8, ["node"])) : (g(), k("span", Tr, H(e.node.label), 1)),
         z("span", xr, [
           X(on)
         ])
@@ -1507,22 +1507,22 @@ const on = /* @__PURE__ */ rn(Sr, [["render", Nr]]), wr = { class: "vue-treesele
 }, Cr = { class: "vue-treeselect__limit-tip-text" }, Dr = /* @__PURE__ */ K({
   __name: "MultiValue",
   setup(e) {
-    const n = Z("treeselect"), t = T(() => n.internalValue.value.slice(0, n.limit).map(n.getNode).filter((a) => a !== null)), r = T(() => n.internalValue.value.length > n.limit), o = T(() => {
-      const a = n.internalValue.value.length - n.limit;
-      return n.limitText(a);
+    const n = Z("treeselect"), t = T(() => n.internalValue.value.slice(0, n.limit).map(n.getNode).filter((l) => l !== null)), r = T(() => n.internalValue.value.length > n.limit), o = T(() => {
+      const l = n.internalValue.value.length - n.limit;
+      return n.limitText(l);
     });
-    return (a, i) => (g(), V(dn, {
+    return (l, i) => (g(), V(dn, {
       class: "vue-treeselect__multi-value",
       tag: "div",
       name: "vue-treeselect__multi-value-item--transition",
       appear: ""
     }, {
       default: j(() => [
-        (g(!0), M(re, null, ue(t.value, (u) => (g(), V(Rr, {
-          key: `multi-value-item-${u.id}`,
-          node: u
+        (g(!0), k(re, null, ue(t.value, (f) => (g(), V(Rr, {
+          key: `multi-value-item-${f.id}`,
+          node: f
         }, null, 8, ["node"]))), 128)),
-        r.value ? (g(), M("div", Lr, [
+        r.value ? (g(), k("div", Lr, [
           z("span", Cr, H(o.value), 1)
         ])) : Y("", !0),
         X(nn, { key: "placeholder" }),
@@ -1536,16 +1536,16 @@ const on = /* @__PURE__ */ rn(Sr, [["render", Nr]]), wr = { class: "vue-treesele
   }
 }), Ar = {
   name: "vue-treeselect--arrow"
-}, Ir = {
+}, Mr = {
   xmlns: "http://www.w3.org/2000/svg",
   viewBox: "0 0 292.362 292.362"
 };
-function Mr(e, n, t, r, o, a) {
-  return g(), M("svg", Ir, [...n[0] || (n[0] = [
+function Ir(e, n, t, r, o, l) {
+  return g(), k("svg", Mr, [...n[0] || (n[0] = [
     z("path", { d: "M286.935 69.377c-3.614-3.617-7.898-5.424-12.848-5.424H18.274c-4.952 0-9.233 1.807-12.85 5.424C1.807 72.998 0 77.279 0 82.228c0 4.948 1.807 9.229 5.424 12.847l127.907 127.907c3.621 3.617 7.902 5.428 12.85 5.428s9.233-1.811 12.847-5.428L286.935 95.074c3.613-3.617 5.427-7.898 5.427-12.847 0-4.948-1.814-9.229-5.427-12.85z" }, null, -1)
   ])]);
 }
-const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
+const sn = /* @__PURE__ */ rn(Ar, [["render", Ir]]), kr = {
   ref: "value-container",
   class: "vue-treeselect__value-container"
 }, Br = ["title"], $r = /* @__PURE__ */ K({
@@ -1554,7 +1554,7 @@ const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
     const n = Z("treeselect"), t = Z("instance"), r = T(() => n.single.value), o = T(() => n.hasValue.value && n.internalValue.value.some((h) => {
       const d = n.getNode(h);
       return d && !d.isDisabled;
-    })), a = T(() => n.clearable && !n.disabled && n.hasValue.value && (o.value || n.allowClearingDisabled)), i = T(() => n.alwaysOpen ? !n.menu.value.isOpen : !0), u = T(() => n.multiple ? n.clearAllText : n.clearValueText), l = T(() => ({
+    })), l = T(() => n.clearable && !n.disabled && n.hasValue.value && (o.value || n.allowClearingDisabled)), i = T(() => n.alwaysOpen ? !n.menu.value.isOpen : !0), f = T(() => n.multiple ? n.clearAllText : n.clearValueText), a = T(() => ({
       "vue-treeselect__control-arrow": !0,
       "vue-treeselect__control-arrow--rotated": n.menu.value.isOpen
     })), c = oe(function(h) {
@@ -1566,32 +1566,32 @@ const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
     }), s = oe(function(h) {
       h.preventDefault(), h.stopPropagation(), t.focusInput(), n.toggleMenu();
     });
-    return (h, d) => (g(), M("div", {
+    return (h, d) => (g(), k("div", {
       ref: "control",
       class: "vue-treeselect__control",
       onMousedown: d[2] || (d[2] = //@ts-ignore
-      (..._) => L(t).handleMouseDown && L(t).handleMouseDown(..._))
+      (..._) => R(t).handleMouseDown && R(t).handleMouseDown(..._))
     }, [
       z("div", kr, [
         r.value ? (g(), V(br, { key: 0 })) : (g(), V(Dr, { key: 1 }))
       ], 512),
-      a.value ? (g(), M("div", {
+      l.value ? (g(), k("div", {
         key: 0,
         class: "vue-treeselect__x-container",
-        title: u.value,
+        title: f.value,
         onMousedown: d[0] || (d[0] = //@ts-ignore
-        (..._) => L(c) && L(c)(..._))
+        (..._) => R(c) && R(c)(..._))
       }, [
         X(on, { class: "vue-treeselect__x" })
       ], 40, Br)) : Y("", !0),
-      i.value ? (g(), M("div", {
+      i.value ? (g(), k("div", {
         key: 1,
         class: "vue-treeselect__control-arrow-container",
         onMousedown: d[1] || (d[1] = //@ts-ignore
-        (..._) => L(s) && L(s)(..._))
+        (..._) => R(s) && R(s)(..._))
       }, [
         X(sn, {
-          class: G(l.value)
+          class: G(a.value)
         }, null, 8, ["class"])
       ], 32)) : Y("", !0)
     ], 544));
@@ -1603,7 +1603,7 @@ const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
     icon: {}
   },
   setup(e) {
-    return (n, t) => (g(), M("div", {
+    return (n, t) => (g(), k("div", {
       class: G(`vue-treeselect__tip vue-treeselect__${e.type}-tip`)
     }, [
       z("div", Fr, [
@@ -1636,7 +1636,7 @@ const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
     const n = e, t = Ze(), r = Z("treeselect"), o = T(() => ({
       "vue-treeselect__list-item": !0,
       [`vue-treeselect__indent-level-${r.shouldFlattenOptions ? 0 : n.node.level}`]: !0
-    })), a = T(() => n.node.isBranch && r.shouldExpand(n.node)), i = T(() => r.shouldShowOptionInMenu(n.node)), u = T(() => !r.shouldFlattenOptions || !i.value), l = T(() => ({
+    })), l = T(() => n.node.isBranch && r.shouldExpand(n.node)), i = T(() => r.shouldShowOptionInMenu(n.node)), f = T(() => !r.shouldFlattenOptions || !i.value), a = T(() => ({
       "vue-treeselect__option": !0,
       "vue-treeselect__option--disabled": n.node.isDisabled,
       "vue-treeselect__option--selected": r.isSelected(n.node),
@@ -1645,40 +1645,40 @@ const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
       "vue-treeselect__option--hide": !i.value
     })), c = T(() => ({
       "vue-treeselect__option-arrow": !0,
-      "vue-treeselect__option-arrow--rotated": a.value
+      "vue-treeselect__option-arrow--rotated": l.value
     })), s = T(() => r.single ? !1 : !(r.disableBranchNodes && n.node.isBranch)), h = T(() => {
-      const A = r.forest.value.checkedStateMap[n.node.id];
+      const I = r.forest.value.checkedStateMap[n.node.id];
       return {
         "vue-treeselect__checkbox": !0,
-        "vue-treeselect__checkbox--checked": A === Zt,
-        "vue-treeselect__checkbox--indeterminate": A === Jt,
-        "vue-treeselect__checkbox--unchecked": A === nt,
+        "vue-treeselect__checkbox--checked": I === Zt,
+        "vue-treeselect__checkbox--indeterminate": I === Jt,
+        "vue-treeselect__checkbox--unchecked": I === nt,
         "vue-treeselect__checkbox--disabled": n.node.isDisabled
       };
-    }), d = T(() => n.node.isBranch && (r.localSearch.value.active ? r.showCountOnSearchComputed : r.showCount)), _ = T(() => d.value ? r.localSearch.value.active ? r.localSearch.value.countMap[n.node.id][r.showCountOf] : n.node.count[r.showCountOf] : NaN), v = T(() => t["option-label"]), b = T(() => !n.node.childrenStates || !n.node.childrenStates.isLoaded ? [] : n.node.children || []), E = T(() => n.node.childrenStates?.isLoaded && (!n.node.children || n.node.children.length === 0)), S = T(() => n.node.childrenStates?.isLoading || !1), m = T(() => !!n.node.childrenStates?.loadingError), f = (A) => {
-      A.target === A.currentTarget && r.setCurrentHighlightedOption(n.node, !1);
-    }, R = oe(function() {
+    }), d = T(() => n.node.isBranch && (r.localSearch.value.active ? r.showCountOnSearchComputed : r.showCount)), _ = T(() => d.value ? r.localSearch.value.active ? r.localSearch.value.countMap[n.node.id][r.showCountOf] : n.node.count[r.showCountOf] : NaN), v = T(() => t["option-label"]), b = T(() => !n.node.childrenStates || !n.node.childrenStates.isLoaded ? [] : n.node.children || []), E = T(() => n.node.childrenStates?.isLoaded && (!n.node.children || n.node.children.length === 0)), S = T(() => n.node.childrenStates?.isLoading || !1), y = T(() => !!n.node.childrenStates?.loadingError), u = (I) => {
+      I.target === I.currentTarget && r.setCurrentHighlightedOption(n.node, !1);
+    }, L = oe(function() {
       r.toggleExpanded(n.node);
-    }), k = oe(function() {
+    }), D = oe(function() {
       n.node.isBranch && r.disableBranchNodes ? r.toggleExpanded(n.node) : r.select(n.node);
-    }), y = oe(function() {
+    }), m = oe(function() {
       r.loadChildrenOptions(n.node);
     });
-    return (A, p) => {
-      const I = fn("Option", !0);
-      return g(), M("div", {
+    return (I, p) => {
+      const A = fn("Option", !0);
+      return g(), k("div", {
         class: G(o.value)
       }, [
         z("div", {
-          class: G(l.value),
+          class: G(a.value),
           "data-id": e.node.id,
-          onMouseenter: f
+          onMouseenter: u
         }, [
-          e.node.isBranch && u.value ? (g(), M("div", {
+          e.node.isBranch && f.value ? (g(), k("div", {
             key: 0,
             class: "vue-treeselect__option-arrow-container",
             onMousedown: p[0] || (p[0] = //@ts-ignore
-            (...O) => L(R) && L(R)(...O))
+            (...O) => R(L) && R(L)(...O))
           }, [
             X(Xe, {
               name: "vue-treeselect__option-arrow--prepare",
@@ -1691,13 +1691,13 @@ const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
               ]),
               _: 1
             })
-          ], 32)) : L(r).hasBranchNodes && u.value ? (g(), M("div", Hr, "   ")) : Y("", !0),
+          ], 32)) : R(r).hasBranchNodes && f.value ? (g(), k("div", Hr, "   ")) : Y("", !0),
           z("div", {
             class: "vue-treeselect__label-container",
             onMousedown: p[1] || (p[1] = //@ts-ignore
-            (...O) => L(k) && L(k)(...O))
+            (...O) => R(D) && R(D)(...O))
           }, [
-            s.value ? (g(), M("div", zr, [
+            s.value ? (g(), k("div", zr, [
               z("span", {
                 class: G(h.value)
               }, [...p[3] || (p[3] = [
@@ -1712,12 +1712,12 @@ const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
               count: _.value,
               labelClassName: Ft,
               countClassName: Vt
-            }, null, 8, ["node", "shouldShowCount", "count"])) : (g(), M("label", {
+            }, null, 8, ["node", "shouldShowCount", "count"])) : (g(), k("label", {
               key: 2,
               class: G(Ft)
             }, [
               Q(H(e.node.label) + " ", 1),
-              d.value ? (g(), M("span", {
+              d.value ? (g(), k("span", {
                 key: 0,
                 class: G(Vt)
               }, " (" + H(_.value) + ") ", 1)) : Y("", !0)
@@ -1729,8 +1729,8 @@ const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
           name: "vue-treeselect__list--transition"
         }, {
           default: j(() => [
-            a.value ? (g(), M("div", Pr, [
-              (g(!0), M(re, null, ue(b.value, (O) => (g(), V(I, {
+            l.value ? (g(), k("div", Pr, [
+              (g(!0), k(re, null, ue(b.value, (O) => (g(), V(A, {
                 key: O.id,
                 node: O
               }, null, 8, ["node"]))), 128)),
@@ -1740,7 +1740,7 @@ const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
                 icon: "warning"
               }, {
                 default: j(() => [
-                  Q(H(L(r).noChildrenText), 1)
+                  Q(H(R(r).noChildrenText), 1)
                 ]),
                 _: 1
               })) : Y("", !0),
@@ -1750,11 +1750,11 @@ const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
                 icon: "loader"
               }, {
                 default: j(() => [
-                  Q(H(L(r).loadingText), 1)
+                  Q(H(R(r).loadingText), 1)
                 ]),
                 _: 1
               })) : Y("", !0),
-              m.value ? (g(), V(J, {
+              y.value ? (g(), V(J, {
                 key: 2,
                 type: "error",
                 icon: "error"
@@ -1763,10 +1763,10 @@ const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
                   Q(H(e.node.childrenStates?.loadingError) + " ", 1),
                   z("a", {
                     class: "vue-treeselect__retry",
-                    title: L(r).retryTitle,
+                    title: R(r).retryTitle,
                     onMousedown: p[2] || (p[2] = //@ts-ignore
-                    (...O) => L(y) && L(y)(...O))
-                  }, H(L(r).retryText), 41, qr)
+                    (...O) => R(m) && R(m)(...O))
+                  }, H(R(r).retryText), 41, qr)
                 ]),
                 _: 1
               })) : Y("", !0)
@@ -1793,164 +1793,165 @@ const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
       below: "bottom"
     }, t = Z("treeselect");
     let r = null, o = null;
-    const a = T(() => ({
+    const l = (u) => {
+      console.log("[Menu handleMenuMouseDown]", u.target), t.handleMouseDown && t.handleMouseDown(u);
+    }, i = T(() => ({
       maxHeight: t.maxHeight + "px"
-    })), i = T(() => ({
+    })), f = T(() => ({
       zIndex: t.appendToBody ? null : t.zIndex
-    })), u = T(() => t.rootOptionsStates.isLoaded && t.forest.value.normalizedOptions.length === 0), l = T(() => t.getRemoteSearchEntry()), c = T(() => t.trigger.searchQuery === "" && !t.defaultOptions), s = T(() => {
-      if (c.value) return !1;
-      const m = l.value;
-      return m.isLoaded && m.options.length === 0;
-    }), h = () => {
+    })), a = T(() => t.rootOptionsStates.isLoaded && t.forest.value.normalizedOptions.length === 0), c = T(() => t.getRemoteSearchEntry()), s = T(() => t.trigger.searchQuery === "" && !t.defaultOptions), h = T(() => {
+      if (s.value) return !1;
+      const u = c.value;
+      return u.isLoaded && u.options.length === 0;
+    }), d = () => {
       if (!t.menu.value.isOpen) return;
-      const m = t.getMenu(), f = t.getControl();
-      if (!m || !f) return;
-      const R = m.getBoundingClientRect(), k = f.getBoundingClientRect(), y = R.height, A = window.innerHeight, p = k.top, I = window.innerHeight - k.bottom, O = k.top >= 0 && k.top <= A || k.top < 0 && k.bottom > 0, N = I > y + Lt, C = p > y + Lt;
-      O ? t.openDirection !== "auto" ? t.menu.value.placement = n[t.openDirection] : N || !C ? t.menu.value.placement = "bottom" : t.menu.value.placement = "top" : t.closeMenu();
-    }, d = () => {
-      const m = t.getMenu();
-      r || !m || (r = {
-        remove: Ut(m, h)
-      });
+      const u = t.getMenu(), L = t.getControl();
+      if (!u || !L) return;
+      const D = u.getBoundingClientRect(), m = L.getBoundingClientRect(), I = D.height, p = window.innerHeight, A = m.top, O = window.innerHeight - m.bottom, N = m.top >= 0 && m.top <= p || m.top < 0 && m.bottom > 0, M = O > I + Lt, C = A > I + Lt;
+      N ? t.openDirection !== "auto" ? t.menu.value.placement = n[t.openDirection] : M || !C ? t.menu.value.placement = "bottom" : t.menu.value.placement = "top" : t.closeMenu();
     }, _ = () => {
-      const m = t.getControl();
-      o || !m || (o = {
-        remove: Qt(m, h)
+      const u = t.getMenu();
+      r || !u || (r = {
+        remove: Ut(u, d)
       });
     }, v = () => {
-      r && (r.remove(), r = null);
+      const u = t.getControl();
+      o || !u || (o = {
+        remove: Qt(u, d)
+      });
     }, b = () => {
-      o && (o.remove(), o = null);
+      r && (r.remove(), r = null);
     }, E = () => {
-      h(), d(), _();
+      o && (o.remove(), o = null);
     }, S = () => {
-      v(), b();
+      d(), _(), v();
+    }, y = () => {
+      b(), E();
     };
     return W(
       () => t.menu.value.isOpen,
-      (m) => {
-        m ? ne(E) : S();
+      (u) => {
+        u ? ne(S) : y();
       }
     ), Oe(() => {
-      t.menu.value.isOpen && ne(E);
+      t.menu.value.isOpen && ne(S);
     }), be(() => {
-      S();
-    }), (m, f) => (g(), M("div", {
+      y();
+    }), (u, L) => (g(), k("div", {
       ref: "menu-container",
       class: "vue-treeselect__menu-container",
-      style: Ge(i.value)
+      style: Ge(f.value)
     }, [
       X(Xe, { name: "vue-treeselect__menu--transition" }, {
         default: j(() => [
-          L(t).menu.value.isOpen ? (g(), M("div", {
+          R(t).menu.value.isOpen ? (g(), k("div", {
             key: 0,
             ref: "menu",
             class: "vue-treeselect__menu",
-            style: Ge(a.value),
-            onMousedown: f[2] || (f[2] = //@ts-ignore
-            (...R) => L(t).handleMouseDown && L(t).handleMouseDown(...R))
+            style: Ge(i.value),
+            onMousedown: l
           }, [
-            Ke(m.$slots, "before-list"),
-            L(t).async ? (g(), M(re, { key: 0 }, [
-              c.value ? (g(), V(J, {
+            Ke(u.$slots, "before-list"),
+            R(t).async ? (g(), k(re, { key: 0 }, [
+              s.value ? (g(), V(J, {
                 key: 0,
                 type: "search-prompt",
                 icon: "warning"
               }, {
                 default: j(() => [
-                  Q(H(L(t).searchPromptText), 1)
+                  Q(H(R(t).searchPromptText), 1)
                 ]),
                 _: 1
-              })) : l.value.isLoading ? (g(), V(J, {
+              })) : c.value.isLoading ? (g(), V(J, {
                 key: 1,
                 type: "loading",
                 icon: "loader"
               }, {
                 default: j(() => [
-                  Q(H(L(t).loadingText), 1)
+                  Q(H(R(t).loadingText), 1)
                 ]),
                 _: 1
-              })) : l.value.loadingError ? (g(), V(J, {
+              })) : c.value.loadingError ? (g(), V(J, {
                 key: 2,
                 type: "error",
                 icon: "error"
               }, {
                 default: j(() => [
-                  Q(H(l.value.loadingError) + " ", 1),
+                  Q(H(c.value.loadingError) + " ", 1),
                   z("a", {
                     class: "vue-treeselect__retry",
-                    title: L(t).retryTitle,
-                    onClick: f[0] || (f[0] = //@ts-ignore
-                    (...R) => L(t).handleRemoteSearch && L(t).handleRemoteSearch(...R))
-                  }, H(L(t).retryText), 9, Wr)
+                    title: R(t).retryTitle,
+                    onClick: L[0] || (L[0] = //@ts-ignore
+                    (...D) => R(t).handleRemoteSearch && R(t).handleRemoteSearch(...D))
+                  }, H(R(t).retryText), 9, Wr)
                 ]),
                 _: 1
-              })) : s.value ? (g(), V(J, {
+              })) : h.value ? (g(), V(J, {
                 key: 3,
                 type: "no-results",
                 icon: "warning"
               }, {
                 default: j(() => [
-                  Q(H(L(t).noResultsText), 1)
+                  Q(H(R(t).noResultsText), 1)
                 ]),
                 _: 1
-              })) : (g(), M("div", jr, [
-                (g(!0), M(re, null, ue(L(t).forest.value.normalizedOptions, (R) => (g(), V(Ht, {
-                  key: R.id,
-                  node: R
+              })) : (g(), k("div", jr, [
+                (g(!0), k(re, null, ue(R(t).forest.value.normalizedOptions, (D) => (g(), V(Ht, {
+                  key: D.id,
+                  node: D
                 }, null, 8, ["node"]))), 128))
               ]))
-            ], 64)) : (g(), M(re, { key: 1 }, [
-              L(t).rootOptionsStates.isLoading ? (g(), V(J, {
+            ], 64)) : (g(), k(re, { key: 1 }, [
+              R(t).rootOptionsStates.isLoading ? (g(), V(J, {
                 key: 0,
                 type: "loading",
                 icon: "loader"
               }, {
                 default: j(() => [
-                  Q(H(L(t).loadingText), 1)
+                  Q(H(R(t).loadingText), 1)
                 ]),
                 _: 1
-              })) : L(t).rootOptionsStates.loadingError ? (g(), V(J, {
+              })) : R(t).rootOptionsStates.loadingError ? (g(), V(J, {
                 key: 1,
                 type: "error",
                 icon: "error"
               }, {
                 default: j(() => [
-                  Q(H(L(t).rootOptionsStates.loadingError) + " ", 1),
+                  Q(H(R(t).rootOptionsStates.loadingError) + " ", 1),
                   z("a", {
                     class: "vue-treeselect__retry",
-                    title: L(t).retryTitle,
-                    onClick: f[1] || (f[1] = //@ts-ignore
-                    (...R) => L(t).loadRootOptions && L(t).loadRootOptions(...R))
-                  }, H(L(t).retryText), 9, Yr)
+                    title: R(t).retryTitle,
+                    onClick: L[1] || (L[1] = //@ts-ignore
+                    (...D) => R(t).loadRootOptions && R(t).loadRootOptions(...D))
+                  }, H(R(t).retryText), 9, Yr)
                 ]),
                 _: 1
-              })) : u.value ? (g(), V(J, {
+              })) : a.value ? (g(), V(J, {
                 key: 2,
                 type: "no-options",
                 icon: "warning"
               }, {
                 default: j(() => [
-                  Q(H(L(t).noOptionsText), 1)
+                  Q(H(R(t).noOptionsText), 1)
                 ]),
                 _: 1
-              })) : L(t).localSearch.value.active && L(t).localSearch.value.noResults ? (g(), V(J, {
+              })) : R(t).localSearch.value.active && R(t).localSearch.value.noResults ? (g(), V(J, {
                 key: 3,
                 type: "no-results",
                 icon: "warning"
               }, {
                 default: j(() => [
-                  Q(H(L(t).noResultsText), 1)
+                  Q(H(R(t).noResultsText), 1)
                 ]),
                 _: 1
-              })) : (g(), M("div", Ur, [
-                (g(!0), M(re, null, ue(L(t).forest.value.normalizedOptions, (R) => (g(), V(Ht, {
-                  key: R.id,
-                  node: R
+              })) : (g(), k("div", Ur, [
+                (g(!0), k(re, null, ue(R(t).forest.value.normalizedOptions, (D) => (g(), V(Ht, {
+                  key: D.id,
+                  node: D
                 }, null, 8, ["node"]))), 128))
               ]))
             ], 64)),
-            Ke(m.$slots, "after-list")
+            Ke(u.$slots, "after-list")
           ], 36)) : Y("", !0)
         ]),
         _: 3
@@ -1960,82 +1961,82 @@ const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
 }), Qr = { class: "vue-treeselect__menu-placeholder" }, Gr = /* @__PURE__ */ K({
   __name: "MenuPortal",
   setup(e) {
-    const n = Z("treeselect"), t = (u) => K({
+    const n = Z("treeselect"), t = (f) => K({
       name: "vue-treeselect--portal-target",
       setup() {
-        let l = null, c = null, s = null;
+        let a = null, c = null, s = null;
         const h = () => {
           if (!s) return;
-          const f = u.getControl();
-          if (!f) return;
-          const R = f.getBoundingClientRect();
-          s.style.width = R.width + "px";
+          const u = f.getControl();
+          if (!u) return;
+          const L = u.getBoundingClientRect();
+          s.style.width = L.width + "px";
         }, d = () => {
           if (!s) return;
-          const f = u.getControl();
-          if (!f) return;
-          const R = s.querySelector(".vue-treeselect__menu-container");
-          if (!R) return;
-          const k = f.getBoundingClientRect(), y = s.getBoundingClientRect(), A = u.menu.value.placement === "bottom" ? k.height : 0, p = Math.round(k.left - y.left) + "px", I = Math.round(k.top - y.top + A) + "px", N = tt(["transform", "webkitTransform", "MozTransform", "msTransform"], (C) => C in document.body.style);
-          N && (R.style[N] = `translate(${p}, ${I})`);
+          const u = f.getControl();
+          if (!u) return;
+          const L = s.querySelector(".vue-treeselect__menu-container");
+          if (!L) return;
+          const D = u.getBoundingClientRect(), m = s.getBoundingClientRect(), I = f.menu.value.placement === "bottom" ? D.height : 0, p = Math.round(D.left - m.left) + "px", A = Math.round(D.top - m.top + I) + "px", N = tt(["transform", "webkitTransform", "MozTransform", "msTransform"], (M) => M in document.body.style);
+          N && (L.style[N] = `translate(${p}, ${A})`);
         }, _ = () => {
-          const f = u.getControl();
-          l || !f || (l = {
-            remove: Qt(f, d)
+          const u = f.getControl();
+          a || !u || (a = {
+            remove: Qt(u, d)
           });
         }, v = () => {
-          const f = u.getControl();
-          c || !f || (c = {
-            remove: Ut(f, () => {
+          const u = f.getControl();
+          c || !u || (c = {
+            remove: Ut(u, () => {
               h(), d();
             })
           });
         }, b = () => {
-          l && (l.remove(), l = null);
+          a && (a.remove(), a = null);
         }, E = () => {
           c && (c.remove(), c = null);
         }, S = () => {
           h(), d(), _(), v();
-        }, m = () => {
+        }, y = () => {
           b(), E();
         };
         return W(
-          () => u.menu.value.isOpen,
-          (f) => {
-            f ? ne(S) : m();
+          () => f.menu.value.isOpen,
+          (u) => {
+            u ? ne(S) : y();
           }
         ), W(
-          () => u.menu.value.placement,
+          () => f.menu.value.placement,
           () => {
             d();
           }
         ), Oe(() => {
-          s = document.body.lastElementChild, u.menu.value.isOpen && ne(S);
+          s = document.body.lastElementChild, f.menu.value.isOpen && ne(S);
         }), be(() => {
-          m();
+          y();
         }), () => lt("div", {
-          class: ["vue-treeselect__portal-target", u.wrapperClass],
-          style: { zIndex: u.zIndex },
-          "data-instance-id": u.getInstanceId()
+          class: ["vue-treeselect__portal-target", f.wrapperClass],
+          style: { zIndex: f.zIndex },
+          "data-instance-id": f.getInstanceId()
         }, [
           lt(ln)
         ]);
       }
     });
     let r = null, o = null;
-    const a = () => {
-      const u = document.createElement("div");
-      document.body.appendChild(u), o = u;
-      const l = t(n);
-      r = hn(l), r.provide("treeselect", n), r.mount(u);
+    const l = () => {
+      const f = document.createElement("div");
+      document.body.appendChild(f), o = f;
+      const a = t(n);
+      r = hn(a), r.provide("treeselect", n), r.mount(f);
     }, i = () => {
       r && o && (o.parentNode?.removeChild(o), r.unmount(), r = null, o = null);
     };
     return Oe(() => {
-      a();
+      l();
     }), be(() => {
       i();
-    }), (u, l) => (g(), M("div", Qr));
+    }), (f, a) => (g(), k("div", Qr));
   }
 }), so = /* @__PURE__ */ K({
   __name: "Treeselect",
@@ -2106,105 +2107,114 @@ const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
   },
   emits: ["update:modelValue", "select", "deselect", "open", "close", "search-change"],
   setup(e, { expose: n, emit: t }) {
-    const r = e, o = t, a = te(), i = te(), u = te(), l = te(), c = T({
+    const r = e, o = t, l = te(), i = te(), f = te(), a = te(), c = T({
       get: () => r.instanceId ?? `vue-treeselect-${Math.random().toString(36).slice(2, 11)}`,
       set: () => {
       }
     }), s = () => {
       if (r.appendToBody) {
-        const y = document.body.querySelector(".vue-treeselect__menu");
-        return y && y.nodeName !== "#comment" ? y : null;
+        const m = document.body.querySelector(".vue-treeselect__menu");
+        return m && m.nodeName !== "#comment" ? m : null;
       } else {
-        const y = u.value?.$refs?.menu || u.value?.$refs?.["menu-container"]?.querySelector(".vue-treeselect__menu");
-        return y && y.nodeName !== "#comment" ? y : null;
+        const m = f.value?.$refs?.menu || f.value?.$refs?.["menu-container"]?.querySelector(".vue-treeselect__menu");
+        return m && m.nodeName !== "#comment" ? m : null;
       }
     }, h = () => {
-      const y = i.value?.$el;
-      return y && y.nodeName !== "#comment" ? y : null;
+      const m = i.value?.$el;
+      return m && m.nodeName !== "#comment" ? m : null;
     }, d = () => i.value?.$refs?.["value-container"], _ = () => {
-      const y = d();
-      return y && y.$refs ? y.$refs.input : i.value?.$el?.querySelector(".vue-treeselect__input");
+      const m = d();
+      return m && m.$refs ? m.$refs.input : i.value?.$el?.querySelector(".vue-treeselect__input");
     }, v = () => {
       _()?.focus();
     }, b = () => {
       _()?.blur();
-    }, E = (y) => {
-      y ? document.addEventListener("mousedown", S, !1) : document.removeEventListener("mousedown", S, !1);
-    }, S = (y) => {
-      if (a.value && !a.value.contains(y.target)) {
-        const A = s();
-        if (A && A.contains(y.target))
+    }, E = (m) => {
+      m ? document.addEventListener("mousedown", S, !1) : document.removeEventListener("mousedown", S, !1);
+    }, S = (m) => {
+      const I = s(), p = I?.contains(m.target), A = l.value?.contains(m.target);
+      if (console.log("[handleClickOutside]", {
+        target: m.target,
+        clickedInWrapper: A,
+        clickedInMenu: p,
+        menuExists: !!I,
+        menuIsOpen: u.menu.value.isOpen,
+        appendToBody: r.appendToBody
+      }), l.value && !A) {
+        if (p) {
+          console.log("[handleClickOutside] Click inside menu, not closing");
           return;
-        b(), f.closeMenu();
+        }
+        console.log("[handleClickOutside] Closing menu"), b(), u.closeMenu();
       }
-    }, m = oe(function(y) {
-      if (y.preventDefault(), y.stopPropagation(), r.disabled) return;
-      const A = d();
-      (A?.$el || A)?.contains(y.target) && !f.menu.value.isOpen && (r.openOnClick || f.trigger.isFocused) && f.openMenu(), (f.resetFlags ? f.resetFlags() : !1) ? b() : v();
-    }), f = vr(
+    }, y = oe(function(m) {
+      if (m.preventDefault(), m.stopPropagation(), r.disabled) return;
+      const I = d();
+      (I?.$el || I)?.contains(m.target) && !u.menu.value.isOpen && (r.openOnClick || u.trigger.isFocused) && u.openMenu(), (u.resetFlags ? u.resetFlags() : !1) ? b() : v();
+    }), u = vr(
       r,
       o,
       c,
       s,
       h,
       E
-    ), R = T(() => ({
+    ), L = T(() => ({
       "vue-treeselect": !0,
-      "vue-treeselect--single": f.single.value,
+      "vue-treeselect--single": u.single.value,
       "vue-treeselect--multi": r.multiple,
       "vue-treeselect--searchable": r.searchable,
       "vue-treeselect--disabled": r.disabled,
-      "vue-treeselect--focused": f.trigger.isFocused,
-      "vue-treeselect--has-value": f.hasValue.value,
-      "vue-treeselect--open": f.menu.value.isOpen,
-      "vue-treeselect--open-above": f.menu.value.placement === "top",
-      "vue-treeselect--open-below": f.menu.value.placement === "bottom",
+      "vue-treeselect--focused": u.trigger.isFocused,
+      "vue-treeselect--has-value": u.hasValue.value,
+      "vue-treeselect--open": u.menu.value.isOpen,
+      "vue-treeselect--open-above": u.menu.value.placement === "top",
+      "vue-treeselect--open-below": u.menu.value.placement === "bottom",
       "vue-treeselect--branch-nodes-disabled": r.disableBranchNodes,
       "vue-treeselect--append-to-body": r.appendToBody
     }));
-    return Object.keys(r).forEach((y) => {
-      Object.defineProperty(f, y, {
+    return Object.keys(r).forEach((m) => {
+      Object.defineProperty(u, m, {
         get() {
-          return r[y];
+          return r[m];
         }
       });
-    }), Object.defineProperties(f, {
+    }), Object.defineProperties(u, {
       wrapperClass: {
         get() {
-          return R.value;
+          return L.value;
         }
       },
       getInstanceId: {
         value: () => c.value
       }
-    }), at("treeselect", f), at("instance", {
+    }), at("treeselect", u), at("instance", {
       getInput: _,
       focusInput: v,
       blurInput: b,
       getValueContainer: d,
-      handleMouseDown: m
+      handleMouseDown: y
     }), n({
       // Node methods
-      getNode: f.getNode,
+      getNode: u.getNode,
       // Traversal
-      traverseAllNodesDFS: f.traverseAllNodesDFS,
-      traverseAllNodesByIndex: f.traverseAllNodesByIndex,
+      traverseAllNodesDFS: u.traverseAllNodesDFS,
+      traverseAllNodesByIndex: u.traverseAllNodesByIndex,
       // Menu
-      openMenu: f.openMenu,
-      closeMenu: f.closeMenu,
-      toggleMenu: f.toggleMenu,
+      openMenu: u.openMenu,
+      closeMenu: u.closeMenu,
+      toggleMenu: u.toggleMenu,
       // Selection
-      select: f.select,
-      clear: f.clear,
+      select: u.select,
+      clear: u.clear,
       // Value
-      getValue: f.getValue,
+      getValue: u.getValue,
       // Focus
       focusInput: v,
       blurInput: b
-    }), (y, A) => (g(), M("div", {
+    }), (m, I) => (g(), k("div", {
       ref_key: "wrapper",
-      ref: a,
-      class: G(R.value)
+      ref: l,
+      class: G(L.value)
     }, [
       X(mr),
       X($r, {
@@ -2214,11 +2224,11 @@ const sn = /* @__PURE__ */ rn(Ar, [["render", Mr]]), kr = {
       e.appendToBody ? (g(), V(Gr, {
         key: 0,
         ref_key: "portal",
-        ref: l
+        ref: a
       }, null, 512)) : (g(), V(ln, {
         key: 1,
         ref_key: "menu",
-        ref: u
+        ref: f
       }, null, 512))
     ], 2));
   }
