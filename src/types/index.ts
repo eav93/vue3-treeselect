@@ -24,17 +24,17 @@ import type {
  * This is what gets provided via inject('treeselect')
  */
 export interface TreeselectInstance {
-  // ===== State (readonly refs) =====
+  // ===== State (mutable refs) =====
   /** Forest state containing tree structure and selection */
-  forest: Readonly<Ref<ForestState>>
+  forest: Ref<ForestState>
   /** Menu state */
-  menu: Readonly<Ref<MenuState>>
+  menu: Ref<MenuState>
   /** Trigger state (focus and search) */
   trigger: TriggerState
   /** Local search state */
-  localSearch: Readonly<Ref<LocalSearchState>>
+  localSearch: Ref<LocalSearchState>
   /** Remote search state */
-  remoteSearch: Readonly<Ref<RemoteSearchState>>
+  remoteSearch: Ref<RemoteSearchState>
   /** Root options loading states */
   rootOptionsStates: AsyncOptionsStates
 
