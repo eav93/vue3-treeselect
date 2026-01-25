@@ -180,25 +180,14 @@ const handleClickOutside = (evt: MouseEvent): void => {
   const clickedInMenu = $menu?.contains(evt.target as Node)
   const clickedInWrapper = wrapper.value?.contains(evt.target as Node)
 
-  console.log('[handleClickOutside]', {
-    target: evt.target,
-    clickedInWrapper,
-    clickedInMenu,
-    menuExists: !!$menu,
-    menuIsOpen: treeselect.menu.value.isOpen,
-    appendToBody: props.appendToBody,
-  })
-
   // Check if click is outside wrapper
   if (wrapper.value && !clickedInWrapper) {
     // Also check if click is outside menu (for appendToBody mode)
     if (clickedInMenu) {
       // Click was inside menu, don't close
-      console.log('[handleClickOutside] Click inside menu, not closing')
       return
     }
 
-    console.log('[handleClickOutside] Closing menu')
     blurInput()
     treeselect.closeMenu()
   }
@@ -215,22 +204,24 @@ const handleMouseDown = onLeftClick(function (evt: MouseEvent) {
   if (props.disabled) return
 
   const $valueContainer = getValueContainer()
-  // In the old JSX version, value-container was a component with $el
-  // In the current version, it's a div, so check if it has $el property
-  const valueContainerEl = $valueContainer?.$el || $valueContainer
-  const isClickedOnValueContainer = valueContainerEl?.contains(evt.target as Node)
+  // Check if click is on the input element itself, not just anywhere in value-container
+  const $input = getInput()
+  const isClickedOnInput = $input?.contains(evt.target as Node) || $input === evt.target
 
-  if (isClickedOnValueContainer && !treeselect.menu.value.isOpen && (props.openOnClick || treeselect.trigger.isFocused)) {
+  if (isClickedOnInput && !treeselect.menu.value.isOpen && (props.openOnClick || treeselect.trigger.isFocused)) {
     treeselect.openMenu()
   }
 
   // Check if we should blur on select, and reset the flag
   const shouldBlur = treeselect.resetFlags ? treeselect.resetFlags() : false
-  if (shouldBlur) {
-    blurInput()
-  } else {
-    // Focus the input or prevent blurring
-    focusInput()
+
+  // Only focus/blur input when clicking on input area
+  if (isClickedOnInput) {
+    if (shouldBlur) {
+      blurInput()
+    } else {
+      focusInput()
+    }
   }
 })
 
