@@ -1,12 +1,12 @@
 <template>
   <div
-    ref="control"
+    ref="controlRef"
     class="vue-treeselect__control"
     @mousedown="instance.handleMouseDown"
   >
-    <div ref="value-container" class="vue-treeselect__value-container">
-      <SingleValue v-if="single" />
-      <MultiValue v-else />
+    <div ref="valueContainerRef" class="vue-treeselect__value-container">
+      <SingleValue v-if="single" ref="valueComponentRef" />
+      <MultiValue v-else ref="valueComponentRef" />
     </div>
 
     <div
@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject } from 'vue'
+import { computed, inject, ref } from 'vue'
 import { onLeftClick, isPromise } from '@/utils'
 import SingleValue from '@/components/SingleValue.vue'
 import MultiValue from '@/components/MultiValue.vue'
@@ -133,5 +133,29 @@ const handleMouseDownOnArrow = onLeftClick(function (evt: MouseEvent) {
   // Focus the input or prevent blurring
   instance.focusInput()
   treeselect.toggleMenu()
+})
+
+// ============================================================================
+// Template refs
+// ============================================================================
+
+const controlRef = ref<HTMLElement>()
+const valueContainerRef = ref<HTMLElement>()
+const valueComponentRef = ref<any>()
+
+// ============================================================================
+// Computed - Input element from value component
+// ============================================================================
+
+const inputElement = computed(() => valueComponentRef.value?.inputElement?.value?.inputElement)
+
+// ============================================================================
+// Expose public API for parent component
+// ============================================================================
+
+defineExpose({
+  controlElement: controlRef,
+  valueContainer: valueContainerRef,
+  inputElement,
 })
 </script>

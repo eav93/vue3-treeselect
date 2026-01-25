@@ -12,14 +12,15 @@
     </template>
   </div>
   <Placeholder />
-  <Input ref="input" />
+  <Input ref="inputRef" />
 </template>
 
 <script setup lang="ts">
-import { computed, inject, useSlots } from 'vue'
+import { computed, inject, useSlots, ref } from 'vue'
 import Input from '@/components/Input.vue'
 import Placeholder from '@/components/Placeholder.vue'
 import type { TreeselectInstance } from '@/types'
+import type { InstanceType } from 'vue'
 
 const treeselect = inject<TreeselectInstance>('treeselect')!
 const slots = useSlots()
@@ -34,5 +35,19 @@ const selectedNode = computed(() => {
 
 const customValueLabelRenderer = computed(() => {
   return slots['value-label']
+})
+
+// ============================================================================
+// Template refs
+// ============================================================================
+
+const inputRef = ref<InstanceType<typeof Input>>()
+
+// ============================================================================
+// Expose for parent
+// ============================================================================
+
+defineExpose({
+  inputElement: inputRef,
 })
 </script>

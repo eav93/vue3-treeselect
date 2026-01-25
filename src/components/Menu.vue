@@ -7,10 +7,10 @@
     <Transition name="vue-treeselect__menu--transition">
       <div
         v-if="treeselect.menu.value.isOpen"
-        ref="menu"
+        ref="menuRef"
         class="vue-treeselect__menu"
         :style="menuStyle"
-        @mousedown.prevent
+        @mousedown="instance.handleMouseDown"
       >
         <!-- Before list slot -->
         <slot name="before-list" />
@@ -91,7 +91,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, onMounted, onUnmounted, nextTick, inject } from 'vue'
+import { computed, watch, onMounted, onUnmounted, nextTick, inject, ref } from 'vue'
 import { MENU_BUFFER } from '@/constants'
 import { watchSize, setupResizeAndScrollEventListeners } from '@/utils'
 import Option from '@/components/Option.vue'
@@ -114,6 +114,24 @@ const directionMap = {
 // ============================================================================
 
 const treeselect = inject<TreeselectInstance>('treeselect')!
+const instance = inject<any>('instance')!
+const registerMenuElement = inject<(el: HTMLElement) => void>('registerMenuElement', undefined)
+
+// ============================================================================
+// Template refs
+// ============================================================================
+
+const menuRef = ref<HTMLElement>()
+
+// ============================================================================
+// Register menu element with portal (if in portal mode)
+// ============================================================================
+
+watch(menuRef, (newEl) => {
+  if (newEl && registerMenuElement) {
+    registerMenuElement(newEl)
+  }
+}, { immediate: true })
 
 // ============================================================================
 // State
@@ -271,5 +289,13 @@ onMounted(() => {
 
 onUnmounted(() => {
   onMenuClose()
+})
+
+// ============================================================================
+// Expose public API for parent component
+// ============================================================================
+
+defineExpose({
+  menuElement: menuRef,
 })
 </script>

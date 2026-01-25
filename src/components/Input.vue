@@ -290,5 +290,6 @@ defineExpose({
   clear,
   focus,
   blur,
+  inputElement: inputRef,
 })
 </script>

@@ -43,6 +43,30 @@ export default defineConfig({
             fileName: 'vue3-treeselect',
             formats: ['es', 'cjs', 'umd']
         },
+        rollupOptions: {
+            external: ['vue'],
+            output: [
+                {
+                    format: 'es',
+                    exports: 'named',
+                    entryFileNames: '[name].mjs'
+                },
+                {
+                    format: 'cjs',
+                    exports: 'named',
+                    entryFileNames: '[name].js'
+                },
+                {
+                    format: 'umd',
+                    exports: 'named',
+                    entryFileNames: '[name].umd.js',
+                    name: 'Vue3Treeselect',
+                    globals: {
+                        vue: 'Vue'
+                    }
+                }
+            ]
+        },
         commonjsOptions: {
             requireReturnsDefault: 'preferred',
             transformMixedEsModules: true,

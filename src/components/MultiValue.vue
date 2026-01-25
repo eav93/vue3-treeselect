@@ -20,22 +20,37 @@
       </span>
     </div>
     <Placeholder key="placeholder" />
-    <Input ref="input" key="input" />
+    <Input ref="inputRef" key="input" />
   </TransitionGroup>
 </template>
 
 <script setup lang="ts">
-import { computed, inject } from 'vue'
+import { computed, inject, ref } from 'vue'
 import MultiValueItem from '@/components/MultiValueItem.vue'
 import Input from '@/components/Input.vue'
 import Placeholder from '@/components/Placeholder.vue'
 import type { TreeselectInstance, NormalizedNode } from '@/types'
+import type { InstanceType } from 'vue'
 
 // ============================================================================
 // Inject treeselect instance
 // ============================================================================
 
 const treeselect = inject<TreeselectInstance>('treeselect')!
+
+// ============================================================================
+// Template refs
+// ============================================================================
+
+const inputRef = ref<InstanceType<typeof Input>>()
+
+// ============================================================================
+// Expose for parent
+// ============================================================================
+
+defineExpose({
+  inputElement: inputRef,
+})
 
 // ============================================================================
 // Computed

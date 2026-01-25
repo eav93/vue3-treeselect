@@ -14,6 +14,7 @@ import type { App as VueApp } from 'vue'
 // ============================================================================
 
 const treeselect = inject<TreeselectInstance>('treeselect')!
+const instance = inject<any>('instance')!
 
 // ============================================================================
 // Portal Target Component (modern Composition API)
@@ -28,6 +29,9 @@ const createPortalTargetComponent = (treeselectInstance: TreeselectInstance) => 
       let controlSizeWatcher: { remove: () => void } | null = null
       let portalElement: HTMLElement | null = null
 
+      // Inject menu element getter provided by parent
+      const getMenuElement = inject<() => HTMLElement | null>('menuElementInPortal')!
+
       const updateWidth = (): void => {
         if (!portalElement) return
         const $control = treeselectInstance.getControl()
@@ -38,11 +42,12 @@ const createPortalTargetComponent = (treeselectInstance: TreeselectInstance) => 
       }
 
       const updateMenuContainerOffset = (): void => {
-        if (!portalElement) return
+        const menuElement = getMenuElement()
+        if (!portalElement || !menuElement) return
         const $control = treeselectInstance.getControl()
         if (!$control) return
 
-        const menuContainer = portalElement.querySelector('.vue-treeselect__menu-container') as HTMLElement
+        const menuContainer = menuElement.parentElement as HTMLElement
         if (!menuContainer) return
 
         const controlRect = $control.getBoundingClientRect()
@@ -151,6 +156,7 @@ const createPortalTargetComponent = (treeselectInstance: TreeselectInstance) => 
 
 let portalApp: VueApp | null = null
 let portalElement: HTMLElement | null = null
+let menuElementInPortal: HTMLElement | null = null
 
 const setupPortal = (): void => {
   const el = document.createElement('div')
@@ -161,6 +167,16 @@ const setupPortal = (): void => {
 
   portalApp = createApp(PortalTargetComponent)
   portalApp.provide('treeselect', treeselect)
+  portalApp.provide('instance', instance)
+
+  // Register callback to receive menu element from Menu component
+  portalApp.provide('registerMenuElement', (el: HTMLElement) => {
+    menuElementInPortal = el
+  })
+
+  // Provide reactive access to menu element for PortalTargetComponent
+  portalApp.provide('menuElementInPortal', () => menuElementInPortal)
+
   portalApp.mount(el)
 }
 
@@ -170,8 +186,21 @@ const teardownPortal = (): void => {
     portalApp.unmount()
     portalApp = null
     portalElement = null
+    menuElementInPortal = null
   }
 }
+
+// ============================================================================
+// Expose methods for parent component
+// ============================================================================
+
+const getMenuInPortal = (): HTMLElement | null => {
+  return menuElementInPortal
+}
+
+defineExpose({
+  getMenuInPortal,
+})
 
 onMounted(() => {
   setupPortal()

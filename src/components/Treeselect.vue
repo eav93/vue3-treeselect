@@ -124,35 +124,28 @@ const instanceId = computed({
 
 const getMenuElement = (): HTMLElement | null => {
   if (props.appendToBody) {
-    // For portal, find the menu in document.body
-    const $menu = document.body.querySelector('.vue-treeselect__menu') as HTMLElement
-    return $menu && $menu.nodeName !== '#comment' ? $menu : null
+    // For portal, get from MenuPortal's defineExpose
+    return portal.value?.getMenuInPortal?.() || null
   } else {
-    // For non-portal, get from menu component ref
-    const $menu = menu.value?.$refs?.menu || (menu.value?.$refs?.['menu-container'] as HTMLElement | undefined)?.querySelector('.vue-treeselect__menu')
+    // For non-portal, get from menu component's defineExpose
+    const $menu = menu.value?.menuElement
     return $menu && ($menu as any).nodeName !== '#comment' ? ($menu as HTMLElement) : null
   }
 }
 
 const getControlElement = (): HTMLElement | null => {
-  const $control = control.value?.$el as HTMLElement
+  const $control = control.value?.controlElement as HTMLElement
   return $control && $control.nodeName !== '#comment' ? $control : null
 }
 
 const getValueContainer = (): any => {
-  // In the old JSX version, value-container ref was on the ValueContainer component
-  // In the current version, it's on a div, so we return the div directly
-  return control.value?.$refs?.['value-container']
+  // Get from Control component's defineExpose
+  return control.value?.valueContainer
 }
 
 const getInput = (): any => {
-  // Get input from value-container refs if it's a component
-  const container = getValueContainer()
-  if (container && container.$refs) {
-    return container.$refs.input
-  }
-  // Otherwise try to find input in control DOM
-  return control.value?.$el?.querySelector('.vue-treeselect__input')
+  // Get input from Control component's defineExpose
+  return control.value?.inputElement?.value
 }
 
 const focusInput = () => {
@@ -204,22 +197,19 @@ const handleMouseDown = onLeftClick(function (evt: MouseEvent) {
   if (props.disabled) return
 
   const $valueContainer = getValueContainer()
-  // Check if click is on the input element itself, not just anywhere in value-container
-  const $input = getInput()
-  const isClickedOnInput = $input?.contains(evt.target as Node) || $input === evt.target
+  const isClickedOnValueContainer = $valueContainer?.contains?.(evt.target as Node) || $valueContainer === evt.target
 
-  if (isClickedOnInput && !treeselect.menu.value.isOpen && (props.openOnClick || treeselect.trigger.isFocused)) {
+  if (isClickedOnValueContainer && !treeselect.menu.value.isOpen && (props.openOnClick || treeselect.trigger.isFocused)) {
     treeselect.openMenu()
   }
 
-  // Check if we should blur on select, and reset the flag
+  // Check if we should blur on select
   const shouldBlur = treeselect.resetFlags ? treeselect.resetFlags() : false
 
-  // Always focus/blur input when clicking on control (not on menu options)
-  // This ensures the focused class is applied for correct styling
   if (shouldBlur) {
     blurInput()
   } else {
+    // Focus the input or prevent blurring
     focusInput()
   }
 })
