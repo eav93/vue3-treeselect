@@ -1,7 +1,6 @@
 import Treeselect from '@/components/Treeselect.vue'
 import '../styles/style.scss'
 
-export default Treeselect
 export { Treeselect }
 
 // Export types

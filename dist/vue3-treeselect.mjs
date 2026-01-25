@@ -2236,7 +2236,6 @@ export {
   Zr as LOAD_ROOT_OPTIONS,
   lo as Treeselect,
   nt as UNCHECKED,
-  lo as default,
   vr as useAsyncOptions,
   Gn as useForestState,
   lr as useLocalSearch,

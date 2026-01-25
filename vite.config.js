@@ -41,6 +41,7 @@ export default defineConfig({
             entry: path.resolve(__dirname, 'src/index.ts'),
             name: 'Vue3Treeselect',
             fileName: 'vue3-treeselect',
+            formats: ['es', 'cjs', 'umd']
         },
         commonjsOptions: {
             requireReturnsDefault: 'preferred',
