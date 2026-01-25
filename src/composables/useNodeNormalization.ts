@@ -1,5 +1,12 @@
 import type { ComputedRef } from 'vue'
 import { warning, createMap } from '@/utils'
+import {
+  NO_PARENT_NODE,
+  ALL_CHILDREN,
+  ALL_DESCENDANTS,
+  LEAF_CHILDREN,
+  LEAF_DESCENDANTS,
+} from '@/constants'
 import type {
   RawNode,
   NormalizedNode,
@@ -7,13 +14,6 @@ import type {
   TreeselectProps,
   ForestState,
 } from '@/types'
-
-// Constants - will be imported from constants.ts later
-const NO_PARENT_NODE = null
-const ALL_CHILDREN = 'ALL_CHILDREN'
-const ALL_DESCENDANTS = 'ALL_DESCENDANTS'
-const LEAF_CHILDREN = 'LEAF_CHILDREN'
-const LEAF_DESCENDANTS = 'LEAF_DESCENDANTS'
 
 /**
  * Helper to create async options states

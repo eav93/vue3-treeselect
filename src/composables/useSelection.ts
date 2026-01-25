@@ -1,5 +1,6 @@
 import { nextTick } from 'vue'
 import { removeFromArray, getLast } from '@/utils'
+import { NO_PARENT_NODE, UNCHECKED } from '@/constants'
 import type {
   NormalizedNode,
   ForestState,
@@ -8,10 +9,6 @@ import type {
   NodeId,
   LocalSearchState,
 } from '@/types'
-
-// Constants - will be imported from constants.ts later
-const NO_PARENT_NODE = null
-const UNCHECKED = 0
 
 /**
  * Composable for managing node selection
@@ -56,10 +53,13 @@ export function useSelection(
   let _blurOnSelect = false
 
   /**
-   * Reset internal flags
+   * Reset internal flags and return blur flag
+   * @returns Whether blur should happen on select
    */
-  const resetFlags = (): void => {
+  const resetFlags = (): boolean => {
+    const shouldBlur = _blurOnSelect
     _blurOnSelect = false
+    return shouldBlur
   }
 
   /**
@@ -252,7 +252,7 @@ export function useSelection(
     buildForestState()
 
     // Emit events
-    nextTick(() => {
+    void nextTick(() => {
       if (nextState) {
         emit('select', node.raw, instanceId)
       } else {
@@ -297,7 +297,5 @@ export function useSelection(
     removeValue,
     removeLastValue,
     resetFlags,
-    getBlurOnSelectFlag: () => _blurOnSelect,
-    setBlurOnSelectFlag: (value: boolean) => { _blurOnSelect = value },
   }
 }

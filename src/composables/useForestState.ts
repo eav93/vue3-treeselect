@@ -1,11 +1,7 @@
 import { reactive } from 'vue'
 import { createMap } from '@/utils'
+import { UNCHECKED, INDETERMINATE, CHECKED } from '@/constants'
 import type { ForestState, TreeselectProps, NodeId, NormalizedNode, CheckedState } from '@/types'
-
-// Import constants
-const UNCHECKED = 0 as CheckedState
-const INDETERMINATE = 1 as CheckedState
-const CHECKED = 2 as CheckedState
 
 /**
  * Composable for managing forest state (tree structure and selection)

@@ -88,7 +88,7 @@ export function useAsyncOptions(
 
     // Handle promise-based loadOptions
     if (isPromise(loadResult)) {
-      loadResult
+      void loadResult
         .then(() => {
           callback()
         })

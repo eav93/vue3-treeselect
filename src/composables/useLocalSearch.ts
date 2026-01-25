@@ -1,19 +1,19 @@
 import { reactive } from 'vue'
 import fuzzysearch from 'fuzzysearch'
 import { createMap, includes } from '@/utils'
+import {
+  NO_PARENT_NODE,
+  ALL_CHILDREN,
+  ALL_DESCENDANTS,
+  LEAF_CHILDREN,
+  LEAF_DESCENDANTS,
+} from '@/constants'
 import type {
   LocalSearchState,
   NormalizedNode,
   TreeselectProps,
   TriggerState,
 } from '@/types'
-
-// Constants - will be imported from constants.ts later
-const NO_PARENT_NODE = null
-const ALL_CHILDREN = 'ALL_CHILDREN'
-const ALL_DESCENDANTS = 'ALL_DESCENDANTS'
-const LEAF_CHILDREN = 'LEAF_CHILDREN'
-const LEAF_DESCENDANTS = 'LEAF_DESCENDANTS'
 
 /**
  * Match a search query against a string

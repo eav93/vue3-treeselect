@@ -31,6 +31,33 @@ function sortValueByLevel(a: NormalizedNode, b: NormalizedNode): number {
 }
 
 /**
+ * Expand nodes up to parents when all siblings are selected
+ * Helper to avoid code duplication in fixSelectedNodeIds
+ */
+function expandNodesUpToParents(
+  queue: NodeId[],
+  result: NodeId[],
+  getNode: (id: NodeId) => NormalizedNode | null
+): void {
+  const map = createMap<number>()
+  while (queue.length) {
+    const nodeId = queue.shift()!
+    const node = getNode(nodeId)
+    if (!node) continue
+
+    result.push(nodeId)
+    if (node.isRootNode) continue
+
+    if (!(node.parentNode!.id in map)) {
+      map[node.parentNode!.id] = node.parentNode!.children!.length
+    }
+    if (--map[node.parentNode!.id] === 0) {
+      queue.push(node.parentNode!.id)
+    }
+  }
+}
+
+/**
  * Composable for managing selected values
  *
  * @param props - Component props
@@ -198,45 +225,14 @@ export function useValue(
       })
     } else if (props.valueConsistsOf === LEAF_PRIORITY) {
       // Expand leaves up to fully selected branches
-      const map = createMap<number>()
-      const queue = nodeIdListOfPrevValue.slice()
-      while (queue.length) {
-        const nodeId = queue.shift()!
-        const node = getNode(nodeId)
-        if (!node) continue
-
-        nextSelectedNodeIds.push(nodeId)
-        if (node.isRootNode) continue
-
-        if (!(node.parentNode!.id in map)) {
-          map[node.parentNode!.id] = node.parentNode!.children!.length
-        }
-        if (--map[node.parentNode!.id] === 0) {
-          queue.push(node.parentNode!.id)
-        }
-      }
+      expandNodesUpToParents(nodeIdListOfPrevValue.slice(), nextSelectedNodeIds, getNode)
     } else if (props.valueConsistsOf === ALL_WITH_INDETERMINATE) {
       // Expand from leaves/empty branches up to roots
-      const map = createMap<number>()
-      const queue = nodeIdListOfPrevValue.filter(nodeId => {
+      const initialQueue = nodeIdListOfPrevValue.filter(nodeId => {
         const node = getNode(nodeId)
         return node && (node.isLeaf || node.children!.length === 0)
       })
-      while (queue.length) {
-        const nodeId = queue.shift()!
-        const node = getNode(nodeId)
-        if (!node) continue
-
-        nextSelectedNodeIds.push(nodeId)
-        if (node.isRootNode) continue
-
-        if (!(node.parentNode!.id in map)) {
-          map[node.parentNode!.id] = node.parentNode!.children!.length
-        }
-        if (--map[node.parentNode!.id] === 0) {
-          queue.push(node.parentNode!.id)
-        }
-      }
+      expandNodesUpToParents(initialQueue, nextSelectedNodeIds, getNode)
     }
 
     const hasChanged = quickDiff(forest.selectedNodeIds, nextSelectedNodeIds)

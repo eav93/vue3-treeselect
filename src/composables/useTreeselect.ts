@@ -1,5 +1,6 @@
 import {computed, onMounted, onUnmounted, reactive, readonly, toRef, watch} from 'vue'
 import {createMap, find, quickDiff, warning} from '@/utils'
+import { NO_PARENT_NODE } from '@/constants'
 import {useNodeTraversal} from './useNodeTraversal'
 import {useForestState} from './useForestState'
 import {useNodeNormalization} from './useNodeNormalization'
@@ -10,9 +11,6 @@ import {useLocalSearch} from './useLocalSearch'
 import {useRemoteSearch} from './useRemoteSearch'
 import {useAsyncOptions} from './useAsyncOptions'
 import type {NodeId, NormalizedNode, RawNode, TreeselectEmits, TreeselectProps, TriggerState,} from '@/types'
-
-// Constants - will be imported from constants.ts later
-const NO_PARENT_NODE = null
 
 /**
  * Main composable for Treeselect functionality
