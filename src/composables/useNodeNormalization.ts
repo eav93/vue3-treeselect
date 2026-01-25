@@ -5,7 +5,6 @@ import type {
   NormalizedNode,
   NodeMap,
   TreeselectProps,
-  NodeId,
   ForestState,
 } from '@/types'
 

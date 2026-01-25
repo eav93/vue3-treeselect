@@ -4,7 +4,6 @@ import type {
   AsyncOptionsStates,
   TreeselectProps,
   NormalizedNode,
-  RawNode,
 } from '@/types'
 
 // Constants - will be imported from constants.ts later

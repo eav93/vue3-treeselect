@@ -12,7 +12,6 @@ import type {
 // Constants - will be imported from constants.ts later
 const NO_PARENT_NODE = null
 const UNCHECKED = 0
-const CHECKED = 2
 
 /**
  * Composable for managing node selection

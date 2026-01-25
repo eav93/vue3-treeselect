@@ -8,7 +8,6 @@ export * from './props'
 import type {
   NodeId,
   NormalizedNode,
-  RawNode,
 } from './node'
 
 import type {
