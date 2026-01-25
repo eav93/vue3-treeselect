@@ -112,7 +112,7 @@ const portal = ref<InstanceType<typeof MenuPortal>>()
 // ============================================================================
 
 const instanceId = computed({
-  get: () => props.instanceId ?? `vue-treeselect-${Math.random().toString(36).substr(2, 9)}`,
+  get: () => props.instanceId ?? `vue-treeselect-${Math.random().toString(36).slice(2, 11)}`,
   set: () => {
     // Read-only, set does nothing
   }

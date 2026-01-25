@@ -2120,7 +2120,7 @@ const sn = /* @__PURE__ */ rn(Pr, [["render", Wr]]), jr = {
   emits: ["update:modelValue", "select", "deselect", "open", "close", "search-change"],
   setup(e, { expose: n, emit: t }) {
     const r = e, o = t, u = te(), f = te(), d = te(), s = te(), c = T({
-      get: () => r.instanceId ?? `vue-treeselect-${Math.random().toString(36).substr(2, 9)}`,
+      get: () => r.instanceId ?? `vue-treeselect-${Math.random().toString(36).slice(2, 11)}`,
       set: () => {
       }
     }), l = () => {
