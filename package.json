@@ -11,9 +11,8 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./dist/style.css": "./dist/vue3-treeselect.css",
-    "./dist/style.scss": "./dist/style.scss",
-    "./dist/style.less": "./dist/style.less"
+    "./styles/style.scss": "./styles/style.scss",
+    "./styles/style.less": "./styles/style.less"
   },
   "unpkg": "./dist/index.umd.js",
   "author": "megafetis",
@@ -37,7 +36,6 @@
     "sass-easing": "^1.0.3",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
-    "vite-plugin-static-copy": "^3.1.6",
     "vue": "^3.5.27",
     "vue-tsc": "^3.2.3",
     "watch-size": "2.0.0"
@@ -52,7 +50,8 @@
   ],
   "homepage": "https://github.com/eav93/vue3-treeselect",
   "files": [
-    "dist"
+    "dist",
+    "styles"
   ],
   "keywords": [
     "vue",
@@ -67,8 +66,8 @@
     "hierarchical"
   ],
   "style": "./dist/vue3-treeselect.css",
-  "sass": "./dist/style.scss",
-  "less": "./dist/style.less",
+  "sass": "./styles/style.scss",
+  "less": "./styles/style.less",
   "sideEffects": [
     "*.css",
     "*.scss",

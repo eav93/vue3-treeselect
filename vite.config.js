@@ -9,19 +9,7 @@ const pathSegments = path.dirname(filename);
 
 export default defineConfig({
     plugins: [
-        vue(),
-        viteStaticCopy({
-            targets: [
-                {
-                    src: 'styles/style.scss',
-                    dest: '.'
-                },
-                {
-                    src: 'styles/style.less',
-                    dest: '.'
-                }
-            ]
-        })
+        vue()
     ],
     resolve: {
         alias: {
