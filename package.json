@@ -1,7 +1,7 @@
 {
   "name": "@eav93/vue3-treeselect",
   "version": "0.2.5",
-  "main": "./dist/vue3-treeselect.cjs",
+  "main": "./dist/vue3-treeselect.js",
   "module": "./dist/vue3-treeselect.mjs",
   "style": "./dist/vue3-treeselect.css",
   "description": "Tree select hierarchical component for vue 3 (next)",
