@@ -1,9 +1,9 @@
 {
   "name": "@eav93/vue3-treeselect",
   "version": "0.2.5",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
-  "style": "./dist/style.css",
+  "main": "./dist/vue3-treeselect.cjs",
+  "module": "./dist/vue3-treeselect.mjs",
+  "style": "./dist/vue3-treeselect.css",
   "description": "Tree select hierarchical component for vue 3 (next)",
   "author": "megafetis",
   "license": "MIT",
