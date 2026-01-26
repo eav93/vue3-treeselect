@@ -1,29 +1,24 @@
-import Treeselect from '@/components/Treeselect.vue'
-import '../styles/style.scss'
+import "../sass/style.scss";
+import Treeselect from "@/components/Treeselect.vue";
+// Component
+export { Treeselect };
 
-// Export both default and named
-export default Treeselect
-export { Treeselect }
+// Types
+export * from "@/types";
 
-// Export types
-export * from '@/types'
-
-// Export constants
+// Constants
 export {
-  // Delayed loading
-  LOAD_ROOT_OPTIONS,
-  LOAD_CHILDREN_OPTIONS,
-  ASYNC_SEARCH,
-  // Checked states
-  UNCHECKED,
-  INDETERMINATE,
-  CHECKED,
-  // Value formats
-  ALL,
-  BRANCH_PRIORITY,
-  LEAF_PRIORITY,
-  ALL_WITH_INDETERMINATE,
-} from '@/constants'
+    LOAD_ROOT_OPTIONS,
+    LOAD_CHILDREN_OPTIONS,
+    ASYNC_SEARCH,
+    UNCHECKED,
+    INDETERMINATE,
+    CHECKED,
+    ALL,
+    BRANCH_PRIORITY,
+    LEAF_PRIORITY,
+    ALL_WITH_INDETERMINATE,
+} from "@/constants";
 
-// Export composables for advanced usage
-export * from '@/composables'
+// Composables
+export * from "@/composables";
