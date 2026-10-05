@@ -1,19 +1,28 @@
 {
   "name": "@eav93/vue3-treeselect",
   "version": "0.3.0",
+  "description": "Tree select component with nested options for Vue 3.5+ (TypeScript). A fork of vue-treeselect with fixes and performance improvements for large trees.",
   "main": "./dist/vue3-treeselect.js",
   "module": "./dist/vue3-treeselect.mjs",
   "types": "./dist/types/index.d.ts",
   "unpkg": "./dist/vue3-treeselect.umd.js",
   "style": "./dist/vue3-treeselect.css",
   "sass": "./sass/style.scss",
-  "description": "Tree select hierarchical component for vue 3 (next)",
+  "files": [
+    "assets",
+    "sass",
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "megafetis",
   "license": "MIT",
   "homepage": "https://github.com/eav93/vue3-treeselect",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/eav93/vue3-treeselect"
+    "url": "git+https://github.com/eav93/vue3-treeselect.git"
   },
   "keywords": [
     "vue",
@@ -25,7 +34,10 @@
     "select",
     "tree select",
     "hierarchy",
-    "hierarchical"
+    "hierarchical",
+    "vue-treeselect",
+    "typescript",
+    "multiselect"
   ],
   "scripts": {
     "dev": "vite",
@@ -37,11 +49,6 @@
     "bench": "vitest run --config bench/vitest.config.ts",
     "bench:browser": "node bench/browser/run.mjs"
   },
-  "files": [
-    "assets",
-    "sass",
-    "dist"
-  ],
   "dependencies": {
     "material-colors": "^1.2.6",
     "sass-easing": "^1.0.3"
@@ -72,5 +79,13 @@
     "Android >= 6.0",
     "iOS >= 9",
     "not dead"
-  ]
+  ],
+  "contributors": [
+    "Riophae Lee",
+    "megafetis",
+    "eav93"
+  ],
+  "bugs": {
+    "url": "https://github.com/eav93/vue3-treeselect/issues"
+  }
 }
