@@ -80,4 +80,6 @@ export interface MenuRow {
     node: NormalizedNode;
     /** Indentation level */
     level: number;
+    /** Position in the current rows (row objects are reused between computations) */
+    index: number;
 }

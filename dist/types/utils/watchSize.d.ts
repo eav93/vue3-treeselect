@@ -1,4 +1,9 @@
-export declare function watchSize($el: HTMLElement, listener: (size: {
+export interface Size {
     width: number;
     height: number;
-}) => void): () => void;
+}
+/**
+ * Call `listener` when the size of an element changes (not on registration).
+ * @returns a function that stops watching
+ */
+export declare function watchSize($el: HTMLElement, listener: (size: Size) => void): () => void;

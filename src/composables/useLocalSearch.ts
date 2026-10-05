@@ -129,12 +129,14 @@ export function useLocalSearch(
         }
 
         countMap[node.id] = count
-        node.isExpandedOnSearch = expandedOnSearch || (keepExpanded && !!node.isExpandedOnSearch)
-        node.hasMatchedDescendants = expandedOnSearch
-        if (!keepExpanded) node.showAllChildrenOnSearch = false
+        // Writes go through the node proxies: only write what changed
+        const nextExpanded = expandedOnSearch || (keepExpanded && !!node.isExpandedOnSearch)
+        if (node.isExpandedOnSearch !== nextExpanded) node.isExpandedOnSearch = nextExpanded
+        if (node.hasMatchedDescendants !== expandedOnSearch) node.hasMatchedDescendants = expandedOnSearch
+        if (!keepExpanded && node.showAllChildrenOnSearch) node.showAllChildrenOnSearch = false
       }
 
-      node.isMatched = matched
+      if (node.isMatched !== matched) node.isMatched = matched
       return matched || (node.isBranch && !!node.isExpandedOnSearch)
     }
 

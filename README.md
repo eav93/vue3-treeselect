@@ -173,8 +173,26 @@ The SCSS needs the `material-colors` and `sass-easing` packages, which are insta
 dependencies. Configuring variables is preferable to overriding the generated rules with CSS:
 it covers all states (hover, focus, disabled) and doesn't fight selector specificity.
 
-Checkbox marks are SVG; their colors are `$treeselect-checkbox-icon-color` / `-disabled`, and they can be
-replaced with any CSS image. For example, Bootstrap-like checkboxes:
+Colors and sizes can also be changed at runtime, without Sass, with CSS custom properties:
+`--vue-treeselect-<name>` corresponds to `$treeselect-<name>` (the SCSS value is the default), e.g.
+
+```css
+.vue-treeselect {
+  --vue-treeselect-control-border-color: #ced4da;
+  --vue-treeselect-checkbox-checked-bg: #26a65b;
+  --vue-treeselect-padding: 8px;
+}
+```
+
+Set them on an ancestor of both the component and `.vue-treeselect__portal-target` (e.g. `:root`
+or a theme class on `body`) when `appendToBody` is used: the menu is then rendered outside of the
+component. The mark colors are `--vue-treeselect-checkbox-mark-color` / `-disabled`, the arrow of a
+branch is mirrored with `--vue-treeselect-arrow-direction: -1` (set automatically for `[dir="rtl"]`).
+The indentation of a row is `padding + level * narrow-cell-width`, computed from the `--level`
+custom property of the `.vue-treeselect__list-item` elements.
+
+Checkbox marks are SVG masks painted with `$treeselect-checkbox-icon-color` / `-disabled`, and they
+can be replaced with any CSS image (only its shape matters). For example, Bootstrap-like checkboxes:
 
 ```scss
 @use "@eav93/vue3-treeselect/sass/style.scss" with (
@@ -189,9 +207,10 @@ replaced with any CSS image. For example, Bootstrap-like checkboxes:
 );
 ```
 
-Option rows use `content-visibility: auto`, so the browser skips rendering of rows outside the
-menu viewport. It clips content overflowing a row; if a custom `option-label` slot renders
-something outside of the row, set `$treeselect-option-content-visibility: visible`.
+Option rows are rendered in blocks with `content-visibility: auto`, so the browser skips rendering
+of blocks outside the menu viewport. It clips content overflowing a block; if a custom `option-label`
+slot renders something outside of the row, set `$treeselect-option-content-visibility: visible`
+(or `--vue-treeselect-option-content-visibility: visible`).
 
 ## Large trees
 
@@ -199,8 +218,11 @@ something outside of the row, set `$treeselect-option-content-visibility: visibl
   Reactive options are deep-watched (for compatibility), which costs memory and time on large trees.
 - The menu renders the first screens at once and the rest progressively, without blocking the page.
   For very large expanded trees or search results use `virtualScroll`.
+- Rows are rendered in blocks with `content-visibility: auto`, so scrolling, keyboard navigation and
+  selecting stay at 60 fps even with tens of thousands of rendered rows.
 - `npm run bench:browser` measures opening a menu with 11k expanded options in Chrome
-  (about 130 ms to the first paint, about 100 ms with `virtualScroll`).
+  (about 130 ms to the first paint, about 100 ms with `virtualScroll`); `bench/browser/perf.mjs`
+  measures scrolling, typing, selecting and more.
 
 ## Development
 

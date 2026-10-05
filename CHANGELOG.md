@@ -1,5 +1,56 @@
 # Changelog
 
+## 0.7.0
+
+Performance (measured in Chrome, 11k expanded rows unless noted; see `npm run bench:browser` and
+`bench/browser/perf.mjs`):
+
+- Rows are rendered in blocks (`.vue-treeselect__list-chunk`, ~100 rows) with stable membership;
+  `content-visibility: auto` applies to blocks instead of rows, so the browser no longer re-checks
+  every row on each scroll or layout. Scrolling 46–59 → 16.6 ms/frame (60 fps), ArrowDown 40 → 16 ms,
+  selecting an option with the menu open 44 → 16.6 ms, opening the menu until all rows are rendered
+  784 → 377 ms, clearing a search 1.0 → 0.43 s. 55k rows: rendered after 6.4 s instead of over 2 minutes.
+- Option rows are a render function: no comment or fragment nodes (224 instead of 282 DOM nodes per
+  20 rows), lighter mount and unmount.
+- Search: row objects are reused between searches, node flags are only written when they change,
+  keyboard navigation scans from the current row instead of indexing all options.
+- Reactive `options` (`ref([...])`) are normalized from their raw objects: as fast as plain arrays
+  (was 2.2x slower). Children loaded with `loadOptions` always re-initialize the tree.
+- The first chunk of progressive rendering is scheduled after the first frame.
+- Dependencies `lodash`, `watch-size` and `is-promise` replaced by small built-ins (`ResizeObserver`
+  for the menu size): the ES bundle is 20.5 kB gzip (was 21.5 kB, 25.4 kB with the inline locales of 0.5).
+- **Breaking:** the `assets` directory (PNG checkbox icons) is no longer shipped.
+
+- Styles: runtime theming with CSS custom properties. Every color and size of the stylesheet has a
+  `--vue-treeselect-<name>` property (`--vue-treeselect-control-border-color` for
+  `$treeselect-control-border-color`, ...) with the SCSS value as the default; set them on
+  `.vue-treeselect` or on `:root` (which also covers the menu with `appendToBody`). The SCSS
+  variables keep working as before.
+- Styles: the indentation is computed from the `--level` custom property of the rows
+  (`padding + level * $treeselect-narrow-cell-width`) instead of generated per-level rules, so it
+  works at any depth (levels above `$treeselect-max-level` = 8 were not indented).
+  `$treeselect-max-level` is deprecated and ignored. The `.vue-treeselect__indent-level-N` classes
+  are still set. Custom `padding-left` rules on `.vue-treeselect__option` now have the same
+  specificity as the indentation rule (`padding-inline-start`): they used to be overridden by it.
+- Styles: right-to-left layout uses CSS logical properties (`padding-inline-*`, `text-align: start`,
+  ...), so it also follows `direction: rtl` set with CSS. The only `[dir="rtl"]` rule left mirrors
+  the branch arrows with `--vue-treeselect-arrow-direction: -1`.
+- Styles: checkbox marks are CSS masks painted with `$treeselect-checkbox-icon-color` / `-disabled`
+  (`--vue-treeselect-checkbox-mark-color` / `-disabled` at runtime). `$treeselect-checkbox-checked-image`
+  & co. are now mask images: only the shape of a custom image matters, its colors are ignored.
+  **Breaking:** the PNG icons of vue-treeselect are not supported anymore. `$treeselect-assets-path`
+  and `$treeselect-checkbox-checked-icon` / `-indeterminate-icon` / `-disabled-*-icon` are still
+  accepted by `@use ... with (...)` but ignored.
+- Styles: `content-visibility: auto` is applied to blocks of rows (`.vue-treeselect__list-chunk`) instead
+  of every row; `$treeselect-option-content-visibility` keeps its meaning (also
+  `--vue-treeselect-option-content-visibility`). `$treeselect-option-intrinsic-height` and
+  `treeselect-line-height-to-length()` are removed (the component sets the intrinsic size of a block).
+- Styles: the multi-value chip enter transition works again (Vue 3 class name `-enter-from`; the
+  Vue 2 `-enter` class was never applied). Transitions name their properties instead of `all`.
+  `$treeselect-multi-value-item-bg-new-hover` is applied to hovered new chips (it was declared but unused).
+- Styles: removed dead CSS (`--prepare-enter` arrow rules, `::-ms-clear`, `.vue-treeselect__menu-placeholder`,
+  empty menu transition rules, IE/iOS workarounds). The `str-replace` function and `retina` mixin are gone.
+
 ## 0.6.0
 
 - Locales are separate entry points: `import { ru } from '@eav93/vue3-treeselect/locales/ru'`.

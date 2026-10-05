@@ -45,6 +45,7 @@ export declare function useTreeselect(props: TreeselectProps, emit: TreeselectEm
     internalValue: import('vue').ComputedRef<NodeId[]>;
     hasValue: import('vue').ComputedRef<boolean>;
     menuRows: import('vue').ComputedRef<import('../types').MenuRow[]>;
+    getOptionRow: (node: NormalizedNode) => import('../types').MenuRow | null;
     visibleOptionIds: import('vue').ComputedRef<NodeId[]>;
     hasVisibleOptions: import('vue').ComputedRef<boolean>;
     showCountOnSearchComputed: import('vue').ComputedRef<boolean>;

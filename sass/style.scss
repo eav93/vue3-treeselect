@@ -3,13 +3,16 @@
  */
 
 @use "sass:color";
-@use "sass:math";
 @use "sass:string";
 @use "material-colors/dist/colors" as *;
 @use "sass-easing/easings" as *;
 
 /**
  * Variables
+ *
+ * The values are the compiled defaults. Colors and sizes can also be changed at runtime with CSS
+ * custom properties, see the "Theme" section below: `--vue-treeselect-<name>` for
+ * `$treeselect-<name>` (e.g. `--vue-treeselect-control-border-color`).
  */
 
 $treeselect-font-size: 1em !default;
@@ -22,6 +25,7 @@ $treeselect-wide-cell-width: 100% !default;
 $treeselect-icon-size: 12px !default;
 $treeselect-transition-duration: 200ms !default;
 $treeselect-transition-duration-slow: 400ms !default;
+// Deprecated, unused: the indentation is computed from the `--level` custom property of the rows
 $treeselect-max-level: 8 !default;
 
 $treeselect-control-height: 36px !default;
@@ -70,22 +74,11 @@ $treeselect-multi-input-font-size: $treeselect-multi-value-font-size !default;
 $treeselect-menu-bg: #fff !default;
 $treeselect-menu-padding-y: $treeselect-padding !default;
 $treeselect-menu-line-height: 180% !default;
-// `auto` lets the browser skip rendering of options outside the menu viewport (much faster
-// for large trees). It also clips content overflowing a row: set to `visible` if a custom
-// `option-label` slot renders something outside of the row.
+// `auto` lets the browser skip rendering of the option blocks outside the menu viewport (much
+// faster for large trees). It also clips content overflowing a block: set to `visible` if a custom
+// `option-label` slot renders something outside of the row (`--vue-treeselect-option-content-visibility`
+// at runtime).
 $treeselect-option-content-visibility: auto !default;
-// Estimated height of an option row (used by `contain-intrinsic-size`)
-@function treeselect-line-height-to-length($line-height) {
-  @if math.unit($line-height) == "%" {
-    @return math.div($line-height, 100%) * 1em;
-  }
-  @if math.is-unitless($line-height) {
-    @return $line-height * 1em;
-  }
-  @return $line-height;
-}
-
-$treeselect-option-intrinsic-height: treeselect-line-height-to-length($treeselect-menu-line-height) !default;
 $treeselect-menu-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06) !default;
 $treeselect-control-menu-divider-color: #f2f2f2 !default;
 
@@ -107,23 +100,26 @@ $treeselect-checkbox-color: $md-grey-300 !default;
 $treeselect-checkbox-color-highlight: $md-light-blue-600 !default;
 $treeselect-checkbox-border-color: $treeselect-checkbox-color !default;
 $treeselect-checkbox-bg: #fff !default;
+// Deprecated, unused: no image assets are needed anymore
 $treeselect-assets-path: "../assets" !default;
 $treeselect-checkbox-border-color-hover: $treeselect-checkbox-color-highlight !default;
 $treeselect-checkbox-bg-hover: $treeselect-checkbox-bg !default;
 $treeselect-checkbox-indeterminate-border-color: $treeselect-checkbox-color-highlight !default;
 $treeselect-checkbox-indeterminate-bg: $treeselect-checkbox-color-highlight !default;
-// PNG icons of vue-treeselect: set a path (e.g. "#{$treeselect-assets-path}/checkbox-checked.png")
-// to use them instead of the SVG icons
+// Deprecated, unused: the PNG icons of vue-treeselect are not supported anymore, use
+// `$treeselect-checkbox-checked-image` & co. for custom marks
 $treeselect-checkbox-indeterminate-icon: null !default;
 $treeselect-checkbox-indeterminate-border-color-hover: $treeselect-checkbox-color-highlight !default;
 $treeselect-checkbox-indeterminate-bg-hover: $treeselect-checkbox-color-highlight !default;
 $treeselect-checkbox-checked-border-color: $treeselect-checkbox-color-highlight !default;
 $treeselect-checkbox-checked-bg: $treeselect-checkbox-color-highlight !default;
+// Deprecated, unused
 $treeselect-checkbox-checked-icon: null !default;
 $treeselect-checkbox-checked-border-color-hover: $treeselect-checkbox-color-highlight !default;
 $treeselect-checkbox-checked-bg-hover: $treeselect-checkbox-color-highlight !default;
 $treeselect-checkbox-disabled-border-color: $treeselect-checkbox-border-color !default;
 $treeselect-checkbox-disabled-bg-color: color.scale($treeselect-checkbox-bg, $lightness: -3%) !default;
+// Deprecated, unused
 $treeselect-checkbox-disabled-indeterminate-icon: null !default;
 $treeselect-checkbox-disabled-checked-icon: null !default;
 $treeselect-option-label-color: inherit !default;
@@ -138,14 +134,15 @@ $treeselect-tip-color: $md-grey-600 !default;
 $treeselect-tip-font-size: $treeselect-font-size-sm !default;
 $treeselect-retry-text-color: $md-light-blue-600 !default;
 
-// Checkbox icon sizes (fixed values)
 // Size of the check / minus mark, centered in the checkbox (e.g. 100% to fill the checkbox)
 $treeselect-checkbox-icon-width: 10px !default;
 $treeselect-checkbox-icon-height: 8px !default;
-// Colors of the default SVG marks
+// Colors of the marks (`--vue-treeselect-checkbox-mark-color` / `-disabled` at runtime)
 $treeselect-checkbox-icon-color: #fff !default;
 $treeselect-checkbox-icon-color-disabled: #e1e1e1 !default;
-// Custom marks: any CSS image, e.g. url("data:image/svg+xml,..."). `null` uses the default SVG marks.
+// Custom marks: any CSS image used as a mask (the opaque parts are painted with the mark color),
+// e.g. url("data:image/svg+xml,..."). `null` uses the default SVG marks. The disabled variants
+// default to the same shapes in the disabled color.
 $treeselect-checkbox-checked-image: null !default;
 $treeselect-checkbox-indeterminate-image: null !default;
 $treeselect-checkbox-disabled-checked-image: null !default;
@@ -207,7 +204,7 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
 }
 
 @mixin row {
-  @include horizontal-padding($treeselect-padding);
+  @include horizontal-padding(var(--_ts-padding));
 
   display: table;
   table-layout: fixed;
@@ -221,7 +218,7 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
 
 @mixin wide-cell {
   @include cell;
-  @include horizontal-padding($treeselect-padding);
+  @include horizontal-padding(var(--_ts-padding));
   @include text-truncate;
 
   width: $treeselect-wide-cell-width;
@@ -230,35 +227,16 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
 @mixin narrow-cell {
   @include cell;
 
-  width: $treeselect-narrow-cell-width;
+  width: var(--_ts-narrow-cell-width);
   text-align: center;
   line-height: 0;
 }
 
-// Retina background images mixin
-@mixin retina($path, $cap: 2) {
-  $path-2x: str-replace($path, ".png", "@2x.png");
-
-  background-image: url("#{$path}");
-
-  @media (min-resolution: 1.5dppx) {
-    background-image: url("#{$path-2x}");
-  }
-
-  @if $cap >= 3 {
-    $path-3x: str-replace($path, ".png", "@3x.png");
-    @media (min-resolution: 288dpi) {
-      background-image: url("#{$path-3x}");
-    }
-  }
-}
-
-// String replace function for retina mixin
-@function str-replace($string, $search, $replace: "") {
+@function -treeselect-str-replace($string, $search, $replace: "") {
   $index: string.index($string, $search);
 
   @if $index {
-    @return string.slice($string, 1, $index - 1) + $replace + str-replace(string.slice($string, $index + string.length($search)), $search, $replace);
+    @return string.slice($string, 1, $index - 1) + $replace + -treeselect-str-replace(string.slice($string, $index + string.length($search)), $search, $replace);
   }
 
   @return $string;
@@ -268,30 +246,136 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
 @function treeselect-svg-url($svg) {
   $encoded: $svg;
   @each $char, $replacement in ("%": "%25", "<": "%3c", ">": "%3e", "#": "%23", "(": "%28", ")": "%29") {
-    $encoded: str-replace($encoded, $char, $replacement);
+    $encoded: -treeselect-str-replace($encoded, $char, $replacement);
   }
   @return url("data:image/svg+xml,#{$encoded}");
 }
 
-// Default check mark (drawn in a 10x8 box)
-@function treeselect-check-mark-svg($color) {
+// Default check mark (drawn in a 10x8 box). The marks are masks, so only the shape matters:
+// the color is `$treeselect-checkbox-icon-color`.
+@function treeselect-check-mark-svg($color: #000) {
   @return treeselect-svg-url("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 8'><path fill='none' stroke='#{$color}' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' d='M1.2 4.4 3.7 6.7 8.8 1.3'/></svg>");
 }
 
 // Default minus mark (drawn in a 10x8 box)
-@function treeselect-minus-mark-svg($color) {
+@function treeselect-minus-mark-svg($color: #000) {
   @return treeselect-svg-url("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 8'><path fill='none' stroke='#{$color}' stroke-width='2' stroke-linecap='round' d='M1.2 4h7.6'/></svg>");
 }
 
-// Background image of a checkbox mark: PNG icon (if configured), custom image or default SVG
-@mixin treeselect-checkbox-mark($png, $image, $default) {
-  @if $png {
-    @include retina($png, 3);
-  } @else if $image {
-    background-image: $image;
+@mixin treeselect-mask-image($image) {
+  -webkit-mask-image: $image;
+  mask-image: $image;
+}
+
+// Internal custom property `--_ts-<name>`: the public `--vue-treeselect-<name>` with the SCSS default
+@mixin -treeselect-var($name, $default) {
+  --_ts-#{$name}: var(--vue-treeselect-#{$name}, #{$default});
+}
+
+/**
+ * Theme
+ *
+ * Every color and size below can be changed at runtime, e.g.
+ * `.vue-treeselect { --vue-treeselect-control-border-color: red }`. Set them on an ancestor of both
+ * the component and `.vue-treeselect__portal-target` (e.g. `:root`) when `appendToBody` is used.
+ *
+ * (Plain selectors, not `:where()`: tools like PurgeCSS drop `:where()` rules even when the
+ * class is safelisted.)
+ */
+
+.vue-treeselect,
+.vue-treeselect__portal-target {
+  @include -treeselect-var(padding, $treeselect-padding);
+  @include -treeselect-var(narrow-cell-width, $treeselect-narrow-cell-width);
+  @include -treeselect-var(border-radius-lg, $treeselect-border-radius-lg);
+  @include -treeselect-var(border-radius-sm, $treeselect-border-radius-sm);
+  @include -treeselect-var(transition-duration, $treeselect-transition-duration);
+
+  @include -treeselect-var(control-height, $treeselect-control-height);
+  @include -treeselect-var(control-border-width, $treeselect-control-border-width);
+  @if $treeselect-control-inner-height == $treeselect-control-height - $treeselect-control-border-width * 2 {
+    --_ts-control-inner-height: calc(var(--_ts-control-height) - 2 * var(--_ts-control-border-width));
   } @else {
-    background-image: $default;
+    --_ts-control-inner-height: #{$treeselect-control-inner-height};
   }
+  @include -treeselect-var(control-border-radius, $treeselect-control-border-radius);
+  @include -treeselect-var(control-border-color, $treeselect-control-border-color);
+  @include -treeselect-var(control-border-color-hover, $treeselect-control-border-color-hover);
+  @include -treeselect-var(control-border-color-active, $treeselect-control-border-color-active);
+  @include -treeselect-var(control-border-color-focus, $treeselect-control-border-color-focus);
+  @include -treeselect-var(control-bg, $treeselect-control-bg);
+  @include -treeselect-var(control-bg-disabled, $treeselect-control-bg-disabled);
+  @include -treeselect-var(control-box-shadow-focus, $treeselect-control-box-shadow-focus);
+
+  @include -treeselect-var(placeholder-font-color, $treeselect-placeholder-font-color);
+  @include -treeselect-var(single-value-font-color, $treeselect-single-value-font-color);
+  @include -treeselect-var(single-value-font-color-focused, $treeselect-single-value-font-color-focused);
+  @include -treeselect-var(multi-value-font-color, $treeselect-multi-value-font-color);
+  @include -treeselect-var(multi-value-font-color-disabled, $treeselect-multi-value-font-color-disabled);
+  @include -treeselect-var(multi-value-item-bg, $treeselect-multi-value-item-bg);
+  @include -treeselect-var(multi-value-item-bg-new, $treeselect-multi-value-item-bg-new);
+  @include -treeselect-var(multi-value-item-bg-disabled, $treeselect-multi-value-item-bg-disabled);
+  @include -treeselect-var(multi-value-item-border-color, $treeselect-multi-value-item-border-color);
+  @include -treeselect-var(multi-value-item-font-color-control-disabled, $treeselect-multi-value-item-font-color-control-disabled);
+  @include -treeselect-var(multi-value-item-bg-control-disabled, $treeselect-multi-value-item-bg-control-disabled);
+  @include -treeselect-var(multi-value-item-border-color-control-disabled, $treeselect-multi-value-item-border-color-control-disabled);
+  @include -treeselect-var(multi-value-remove-color, $treeselect-multi-value-remove-color);
+  @include -treeselect-var(multi-value-remove-color-hover, $treeselect-multi-value-remove-color-hover);
+  @include -treeselect-var(multi-value-divider-color, $treeselect-multi-value-divider-color);
+  @include -treeselect-var(limit-tip-font-color, $treeselect-limit-tip-font-color);
+
+  @include -treeselect-var(menu-bg, $treeselect-menu-bg);
+  @include -treeselect-var(menu-line-height, $treeselect-menu-line-height);
+  @include -treeselect-var(menu-box-shadow, $treeselect-menu-box-shadow);
+  @include -treeselect-var(control-menu-divider-color, $treeselect-control-menu-divider-color);
+  @include -treeselect-var(arrow-size, $treeselect-arrow-size);
+  @include -treeselect-var(arrow-color, $treeselect-arrow-color);
+  @include -treeselect-var(arrow-color-hover, $treeselect-arrow-color-hover);
+  @include -treeselect-var(x-size, $treeselect-x-size);
+  @include -treeselect-var(x-color, $treeselect-x-color);
+  @include -treeselect-var(x-color-hover, $treeselect-x-color-hover);
+  @include -treeselect-var(option-bg-highlight, $treeselect-option-bg-highlight);
+  @include -treeselect-var(option-selected-bg, $treeselect-option-selected-bg);
+  @include -treeselect-var(option-selected-bg-hover, $treeselect-option-selected-bg-hover);
+  @include -treeselect-var(option-label-color, $treeselect-option-label-color);
+  @include -treeselect-var(option-label-color-disabled, $treeselect-option-label-color-disabled);
+
+  @include -treeselect-var(checkbox-size, $treeselect-checkbox-size);
+  @include -treeselect-var(checkbox-border-radius, $treeselect-checkbox-border-radius);
+  @include -treeselect-var(checkbox-icon-width, $treeselect-checkbox-icon-width);
+  @include -treeselect-var(checkbox-icon-height, $treeselect-checkbox-icon-height);
+  @include -treeselect-var(checkbox-mark-color, $treeselect-checkbox-icon-color);
+  @include -treeselect-var(checkbox-mark-color-disabled, $treeselect-checkbox-icon-color-disabled);
+  @include -treeselect-var(checkbox-border-color, $treeselect-checkbox-border-color);
+  @include -treeselect-var(checkbox-bg, $treeselect-checkbox-bg);
+  @include -treeselect-var(checkbox-border-color-hover, $treeselect-checkbox-border-color-hover);
+  @include -treeselect-var(checkbox-bg-hover, $treeselect-checkbox-bg-hover);
+  @include -treeselect-var(checkbox-indeterminate-border-color, $treeselect-checkbox-indeterminate-border-color);
+  @include -treeselect-var(checkbox-indeterminate-bg, $treeselect-checkbox-indeterminate-bg);
+  @include -treeselect-var(checkbox-indeterminate-border-color-hover, $treeselect-checkbox-indeterminate-border-color-hover);
+  @include -treeselect-var(checkbox-indeterminate-bg-hover, $treeselect-checkbox-indeterminate-bg-hover);
+  @include -treeselect-var(checkbox-checked-border-color, $treeselect-checkbox-checked-border-color);
+  @include -treeselect-var(checkbox-checked-bg, $treeselect-checkbox-checked-bg);
+  @include -treeselect-var(checkbox-checked-border-color-hover, $treeselect-checkbox-checked-border-color-hover);
+  @include -treeselect-var(checkbox-checked-bg-hover, $treeselect-checkbox-checked-bg-hover);
+  @include -treeselect-var(checkbox-disabled-border-color, $treeselect-checkbox-disabled-border-color);
+  @include -treeselect-var(checkbox-disabled-bg-color, $treeselect-checkbox-disabled-bg-color);
+
+  @include -treeselect-var(loader-color-dark, $treeselect-loader-color-dark);
+  @include -treeselect-var(loader-color-light, $treeselect-loader-color-light);
+  @include -treeselect-var(warning-icon-bg, $treeselect-warning-icon-bg);
+  @include -treeselect-var(error-icon-bg, $treeselect-error-icon-bg);
+  @include -treeselect-var(tip-color, $treeselect-tip-color);
+  @include -treeselect-var(retry-text-color, $treeselect-retry-text-color);
+}
+
+// Branch arrows point to the start of the row: `-1` mirrors them (`--vue-treeselect-arrow-direction`
+// can be set to any value in custom styles). The portal target is teleported to the body and
+// carries the `dir` of the component.
+[dir="rtl"] .vue-treeselect,
+[dir="rtl"] .vue-treeselect__portal-target,
+.vue-treeselect__portal-target[dir="rtl"] {
+  --vue-treeselect-arrow-direction: -1;
 }
 
 /**
@@ -340,7 +424,7 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
 .vue-treeselect__multi-value-item--transition {
   &-enter-active,
   &-leave-active {
-    transition-duration: $treeselect-transition-duration;
+    transition-duration: var(--_ts-transition-duration);
     transition-property: transform, opacity;
   }
 
@@ -354,26 +438,16 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
     position: absolute;
   }
 
-  &-enter,
+  &-enter-from,
   &-leave-to {
     transform: scale(0.7);
     opacity: 0;
   }
 
   &-move {
-    transition: $treeselect-transition-duration transform $easeOutQuart;
-  }
-}
-
-.vue-treeselect__menu--transition {
-  &-enter-active,
-  &-leave-active {
-    // to be overriden
-  }
-
-  &-enter,
-  &-leave-to {
-    // to be overriden
+    transition-duration: var(--_ts-transition-duration);
+    transition-property: transform;
+    transition-timing-function: $easeOutQuart;
   }
 }
 
@@ -384,11 +458,7 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
 
 .vue-treeselect {
   position: relative;
-  text-align: left;
-
-  [dir="rtl"] & {
-    text-align: right;
-  }
+  text-align: start;
 
   div,
   span {
@@ -408,29 +478,29 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
 .vue-treeselect__control {
   @include row;
 
-  height: $treeselect-control-height;
-  border: $treeselect-control-border-width solid $treeselect-control-border-color;
-  border-radius: $treeselect-control-border-radius;
-  background: $treeselect-control-bg;
-  transition-duration: $treeselect-transition-duration;
+  height: var(--_ts-control-height);
+  border: var(--_ts-control-border-width) solid var(--_ts-control-border-color);
+  border-radius: var(--_ts-control-border-radius);
+  background: var(--_ts-control-bg);
+  transition-duration: var(--_ts-transition-duration);
   transition-property: border-color, box-shadow, width, height, background-color, opacity;
   transition-timing-function: $easeOutCubic;
 
   .vue-treeselect:not(.vue-treeselect--disabled):not(.vue-treeselect--focused) &:hover {
-    border-color: $treeselect-control-border-color-hover;
+    border-color: var(--_ts-control-border-color-hover);
   }
 
   .vue-treeselect--focused:not(.vue-treeselect--open) & {
-    border-color: $treeselect-control-border-color-focus;
-    box-shadow: $treeselect-control-box-shadow-focus;
+    border-color: var(--_ts-control-border-color-focus);
+    box-shadow: var(--_ts-control-box-shadow-focus);
   }
 
   .vue-treeselect--disabled & {
-    background-color: $treeselect-control-bg-disabled;
+    background-color: var(--_ts-control-bg-disabled);
   }
 
   .vue-treeselect--open & {
-    border-color: $treeselect-control-border-color-active;
+    border-color: var(--_ts-control-border-color-active);
   }
 
   .vue-treeselect--open.vue-treeselect--open-below & {
@@ -464,34 +534,34 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
   display: inline-block;
 
   .vue-treeselect--has-value & {
-    margin-bottom: $treeselect-padding;
+    margin-bottom: var(--_ts-padding);
   }
 }
 
 .vue-treeselect__placeholder,
 .vue-treeselect__single-value {
   @include text-truncate;
-  @include horizontal-padding($treeselect-padding);
+  @include horizontal-padding(var(--_ts-padding));
 
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  line-height: $treeselect-control-inner-height;
+  line-height: var(--_ts-control-inner-height);
   user-select: none;
   pointer-events: none;
 }
 
 .vue-treeselect__placeholder {
-  color: $treeselect-placeholder-font-color;
+  color: var(--_ts-placeholder-font-color);
 }
 
 .vue-treeselect__single-value {
-  color: $treeselect-single-value-font-color;
+  color: var(--_ts-single-value-font-color);
 
   .vue-treeselect--focused.vue-treeselect--searchable & {
-    color: $treeselect-single-value-font-color-focused;
+    color: var(--_ts-single-value-font-color-focused);
   }
 
   .vue-treeselect--disabled & {
@@ -502,26 +572,21 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
 
 .vue-treeselect__multi-value-item-container {
   display: inline-block;
-  padding-top: $treeselect-padding;
-  padding-right: $treeselect-padding;
+  padding-top: var(--_ts-padding);
+  padding-inline-end: var(--_ts-padding);
   vertical-align: top;
-
-  [dir="rtl"] & {
-    padding-right: 0;
-    padding-left: $treeselect-padding;
-  }
 }
 
 .vue-treeselect__multi-value-item {
   @include clickable;
 
   display: inline-table;
-  background: $treeselect-multi-value-item-bg;
+  background: var(--_ts-multi-value-item-bg);
   // Table elements do not have margin, so we set at the container element.
   padding: $treeselect-multi-value-margin-y $treeselect-multi-value-margin-x;
-  border: $treeselect-multi-value-item-border-width solid $treeselect-multi-value-item-border-color;
-  border-radius: $treeselect-border-radius-sm;
-  color: $treeselect-multi-value-font-color;
+  border: $treeselect-multi-value-item-border-width solid var(--_ts-multi-value-item-border-color);
+  border-radius: var(--_ts-border-radius-sm);
+  color: var(--_ts-multi-value-font-color);
   font-size: $treeselect-multi-value-font-size;
   vertical-align: top; // stylelint-disable-line plugin/declaration-block-no-ignored-properties
 
@@ -530,30 +595,30 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
   @if $treeselect-multi-value-item-bg-hover != $treeselect-multi-value-item-bg or
     $treeselect-multi-value-font-color-hover != $treeselect-multi-value-font-color {
     .vue-treeselect:not(.vue-treeselect--disabled) &:not(.vue-treeselect__multi-value-item-disabled):not(.vue-treeselect__multi-value-item-new):hover {
-      background: $treeselect-multi-value-item-bg-hover;
-      color: $treeselect-multi-value-font-color-hover;
+      background: var(--vue-treeselect-multi-value-item-bg-hover, #{$treeselect-multi-value-item-bg-hover});
+      color: var(--vue-treeselect-multi-value-font-color-hover, #{$treeselect-multi-value-font-color-hover});
     }
   }
 
   &.vue-treeselect__multi-value-item-disabled {
     @include reset-cursor;
 
-    background: $treeselect-multi-value-item-bg-disabled;
-    color: $treeselect-multi-value-font-color-disabled;
+    background: var(--_ts-multi-value-item-bg-disabled);
+    color: var(--_ts-multi-value-font-color-disabled);
   }
 
   .vue-treeselect--disabled & {
     @include reset-cursor;
 
-    background: $treeselect-multi-value-item-bg-control-disabled;
-    border-color: $treeselect-multi-value-item-border-color-control-disabled;
-    color: $treeselect-multi-value-item-font-color-control-disabled;
+    background: var(--_ts-multi-value-item-bg-control-disabled);
+    border-color: var(--_ts-multi-value-item-border-color-control-disabled);
+    color: var(--_ts-multi-value-item-font-color-control-disabled);
   }
 
   &.vue-treeselect__multi-value-item-new {
-    background: $treeselect-multi-value-item-bg-new;
+    background: var(--_ts-multi-value-item-bg-new);
     &:hover {
-      background: $treeselect-multi-value-item-bg-new;
+      background: var(--vue-treeselect-multi-value-item-bg-new-hover, #{$treeselect-multi-value-item-bg-new-hover});
     }
   }
 }
@@ -566,18 +631,12 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
 }
 
 .vue-treeselect__value-remove {
-  color: $treeselect-multi-value-remove-color;
-  padding-left: $treeselect-multi-value-padding-x;
-  border-left: 1px solid $treeselect-multi-value-divider-color;
+  color: var(--_ts-multi-value-remove-color);
+  border-inline-start: 1px solid var(--_ts-multi-value-divider-color);
   line-height: 0;
 
-  [dir="rtl"] & {
-    border-left: 0 none;
-    border-right: 1px solid $treeselect-multi-value-divider-color;
-  }
-
   .vue-treeselect__multi-value-item:hover & {
-    color: $treeselect-multi-value-remove-color-hover;
+    color: var(--_ts-multi-value-remove-color-hover);
   }
 
   .vue-treeselect--disabled &,
@@ -592,21 +651,15 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
 }
 
 .vue-treeselect__multi-value-label {
-  padding-right: $treeselect-multi-value-padding-x;
   white-space: pre-line;
   user-select: none;
 }
 
 .vue-treeselect__limit-tip {
   display: inline-block;
-  padding-top: $treeselect-padding;
-  padding-right: $treeselect-padding;
+  padding-top: var(--_ts-padding);
+  padding-inline-end: var(--_ts-padding);
   vertical-align: top;
-
-  [dir="rtl"] & {
-    padding-right: 0;
-    padding-left: $treeselect-padding;
-  }
 }
 
 .vue-treeselect__limit-tip-text {
@@ -615,7 +668,7 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
   display: block;
   margin: $treeselect-multi-value-margin-y $treeselect-multi-value-margin-x;
   padding: ($treeselect-multi-value-padding-y + $treeselect-multi-value-item-border-width) 0;
-  color: $treeselect-limit-tip-font-color;
+  color: var(--_ts-limit-tip-font-color);
   font-size: $treeselect-limit-tip-font-size;
   font-weight: $treeselect-limit-tip-font-weight;
 }
@@ -637,17 +690,12 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
   }
 
   .vue-treeselect--searchable & {
-    @include horizontal-padding($treeselect-padding);
+    @include horizontal-padding(var(--_ts-padding));
   }
 
   .vue-treeselect--searchable.vue-treeselect--multi.vue-treeselect--has-value & {
-    padding-top: $treeselect-padding;
-    padding-left: 0;
-
-    [dir="rtl"] & {
-      padding-left: $treeselect-padding;
-      padding-right: 0;
-    }
+    padding-top: var(--_ts-padding);
+    padding-inline-start: 0;
   }
 
   .vue-treeselect--disabled & {
@@ -674,10 +722,6 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
   background: none transparent;
   line-height: 1;
   vertical-align: middle;
-
-  &::-ms-clear {
-    display: none;
-  }
 
   .vue-treeselect--single & {
     width: 100%;
@@ -708,17 +752,19 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
   @include narrow-cell;
   @include clickable;
 
-  color: $treeselect-x-color;
-  animation: $treeselect-transition-duration vue-treeselect-animation-fade-in $easeOutCirc;
+  color: var(--_ts-x-color);
+  animation-name: vue-treeselect-animation-fade-in;
+  animation-duration: var(--_ts-transition-duration);
+  animation-timing-function: $easeOutCirc;
 
   &:hover {
-    color: $treeselect-x-color-hover;
+    color: var(--_ts-x-color-hover);
   }
 }
 
 .vue-treeselect__x {
-  width: $treeselect-x-size;
-  height: $treeselect-x-size;
+  width: var(--_ts-x-size);
+  height: var(--_ts-x-size);
 }
 
 .vue-treeselect__control-arrow-container {
@@ -731,12 +777,12 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
 }
 
 .vue-treeselect__control-arrow {
-  width: $treeselect-arrow-size;
-  height: $treeselect-arrow-size;
-  color: $treeselect-arrow-color;
+  width: var(--_ts-arrow-size);
+  height: var(--_ts-arrow-size);
+  color: var(--_ts-arrow-color);
 
   .vue-treeselect:not(.vue-treeselect--disabled) .vue-treeselect__control-arrow-container:hover & {
-    color: $treeselect-arrow-color-hover;
+    color: var(--_ts-arrow-color-hover);
   }
 
   .vue-treeselect--disabled & {
@@ -758,7 +804,6 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
   left: 0;
   width: 100%;
   overflow: visible;
-  transition: 0s;
 
   .vue-treeselect--open-below:not(.vue-treeselect--append-to-body) & {
     top: 100%;
@@ -777,82 +822,54 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
   position: absolute;
   overflow-x: hidden;
   overflow-y: auto;
-  // IE9 does not properly handle `width: 100%` with scrollbar when `box-sizing: border-box`
-  width: auto;
-  border: 1px solid $treeselect-control-border-color-active;
-  background: $treeselect-menu-bg;
-  line-height: $treeselect-menu-line-height;
-  // https://css-tricks.com/snippets/css/momentum-scrolling-on-ios-overflow-elements/
-  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--_ts-control-border-color-active);
+  background: var(--_ts-menu-bg);
+  line-height: var(--_ts-menu-line-height);
 
   .vue-treeselect--open-below & {
-    @include border-radius-bottom($treeselect-border-radius-lg);
+    @include border-radius-bottom(var(--_ts-border-radius-lg));
 
     top: 0;
-    margin-top: (-$treeselect-control-border-width);
-    border-top-color: $treeselect-control-menu-divider-color;
-    box-shadow: $treeselect-menu-box-shadow;
+    margin-top: calc(-1 * var(--_ts-control-border-width));
+    border-top-color: var(--_ts-control-menu-divider-color);
+    box-shadow: var(--_ts-menu-box-shadow);
   }
 
   .vue-treeselect--open-above & {
-    @include border-radius-top($treeselect-border-radius-lg);
+    @include border-radius-top(var(--_ts-border-radius-lg));
 
     bottom: 0;
-    margin-bottom: (-$treeselect-control-border-width);
-    border-bottom-color: $treeselect-control-menu-divider-color;
+    margin-bottom: calc(-1 * var(--_ts-control-border-width));
+    border-bottom-color: var(--_ts-control-menu-divider-color);
   }
 }
 
-// Generate level indentations
-@for $i from 0 through $treeselect-max-level {
-  .vue-treeselect__indent-level-#{$i} {
-    .vue-treeselect__option {
-      padding-left: $treeselect-padding + $i * $treeselect-narrow-cell-width;
-
-      [dir="rtl"] & {
-        padding-left: $treeselect-padding;
-        padding-right: $treeselect-padding + $i * $treeselect-narrow-cell-width;
-      }
-    }
-
-    .vue-treeselect__tip {
-      padding-left: $treeselect-padding + ($i + 1) * $treeselect-narrow-cell-width;
-
-      [dir="rtl"] & {
-        padding-left: $treeselect-padding;
-        padding-right: $treeselect-padding + ($i + 1) * $treeselect-narrow-cell-width;
-      }
-    }
-  }
+// Blocks of rows: the browser skips style & layout of blocks outside the visible part of the
+// menu (the component sets `contain-intrinsic-size` of each block inline)
+.vue-treeselect__list-chunk {
+  content-visibility: var(--vue-treeselect-option-content-visibility, #{$treeselect-option-content-visibility});
 }
 
+// Rows (`.vue-treeselect__list-item`) set `--level`, the nesting depth of the option
 .vue-treeselect__option {
-  @include horizontal-padding($treeselect-padding);
-
-  // Flex instead of `display: table`: size containment (and thus `content-visibility`)
-  // doesn't apply to tables
+  padding-inline-start: calc(var(--_ts-padding) + var(--level, 0) * var(--_ts-narrow-cell-width));
+  padding-inline-end: var(--_ts-padding);
   display: flex;
   align-items: stretch;
-  // Let the browser skip style & layout of rows outside the visible part of the menu.
-  // The intrinsic size is only an estimate until a row has been rendered once.
-  content-visibility: $treeselect-option-content-visibility;
-  @if $treeselect-option-content-visibility == auto {
-    contain-intrinsic-size: auto $treeselect-option-intrinsic-height;
-  }
 }
 
 .vue-treeselect__option--highlight {
-  background: $treeselect-option-bg-highlight;
+  background: var(--_ts-option-bg-highlight);
 }
 
 .vue-treeselect__option--selected {
   // note that these should override `.vue-treeselect__option--highlight`
   .vue-treeselect--single & {
-    background: $treeselect-option-selected-bg;
+    background: var(--_ts-option-selected-bg);
     font-weight: 600;
 
     &:hover {
-      background: $treeselect-option-selected-bg-hover;
+      background: var(--_ts-option-selected-bg-hover);
     }
   }
 }
@@ -874,37 +891,24 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
 
 .vue-treeselect__option-arrow {
   display: inline-block;
-  width: $treeselect-arrow-size;
-  height: $treeselect-arrow-size;
-  color: $treeselect-arrow-color;
+  width: var(--_ts-arrow-size);
+  height: var(--_ts-arrow-size);
+  color: var(--_ts-arrow-color);
   vertical-align: middle;
-  transition: $treeselect-transition-duration transform $treeselect-arrow-transition-timing-function;
-  transform: rotateZ(-90deg);
-
-  [dir="rtl"] & {
-    transform: rotateZ(90deg);
-  }
+  transition-duration: var(--_ts-transition-duration);
+  transition-property: transform;
+  transition-timing-function: $treeselect-arrow-transition-timing-function;
+  // Collapsed: points to the start of the row (mirrored in RTL, see `--vue-treeselect-arrow-direction`)
+  transform: rotate(calc(var(--vue-treeselect-arrow-direction, 1) * -90deg));
 
   .vue-treeselect__option-arrow-container:hover &,
   .vue-treeselect--branch-nodes-disabled .vue-treeselect__option:hover & {
-    color: $treeselect-arrow-color-hover;
+    color: var(--_ts-arrow-color-hover);
   }
 }
 
 .vue-treeselect__option-arrow--rotated {
-  transform: rotateZ(0);
-
-  [dir="rtl"] & {
-    transform: rotateZ(0);
-  }
-
-  &.vue-treeselect__option-arrow--prepare-enter {
-    transform: rotateZ(-90deg) !important; // stylelint-disable-line declaration-no-important
-
-    [dir="rtl"] & {
-      transform: rotateZ(90deg) !important; // stylelint-disable-line declaration-no-important
-    }
-  }
+  transform: rotate(0);
 }
 
 .vue-treeselect__label-container {
@@ -916,19 +920,19 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
   min-width: 0;
   width: 100%;
   table-layout: fixed;
-  color: $treeselect-option-label-color;
+  color: var(--_ts-option-label-color);
 
   .vue-treeselect__option--disabled & {
     @include forbidden;
 
-    color: $treeselect-option-label-color-disabled;
+    color: var(--_ts-option-label-color-disabled);
   }
 }
 
 .vue-treeselect__checkbox-container {
   display: table-cell;
-  width: $treeselect-narrow-cell-width;
-  min-width: $treeselect-narrow-cell-width;
+  width: var(--_ts-narrow-cell-width);
+  min-width: var(--_ts-narrow-cell-width);
   height: 100%;
   text-align: center;
   vertical-align: middle;
@@ -937,15 +941,18 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
 .vue-treeselect__checkbox {
   display: block;
   margin: auto;
-  width: $treeselect-checkbox-size;
-  height: $treeselect-checkbox-size;
+  width: var(--_ts-checkbox-size);
+  height: var(--_ts-checkbox-size);
   border-width: 1px;
   border-style: solid;
-  border-radius: $treeselect-checkbox-border-radius;
+  border-radius: var(--_ts-checkbox-border-radius);
   position: relative;
-  transition: $treeselect-transition-duration all $easeOutCirc;
+  transition-duration: var(--_ts-transition-duration);
+  transition-property: border-color, background-color;
+  transition-timing-function: $easeOutCirc;
 }
 
+// The marks are masks painted with the mark color
 .vue-treeselect__check-mark,
 .vue-treeselect__minus-mark {
   display: block;
@@ -956,41 +963,41 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
   bottom: 0;
   left: 0;
   margin: auto;
-  width: $treeselect-checkbox-icon-width;
-  height: $treeselect-checkbox-icon-height;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: $treeselect-checkbox-icon-width $treeselect-checkbox-icon-height;
+  width: var(--_ts-checkbox-icon-width);
+  height: var(--_ts-checkbox-icon-height);
+  background-color: var(--_ts-checkbox-mark-color);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
   opacity: 0;
-  transition: $treeselect-transition-duration all ease;
+  transition-duration: var(--_ts-transition-duration);
+  transition-property: opacity, transform;
+  transition-timing-function: ease;
+
+  .vue-treeselect__checkbox--disabled & {
+    background-color: var(--_ts-checkbox-mark-color-disabled);
+  }
 }
 
 .vue-treeselect__minus-mark {
-  @include treeselect-checkbox-mark(
-    $treeselect-checkbox-indeterminate-icon,
-    $treeselect-checkbox-indeterminate-image,
-    treeselect-minus-mark-svg($treeselect-checkbox-icon-color)
-  );
+  @include treeselect-mask-image($treeselect-checkbox-indeterminate-image or treeselect-minus-mark-svg());
 
   .vue-treeselect__checkbox--indeterminate > & {
     opacity: 1;
   }
 
-  .vue-treeselect__checkbox--disabled & {
-    @include treeselect-checkbox-mark(
-      $treeselect-checkbox-disabled-indeterminate-icon,
-      $treeselect-checkbox-disabled-indeterminate-image,
-      treeselect-minus-mark-svg($treeselect-checkbox-icon-color-disabled)
-    );
+  @if $treeselect-checkbox-disabled-indeterminate-image {
+    .vue-treeselect__checkbox--disabled & {
+      @include treeselect-mask-image($treeselect-checkbox-disabled-indeterminate-image);
+    }
   }
 }
 
 .vue-treeselect__check-mark {
-  @include treeselect-checkbox-mark(
-    $treeselect-checkbox-checked-icon,
-    $treeselect-checkbox-checked-image,
-    treeselect-check-mark-svg($treeselect-checkbox-icon-color)
-  );
+  @include treeselect-mask-image($treeselect-checkbox-checked-image or treeselect-check-mark-svg());
   // Grows from a 1px high line
   transform: scaleY(0.125);
 
@@ -999,52 +1006,50 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
     transform: scaleY(1);
   }
 
-  .vue-treeselect__checkbox--disabled & {
-    @include treeselect-checkbox-mark(
-      $treeselect-checkbox-disabled-checked-icon,
-      $treeselect-checkbox-disabled-checked-image,
-      treeselect-check-mark-svg($treeselect-checkbox-icon-color-disabled)
-    );
+  @if $treeselect-checkbox-disabled-checked-image {
+    .vue-treeselect__checkbox--disabled & {
+      @include treeselect-mask-image($treeselect-checkbox-disabled-checked-image);
+    }
   }
 }
 
 .vue-treeselect__checkbox--unchecked {
-  border-color: $treeselect-checkbox-border-color;
-  background: $treeselect-checkbox-bg;
+  border-color: var(--_ts-checkbox-border-color);
+  background: var(--_ts-checkbox-bg);
 
   .vue-treeselect__label-container:hover & {
-    border-color: $treeselect-checkbox-border-color-hover;
-    background: $treeselect-checkbox-bg-hover;
+    border-color: var(--_ts-checkbox-border-color-hover);
+    background: var(--_ts-checkbox-bg-hover);
   }
 }
 
 .vue-treeselect__checkbox--indeterminate {
-  border-color: $treeselect-checkbox-indeterminate-border-color;
-  background: $treeselect-checkbox-indeterminate-bg;
+  border-color: var(--_ts-checkbox-indeterminate-border-color);
+  background: var(--_ts-checkbox-indeterminate-bg);
 
   .vue-treeselect__label-container:hover & {
-    border-color: $treeselect-checkbox-indeterminate-border-color-hover;
-    background: $treeselect-checkbox-indeterminate-bg-hover;
+    border-color: var(--_ts-checkbox-indeterminate-border-color-hover);
+    background: var(--_ts-checkbox-indeterminate-bg-hover);
   }
 }
 
 .vue-treeselect__checkbox--checked {
-  border-color: $treeselect-checkbox-checked-border-color;
-  background: $treeselect-checkbox-checked-bg;
+  border-color: var(--_ts-checkbox-checked-border-color);
+  background: var(--_ts-checkbox-checked-bg);
 
   .vue-treeselect__label-container:hover & {
-    border-color: $treeselect-checkbox-checked-border-color-hover;
-    background: $treeselect-checkbox-checked-bg-hover;
+    border-color: var(--_ts-checkbox-checked-border-color-hover);
+    background: var(--_ts-checkbox-checked-bg-hover);
   }
 }
 
 .vue-treeselect__checkbox--disabled {
-  border-color: $treeselect-checkbox-disabled-border-color;
-  background-color: $treeselect-checkbox-disabled-bg-color;
+  border-color: var(--_ts-checkbox-disabled-border-color);
+  background-color: var(--_ts-checkbox-disabled-bg-color);
 
   .vue-treeselect__label-container:hover & {
-    border-color: $treeselect-checkbox-disabled-border-color;
-    background-color: $treeselect-checkbox-disabled-bg-color;
+    border-color: var(--_ts-checkbox-disabled-border-color);
+    background-color: var(--_ts-checkbox-disabled-bg-color);
   }
 }
 
@@ -1053,32 +1058,27 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
   @include text-truncate;
 
   display: table-cell;
-  padding-left: $treeselect-padding;
+  padding-inline-start: var(--_ts-padding);
   max-width: 100%;
   vertical-align: middle;
   cursor: inherit; // override user agent style
-
-  [dir="rtl"] & {
-    padding-left: 0;
-    padding-right: $treeselect-padding;
-  }
 }
 
 .vue-treeselect__count {
-  margin-left: $treeselect-padding;
+  margin-inline-start: var(--_ts-padding);
   font-weight: 400;
   opacity: 0.6;
-
-  [dir="rtl"] & {
-    margin-left: 0;
-    margin-right: $treeselect-padding;
-  }
 }
 
 .vue-treeselect__tip {
   @include row;
 
-  color: $treeselect-tip-color;
+  color: var(--_ts-tip-color);
+}
+
+// Tips of a branch (loading, no children, error) are indented like its children
+.vue-treeselect__list-item > .vue-treeselect__tip {
+  padding-inline-start: calc(var(--_ts-padding) + (var(--level, 0) + 1) * var(--_ts-narrow-cell-width));
 }
 
 .vue-treeselect__tip-text {
@@ -1091,16 +1091,11 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
   .vue-treeselect__error-tip & {
     @include clickable;
 
-    margin-left: $treeselect-padding;
+    margin-inline-start: var(--_ts-padding);
     font-style: normal;
     font-weight: 600;
     text-decoration: none;
-    color: $treeselect-retry-text-color;
-
-    [dir="rtl"] & {
-      margin-left: 0;
-      margin-right: $treeselect-padding;
-    }
+    color: var(--_ts-retry-text-color);
   }
 }
 
@@ -1108,12 +1103,7 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
   @include narrow-cell;
 
   .vue-treeselect--single & {
-    padding-left: $treeselect-padding;
-
-    [dir="rtl"] & {
-      padding-left: 0;
-      padding-right: $treeselect-padding;
-    }
+    padding-inline-start: var(--_ts-padding);
   }
 }
 
@@ -1124,7 +1114,7 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
   position: relative;
   width: $treeselect-icon-size;
   height: $treeselect-icon-size;
-  background: $treeselect-warning-icon-bg;
+  background: var(--_ts-warning-icon-bg);
 
   &::after {
     display: block;
@@ -1149,7 +1139,7 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
   position: relative;
   width: $treeselect-icon-size;
   height: $treeselect-icon-size;
-  background: $treeselect-error-icon-bg;
+  background: var(--_ts-error-icon-bg);
 
   &::before,
   &::after {
@@ -1200,11 +1190,11 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
   }
 
   &::before {
-    background: $treeselect-loader-color-dark;
+    background: var(--_ts-loader-color-dark);
   }
 
   &::after {
-    background: $treeselect-loader-color-light;
+    background: var(--_ts-loader-color-light);
     animation-delay: -($treeselect-loader-animation-duration * 0.5);
   }
 }
@@ -1213,10 +1203,6 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
 /**
  * Menu Portal
  */
-
-.vue-treeselect__menu-placeholder {
-  display: none;
-}
 
 .vue-treeselect__portal-target {
   position: absolute;

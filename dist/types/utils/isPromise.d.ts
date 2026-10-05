@@ -1,1 +1,1 @@
-export { default as isPromise } from 'is-promise';
+export declare function isPromise(value: any): value is Promise<any>;

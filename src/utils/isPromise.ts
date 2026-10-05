@@ -1,1 +1,3 @@
-export { default as isPromise } from 'is-promise'
+export function isPromise(value: any): value is Promise<any> {
+  return !!value && typeof value.then === 'function'
+}

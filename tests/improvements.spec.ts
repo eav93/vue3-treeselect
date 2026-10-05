@@ -301,6 +301,54 @@ describe('progressive rendering', () => {
   })
 })
 
+describe('row blocks', () => {
+  const rendered = () => document.querySelectorAll('.vue-treeselect__option').length
+  const chunks = () => document.querySelectorAll('.vue-treeselect__list-chunk')
+  const tree = () => Array.from({ length: 4 }, (_, i) => ({
+    id: `r${i}`,
+    label: `root ${i}`,
+    children: Array.from({ length: 60 }, (_, j) => ({ id: `r${i}-${j}`, label: `child ${i}-${j}` })),
+  }))
+
+  it('renders rows in blocks with an intrinsic size and the --level property', async () => {
+    const w = mountTs({ options: tree(), defaultExpandLevel: 1, optionHeight: 20 })
+    await openMenu(w)
+    for (let i = 0; i < 100 && rendered() < 244; i++) await sleep(10)
+    expect(rendered()).toBe(244)
+    expect(chunks().length).toBeGreaterThan(1)
+    const first = chunks()[0] as HTMLElement
+    expect(first.style.containIntrinsicSize).toBe(`auto ${first.children.length * 20}px`)
+    expect((findOption('r0-0')!.parentElement as HTMLElement).style.getPropertyValue('--level')).toBe('1')
+  })
+
+  it('keeps unchanged blocks when a branch is collapsed and expanded', async () => {
+    const w = mountTs({ options: tree(), defaultExpandLevel: 1 })
+    await openMenu(w)
+    for (let i = 0; i < 100 && rendered() < 244; i++) await sleep(10)
+    const before = [...chunks()]
+    const lastBlock = before[before.length - 1]
+    ;(w.vm as any).toggleExpanded((w.vm as any).getNode('r0'))
+    await settle()
+    expect(rendered()).toBe(184)
+    // The last block only holds rows of other branches: same DOM element, untouched
+    expect([...chunks()]).toContain(lastBlock)
+    ;(w.vm as any).toggleExpanded((w.vm as any).getNode('r0'))
+    await settle()
+    expect(rendered()).toBe(244)
+    expect([...chunks()]).toContain(lastBlock)
+    expect([...document.querySelectorAll('.vue-treeselect__option')].map(el => el.getAttribute('data-id')).slice(0, 3))
+      .toEqual(['r0', 'r0-0', 'r0-1'])
+  })
+
+  it('has no comment or empty text nodes between rows', async () => {
+    const w = mountTs({ options: tree().slice(0, 1), defaultExpandLevel: 1 })
+    await openMenu(w)
+    const chunk = chunks()[0]
+    expect([...chunk.childNodes].every(n => n.nodeType === 1)).toBe(true)
+    expect(findOption('r0-0')!.querySelector('.vue-treeselect__label-container')!.childNodes.length).toBe(1)
+  })
+})
+
 describe('input', () => {
   it('does not search while an IME composition is in progress', async () => {
     const w = mountTs({ options: [{ id: 'a', label: '中文' }, { id: 'b', label: 'other' }] })

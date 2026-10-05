@@ -1,1 +1,1 @@
-export declare const warning: (...args: any[]) => void;
+export declare const warning: (checker: () => boolean, complainer: () => string) => void;

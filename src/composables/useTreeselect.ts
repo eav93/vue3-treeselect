@@ -1,4 +1,4 @@
-import { computed, isReactive, onActivated, onDeactivated, onMounted, onUnmounted, reactive, shallowReactive, watch } from 'vue'
+import { computed, onActivated, onDeactivated, onMounted, onUnmounted, reactive, shallowReactive, toRaw, watch } from 'vue'
 import { createMap, quickDiff, warning } from '@/utils'
 import { NO_PARENT_NODE } from '@/constants'
 import {
@@ -235,13 +235,11 @@ export function useTreeselect(
   // ============================================================================
 
   /**
-   * Children of a node have been loaded into the raw options.
-   * Reactive options passed to the component are re-initialized by the deep
-   * `options` watcher. Non-reactive options (plain arrays, `shallowRef`, `markRaw`)
-   * and async search results need an explicit re-initialization.
+   * Children of a node have been loaded into the raw options (`node.raw` is the raw
+   * object even for reactive options, so the `options` watcher doesn't see the change).
    */
   const handleChildrenLoaded = (): void => {
-    if (props.async || !isReactive(props.options)) initialize()
+    initialize()
   }
 
   const asyncOptions = useAsyncOptions(
@@ -301,9 +299,11 @@ export function useTreeselect(
    * (Re)initialize the normalized tree from the options
    */
   const initialize = (): void => {
-    const options = props.async
+    // Raw objects: reading through reactive proxies makes normalization 2x slower,
+    // and the nodes keep references to the user's own objects
+    const options = toRaw(props.async
       ? getRemoteSearchEntry().options
-      : props.options
+      : props.options)
 
     if (Array.isArray(options)) {
       // In case we are re-initializing options, keep the old state tree temporarily
@@ -540,6 +540,7 @@ export function useTreeselect(
     internalValue,
     hasValue,
     menuRows: menu.menuRows,
+    getOptionRow: menu.getOptionRow,
     visibleOptionIds: menu.visibleOptionIds,
     hasVisibleOptions: menu.hasVisibleOptions,
     showCountOnSearchComputed,

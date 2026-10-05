@@ -1,6 +1,6 @@
 {
   "name": "@eav93/vue3-treeselect",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Tree select component with nested options for Vue 3.5+ (TypeScript). A fork of vue-treeselect with fixes and performance improvements for large trees.",
   "main": "./dist/vue3-treeselect.js",
   "module": "./dist/vue3-treeselect.mjs",
@@ -22,7 +22,6 @@
   "style": "./dist/vue3-treeselect.css",
   "sass": "./sass/style.scss",
   "files": [
-    "assets",
     "sass",
     "dist",
     "CHANGELOG.md"
@@ -70,14 +69,11 @@
     "vue": "^3.5.0"
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.25",
     "@types/node": "^25.9.9",
     "@vitejs/plugin-vue": "^6.0.9",
     "@vue/test-utils": "^2.5.1",
     "fuzzysearch": "1.0.3",
     "happy-dom": "^20.14.5",
-    "is-promise": "4.0.0",
-    "lodash": "^4.18.1",
     "playwright-core": "^1.63.0",
     "sass": "^1.105.1",
     "typescript": "^6.0.3",
@@ -85,8 +81,7 @@
     "vite-plugin-dts": "^5.1.2",
     "vitest": "^5.0.3",
     "vue": "^3.5.43",
-    "vue-tsc": "^3.3.12",
-    "watch-size": "2.0.0"
+    "vue-tsc": "^3.3.12"
   },
   "browserslist": [
     "Android >= 6.0",

@@ -27,6 +27,7 @@ export declare function useMenu(options: {
     setScrollToOptionHandler: (handler: ((node: NormalizedNode) => void) | null) => void;
     shouldOptionBeIncludedInSearchResult: (node: NormalizedNode) => boolean;
     menuRows: import('vue').ComputedRef<MenuRow[]>;
+    getOptionRow: (node: NormalizedNode) => MenuRow | null;
     visibleOptionIds: import('vue').ComputedRef<NodeId[]>;
     hasVisibleOptions: import('vue').ComputedRef<boolean>;
     shouldExpand: (node: NormalizedNode) => boolean;

@@ -1,5 +1,5 @@
 import { reactive, computed, nextTick } from 'vue'
-import { scrollIntoView, createMap, cssEscape } from '@/utils'
+import { scrollIntoView, cssEscape } from '@/utils'
 import type {
   MenuState,
   NormalizedNode,
@@ -90,6 +90,20 @@ export function useMenu(options: {
    * (no children / loading / error) of expanded branches.
    * The menu renders these as a flat list; keyboard navigation uses them as well.
    */
+  // Row objects are reused between computations (keyed by node and row type), so that
+  // unchanged rows keep their identity and renderers can skip them
+  const rowCache = new WeakMap<NormalizedNode, Partial<Record<MenuRow['type'], MenuRow>>>()
+  const getRow = (type: MenuRow['type'], node: NormalizedNode, level: number, index: number): MenuRow => {
+    let rows = rowCache.get(node)
+    if (!rows) rowCache.set(node, rows = {})
+    let row = rows[type]
+    if (!row || row.level !== level) {
+      row = rows[type] = { type, key: `${type}-${node.id}`, node, level, index }
+    }
+    row.index = index
+    return row
+  }
+
   const menuRows = computed<MenuRow[]>(() => {
     const rows: MenuRow[] = []
     const searching = localSearch.active
@@ -99,7 +113,7 @@ export function useMenu(options: {
       for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i]
         if (!searching || shouldOptionBeIncludedInSearchResult(node)) {
-          rows.push({ type: 'option', key: `option-${node.id}`, node, level: flatten ? 0 : node.level })
+          rows.push(getRow('option', node, flatten ? 0 : node.level, rows.length))
         }
         if (!node.isBranch || !shouldExpand(node)) continue
 
@@ -109,14 +123,14 @@ export function useMenu(options: {
           const children = node.children || []
           walk(children)
           if (states && !children.length) {
-            rows.push({ type: 'no-children', key: `no-children-${node.id}`, node, level: tipLevel })
+            rows.push(getRow('no-children', node, tipLevel, rows.length))
           }
         }
         if (states?.isLoading) {
-          rows.push({ type: 'loading', key: `loading-${node.id}`, node, level: tipLevel })
+          rows.push(getRow('loading', node, tipLevel, rows.length))
         }
         if (states?.loadingError) {
-          rows.push({ type: 'error', key: `error-${node.id}`, node, level: tipLevel })
+          rows.push(getRow('error', node, tipLevel, rows.length))
         }
       }
     }
@@ -124,6 +138,14 @@ export function useMenu(options: {
     walk(forest.normalizedOptions)
     return rows
   })
+
+  /**
+   * Row of an option in the current rows, if it is shown
+   */
+  const getOptionRow = (node: NormalizedNode): MenuRow | null => {
+    const row = rowCache.get(node)?.option
+    return row && menuRows.value[row.index] === row ? row : null
+  }
 
   /**
    * IDs of all options shown in the menu (for highlighting navigation)
@@ -136,23 +158,6 @@ export function useMenu(options: {
     }
     return ids
   })
-
-  /**
-   * Position of each visible option (for O(1) keyboard navigation)
-   */
-  const visibleOptionIndex = computed(() => {
-    const map = createMap<number>()
-    visibleOptionIds.value.forEach((id, index) => {
-      map[id] = index
-    })
-    return map
-  })
-
-  const getCurrentVisibleIndex = (): number => {
-    if (menu.current == null) return -1
-    const index = visibleOptionIndex.value[menu.current]
-    return index === undefined ? -1 : index
-  }
 
   /**
    * Has any visible options?
@@ -209,51 +214,50 @@ export function useMenu(options: {
   /**
    * Highlight first option
    */
-  const highlightFirstOption = (): void => {
-    if (!hasVisibleOptions.value) return
+  // Navigation scans the rows from the current one: O(distance), no index of all options needed
+  const findOptionRow = (from: number, step: 1 | -1): MenuRow | null => {
+    const rows = menuRows.value
+    for (let i = from; i >= 0 && i < rows.length; i += step) {
+      if (rows[i].type === 'option') return rows[i]
+    }
+    return null
+  }
 
-    const first = visibleOptionIds.value[0]
-    const node = getNode(first)
-    if (node) setCurrentHighlightedOption(node)
+  const currentRow = (): MenuRow | null => {
+    if (menu.current == null) return null
+    const node = forest.nodeMap[menu.current]
+    return node ? getOptionRow(node) : null
+  }
+
+  const highlightFirstOption = (): void => {
+    const row = findOptionRow(0, 1)
+    if (row) setCurrentHighlightedOption(row.node)
   }
 
   /**
-   * Highlight previous option
+   * Highlight previous option (wraps around)
    */
   const highlightPrevOption = (): void => {
-    if (!hasVisibleOptions.value) return
-
-    const currentIndex = getCurrentVisibleIndex()
-    const prev = currentIndex - 1
-    if (prev === -1) return highlightLastOption()
-
-    const node = getNode(visibleOptionIds.value[prev])
-    if (node) setCurrentHighlightedOption(node)
+    const current = currentRow()
+    const row = (current && findOptionRow(current.index - 1, -1)) || findOptionRow(menuRows.value.length - 1, -1)
+    if (row) setCurrentHighlightedOption(row.node)
   }
 
   /**
-   * Highlight next option
+   * Highlight next option (wraps around)
    */
   const highlightNextOption = (): void => {
-    if (!hasVisibleOptions.value) return
-
-    const currentIndex = getCurrentVisibleIndex()
-    const next = currentIndex + 1
-    if (next === visibleOptionIds.value.length) return highlightFirstOption()
-
-    const node = getNode(visibleOptionIds.value[next])
-    if (node) setCurrentHighlightedOption(node)
+    const current = currentRow()
+    const row = (current && findOptionRow(current.index + 1, 1)) || findOptionRow(0, 1)
+    if (row) setCurrentHighlightedOption(row.node)
   }
 
   /**
    * Highlight last option
    */
   const highlightLastOption = (): void => {
-    if (!hasVisibleOptions.value) return
-
-    const ids = visibleOptionIds.value
-    const node = getNode(ids[ids.length - 1])
-    if (node) setCurrentHighlightedOption(node)
+    const row = findOptionRow(menuRows.value.length - 1, -1)
+    if (row) setCurrentHighlightedOption(row.node)
   }
 
   /**
@@ -282,7 +286,7 @@ export function useMenu(options: {
    */
   const highlightOnOpen = (): void => {
     const selected = getSelectedNode()
-    if (selected && shouldShowOptionInMenu(selected) && visibleOptionIndex.value[selected.id] !== undefined) {
+    if (selected && getOptionRow(selected)) {
       setCurrentHighlightedOption(selected, false)
     } else {
       resetHighlightedOptionWhenNecessary()
@@ -381,6 +385,7 @@ export function useMenu(options: {
     setScrollToOptionHandler,
     shouldOptionBeIncludedInSearchResult,
     menuRows,
+    getOptionRow,
     visibleOptionIds,
     hasVisibleOptions,
     shouldExpand,
