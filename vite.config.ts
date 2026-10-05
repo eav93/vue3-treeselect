@@ -1,9 +1,17 @@
 import {resolve} from "path";
 import {defineConfig} from "vite";
 import vue from "@vitejs/plugin-vue";
+import dts from "vite-plugin-dts";
 
 export default defineConfig({
-    plugins: [vue()],
+    plugins: [
+        vue(),
+        dts({
+            tsconfigPath: resolve(__dirname, "tsconfig.json"),
+            entryRoot: "src",
+            outDirs: "dist/types",
+        }),
+    ],
     resolve: {alias: {"@": resolve(__dirname, "src")}},
     build: {
         lib: {
@@ -14,7 +22,10 @@ export default defineConfig({
         },
         rollupOptions: {
             external: ["vue"],
-            output: {globals: {vue: "Vue"}},
+            output: {
+                globals: {vue: "Vue"},
+                exports: "named",
+            },
         },
     },
 });

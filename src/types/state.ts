@@ -10,16 +10,21 @@ export type { AsyncOptionsStates }
 export type CheckedState = 0 | 1 | 2
 
 /**
- * Forest state - manages the tree structure and selection
+ * Forest state - manages the tree structure and selection.
+ *
+ * The object itself is `shallowReactive`; `nodeMap` is a plain object
+ * (replaced on re-initialization), `selectedNodeIds` is replaced immutably,
+ * and `checkedStateMap` / `selectedNodeMap` are `shallowReactive` objects that are
+ * updated per key, so that only affected options re-render.
  */
 export interface ForestState {
   /** Normalized root nodes */
   normalizedOptions: NormalizedNode[]
   /** Map of node ID to normalized node for quick lookup */
   nodeMap: NodeMap
-  /** Map of node ID to checked state (for multi-select) */
+  /** Map of node ID to checked state (multi-select only) */
   checkedStateMap: Record<NodeId, CheckedState>
-  /** Array of selected node IDs */
+  /** Array of selected node IDs (in selection order) */
   selectedNodeIds: NodeId[]
   /** Map of selected node IDs for O(1) lookup */
   selectedNodeMap: Record<NodeId, true>
@@ -57,7 +62,7 @@ export interface LocalSearchState {
   active: boolean
   /** Whether the search returned no results */
   noResults: boolean
-  /** Map of node ID to count of matched children/descendants */
+  /** Map of branch node ID to count of matched children/descendants */
   countMap: Record<NodeId, CountMap>
 }
 
@@ -73,3 +78,16 @@ export interface RemoteSearchEntry extends AsyncOptionsStates {
  * Remote search state - map of search queries to their results
  */
 export type RemoteSearchState = Record<string, RemoteSearchEntry>
+
+/**
+ * A row of the menu: an option or a tip of an expanded branch
+ */
+export interface MenuRow {
+  type: 'option' | 'no-children' | 'loading' | 'error'
+  /** Unique key of the row */
+  key: string
+  /** The option, or the branch the tip belongs to */
+  node: NormalizedNode
+  /** Indentation level */
+  level: number
+}

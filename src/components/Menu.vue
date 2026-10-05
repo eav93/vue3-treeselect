@@ -1,63 +1,58 @@
 <template>
   <div
-    ref="menu-container"
+    ref="menuContainerRef"
     class="vue-treeselect__menu-container"
     :style="menuContainerStyle"
   >
     <Transition name="vue-treeselect__menu--transition">
       <div
-        v-if="treeselect.menu.value.isOpen"
+        v-if="treeselect.menu.isOpen"
         ref="menuRef"
         class="vue-treeselect__menu"
         :style="menuStyle"
-        @mousedown="instance.handleMouseDown"
+        @mousedown="treeselect.handleMouseDown"
+        @scroll.passive="handleScroll"
       >
         <!-- Before list slot -->
-        <slot name="before-list" />
+        <SlotRenderer v-if="treeselect.slots['before-list']" :render-slot="treeselect.slots['before-list']" />
 
         <!-- Async search menu -->
-        <template v-if="treeselect.async">
+        <template v-if="props.async">
           <Tip v-if="showSearchPrompt" type="search-prompt" icon="warning">
-            {{ treeselect.searchPromptText }}
+            {{ props.searchPromptText }}
           </Tip>
           <Tip v-else-if="asyncEntry.isLoading" type="loading" icon="loader">
-            {{ treeselect.loadingText }}
+            {{ props.loadingText }}
           </Tip>
           <Tip v-else-if="asyncEntry.loadingError" type="error" icon="error">
             {{ asyncEntry.loadingError }}
             <a
               class="vue-treeselect__retry"
-              :title="treeselect.retryTitle"
+              :title="props.retryTitle"
               @click="treeselect.handleRemoteSearch"
             >
-              {{ treeselect.retryText }}
+              {{ props.retryText }}
             </a>
           </Tip>
           <Tip v-else-if="showAsyncNoResults" type="no-results" icon="warning">
-            {{ treeselect.noResultsText }}
+            {{ props.noResultsText }}
           </Tip>
-          <div v-else class="vue-treeselect__list">
-            <Option
-              v-for="rootNode in treeselect.forest.value.normalizedOptions"
-              :key="rootNode.id"
-              :node="rootNode"
-            />
-          </div>
+          <OptionList v-else ref="optionListRef" :key="props.virtualScroll ? 'virtual' : 'list'" :virtual="props.virtualScroll" />
         </template>
 
         <!-- Local search / normal menu -->
         <template v-else>
           <Tip v-if="treeselect.rootOptionsStates.isLoading" type="loading" icon="loader">
-            {{ treeselect.loadingText }}
+            {{ props.loadingText }}
           </Tip>
           <Tip v-else-if="treeselect.rootOptionsStates.loadingError" type="error" icon="error">
             {{ treeselect.rootOptionsStates.loadingError }}
             <a
               class="vue-treeselect__retry"
-              :title="treeselect.retryTitle"
+              :title="props.retryTitle"
               @click="treeselect.loadRootOptions"
             >
-              {{ treeselect.retryText }}
+              {{ props.retryText }}
             </a>
           </Tip>
           <Tip
@@ -65,42 +60,33 @@
             type="no-options"
             icon="warning"
           >
-            {{ treeselect.noOptionsText }}
+            {{ props.noOptionsText }}
           </Tip>
           <Tip
-            v-else-if="treeselect.localSearch.value.active && treeselect.localSearch.value.noResults"
+            v-else-if="treeselect.localSearch.active && treeselect.localSearch.noResults"
             type="no-results"
             icon="warning"
           >
-            {{ treeselect.noResultsText }}
+            {{ props.noResultsText }}
           </Tip>
-          <div v-else class="vue-treeselect__list">
-            <Option
-              v-for="rootNode in treeselect.forest.value.normalizedOptions"
-              :key="rootNode.id"
-              :node="rootNode"
-            />
-          </div>
+          <OptionList v-else ref="optionListRef" :key="props.virtualScroll ? 'virtual' : 'list'" :virtual="props.virtualScroll" />
         </template>
 
         <!-- After list slot -->
-        <slot name="after-list" />
+        <SlotRenderer v-if="treeselect.slots['after-list']" :render-slot="treeselect.slots['after-list']" />
       </div>
     </Transition>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, watch, onMounted, onUnmounted, nextTick, inject, ref } from 'vue'
+import { computed, watch, onMounted, onBeforeUnmount, nextTick, ref } from 'vue'
 import { MENU_BUFFER } from '@/constants'
 import { watchSize, setupResizeAndScrollEventListeners } from '@/utils'
-import Option from '@/components/Option.vue'
+import { useTreeselectContext } from '@/context'
 import Tip from '@/components/Tip.vue'
-import type { TreeselectInstance } from '@/types'
-
-// ============================================================================
-// Constants
-// ============================================================================
+import OptionList from '@/components/OptionList.vue'
+import SlotRenderer from '@/components/SlotRenderer'
 
 const directionMap = {
   top: 'top',
@@ -109,29 +95,29 @@ const directionMap = {
   below: 'bottom',
 } as const
 
-// ============================================================================
-// Inject treeselect instance
-// ============================================================================
-
-const treeselect = inject<TreeselectInstance>('treeselect')!
-const instance = inject<any>('instance')!
-const registerMenuElement = inject<(el: HTMLElement) => void>('registerMenuElement', undefined)
+const treeselect = useTreeselectContext()
+const props = treeselect.props
 
 // ============================================================================
 // Template refs
 // ============================================================================
 
-const menuRef = ref<HTMLElement>()
+const menuRef = ref<HTMLElement | null>(null)
+const menuContainerRef = ref<HTMLElement | null>(null)
+const optionListRef = ref<InstanceType<typeof OptionList> | null>(null)
 
-// ============================================================================
-// Register menu element with portal (if in portal mode)
-// ============================================================================
-
-watch(menuRef, (newEl) => {
-  if (newEl && registerMenuElement) {
-    registerMenuElement(newEl)
+// Register the menu element with the root component (also works inside the portal)
+watch(menuRef, (el, prevEl) => {
+  if (el) {
+    treeselect.setMenuElement(el)
+  } else if (prevEl && treeselect.getMenu() === prevEl) {
+    treeselect.setMenuElement(null)
   }
-}, { immediate: true })
+}, { flush: 'sync' })
+
+const handleScroll = (): void => {
+  optionListRef.value?.handleScroll()
+}
 
 // ============================================================================
 // State
@@ -141,19 +127,15 @@ let menuSizeWatcher: { remove: () => void } | null = null
 let menuResizeAndScrollEventListeners: { remove: () => void } | null = null
 
 // ============================================================================
-// Event handlers
-// ============================================================================
-
-// ============================================================================
 // Computed - Styles
 // ============================================================================
 
 const menuStyle = computed(() => ({
-  maxHeight: treeselect.maxHeight + 'px',
+  maxHeight: props.maxHeight + 'px',
 }))
 
 const menuContainerStyle = computed(() => ({
-  zIndex: treeselect.appendToBody ? null : treeselect.zIndex,
+  zIndex: props.appendToBody ? undefined : props.zIndex,
 }))
 
 // ============================================================================
@@ -163,14 +145,14 @@ const menuContainerStyle = computed(() => ({
 const showNoOptions = computed(() => {
   return (
     treeselect.rootOptionsStates.isLoaded &&
-    treeselect.forest.value.normalizedOptions.length === 0
+    treeselect.forest.normalizedOptions.length === 0
   )
 })
 
 const asyncEntry = computed(() => treeselect.getRemoteSearchEntry())
 
 const showSearchPrompt = computed(() => {
-  return treeselect.trigger.searchQuery === '' && !treeselect.defaultOptions
+  return treeselect.trigger.searchQuery === '' && !props.defaultOptions
 })
 
 const showAsyncNoResults = computed(() => {
@@ -184,7 +166,7 @@ const showAsyncNoResults = computed(() => {
 // ============================================================================
 
 const adjustMenuOpenDirection = (): void => {
-  if (!treeselect.menu.value.isOpen) return
+  if (!treeselect.menu.isOpen) return
 
   const $menu = treeselect.getMenu()
   const $control = treeselect.getControl()
@@ -204,12 +186,12 @@ const adjustMenuOpenDirection = (): void => {
 
   if (!isControlInViewport) {
     treeselect.closeMenu()
-  } else if (treeselect.openDirection !== 'auto') {
-    treeselect.menu.value.placement = directionMap[treeselect.openDirection as keyof typeof directionMap]
+  } else if (props.openDirection && props.openDirection !== 'auto') {
+    treeselect.menu.placement = directionMap[props.openDirection]
   } else if (hasEnoughSpaceBelow || !hasEnoughSpaceAbove) {
-    treeselect.menu.value.placement = 'bottom'
+    treeselect.menu.placement = 'bottom'
   } else {
-    treeselect.menu.value.placement = 'top'
+    treeselect.menu.placement = 'top'
   }
 }
 
@@ -267,7 +249,7 @@ const onMenuClose = (): void => {
 // ============================================================================
 
 watch(
-  () => treeselect.menu.value.isOpen,
+  () => treeselect.menu.isOpen,
   (newValue) => {
     if (newValue) {
       void nextTick(onMenuOpen)
@@ -282,20 +264,20 @@ watch(
 // ============================================================================
 
 onMounted(() => {
-  if (treeselect.menu.value.isOpen) {
+  if (treeselect.menu.isOpen) {
     void nextTick(onMenuOpen)
   }
 })
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   onMenuClose()
+  if (menuRef.value && treeselect.getMenu() === menuRef.value) {
+    treeselect.setMenuElement(null)
+  }
 })
-
-// ============================================================================
-// Expose public API for parent component
-// ============================================================================
 
 defineExpose({
   menuElement: menuRef,
+  menuContainerElement: menuContainerRef,
 })
 </script>

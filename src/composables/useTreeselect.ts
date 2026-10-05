@@ -1,16 +1,82 @@
-import {computed, onMounted, onUnmounted, reactive, readonly, toRef, watch} from 'vue'
-import {createMap, find, quickDiff, warning} from '@/utils'
+import { computed, isReactive, onMounted, onUnmounted, reactive, shallowReactive, watch } from 'vue'
+import { createMap, quickDiff, warning } from '@/utils'
 import { NO_PARENT_NODE } from '@/constants'
-import {useNodeTraversal} from './useNodeTraversal'
-import {useForestState} from './useForestState'
-import {useNodeNormalization} from './useNodeNormalization'
-import {useValue} from './useValue'
-import {useSelection} from './useSelection'
-import {useMenu} from './useMenu'
-import {useLocalSearch} from './useLocalSearch'
-import {useRemoteSearch} from './useRemoteSearch'
-import {useAsyncOptions} from './useAsyncOptions'
-import type {NodeId, NormalizedNode, RawNode, TreeselectEmits, TreeselectProps, TriggerState,} from '@/types'
+import {
+  traverseAllNodesByIndex,
+  traverseAllNodesDFS,
+  traverseDescendantsBFS,
+  traverseDescendantsDFS,
+} from './useNodeTraversal'
+import { useForestState } from './useForestState'
+import { useNodeNormalization } from './useNodeNormalization'
+import { useValue } from './useValue'
+import { useSelection } from './useSelection'
+import { useMenu } from './useMenu'
+import { useLocalSearch } from './useLocalSearch'
+import { useRemoteSearch } from './useRemoteSearch'
+import { useAsyncOptions } from './useAsyncOptions'
+import type {
+  NodeId,
+  NodeMap,
+  NormalizedNode,
+  RawNode,
+  TreeselectEmits,
+  TreeselectProps,
+  TriggerState,
+} from '@/types'
+
+/**
+ * Warn about invalid combinations of props
+ */
+function verifyProps(props: TreeselectProps): void {
+  warning(
+    () => props.async ? !!props.searchable : true,
+    () => 'For async search mode, the value of "searchable" prop must be true.'
+  )
+
+  if (props.options == null && !props.loadOptions) {
+    warning(
+      () => false,
+      () => 'Are you meant to dynamically load options? You need to use "loadOptions" prop.'
+    )
+  }
+
+  if (props.flat) {
+    warning(
+      () => !!props.multiple,
+      () => 'You are using flat mode. But you forgot to add "multiple=true"?'
+    )
+  }
+
+  if (!props.flat) {
+    const propNames = [
+      'autoSelectAncestors',
+      'autoSelectDescendants',
+      'autoDeselectAncestors',
+      'autoDeselectDescendants',
+    ] as const
+
+    propNames.forEach(propName => {
+      warning(
+        () => !props[propName],
+        () => `"${propName}" only applies to flat mode.`
+      )
+    })
+  }
+}
+
+export interface UseTreeselectOptions {
+  /** Instance ID getter */
+  getInstanceId: () => NodeId
+  /** Function to get menu DOM element */
+  getMenuElement: () => HTMLElement | null
+  /** Function to get control DOM element */
+  getControlElement: () => HTMLElement | null
+  /** Function to toggle click outside listener */
+  toggleClickOutsideEvent: (enabled: boolean) => void
+  /** Focus the input (used by `autoFocus`) */
+  focusInput: () => void
+}
 
 /**
  * Main composable for Treeselect functionality
@@ -18,20 +84,24 @@ import type {NodeId, NormalizedNode, RawNode, TreeselectEmits, TreeselectProps, 
  *
  * @param props - Component props
  * @param emit - Emit function
- * @param instanceId - Computed instance ID
- * @param getMenuElement - Function to get menu DOM element
- * @param getControlElement - Function to get control DOM element
- * @param toggleClickOutsideEvent - Function to toggle click outside listener
+ * @param options - DOM helpers provided by the component
  * @returns Complete Treeselect instance API
  */
 export function useTreeselect(
   props: TreeselectProps,
   emit: TreeselectEmits,
-  instanceId: ReturnType<typeof computed<string | number>>,
-  getMenuElement: () => HTMLElement | null,
-  getControlElement: () => HTMLElement | null,
-  toggleClickOutsideEvent: (enabled: boolean) => void
+  options: UseTreeselectOptions
 ) {
+  const {
+    getInstanceId,
+    getMenuElement,
+    getControlElement,
+    toggleClickOutsideEvent,
+    focusInput,
+  } = options
+
+  verifyProps(props)
+
   /**
    * Trigger state (focus and search)
    */
@@ -48,199 +118,206 @@ export function useTreeselect(
   }
 
   // ============================================================================
-  // Extract node IDs from modelValue (needed for forest initialization)
+  // modelValue helpers
   // ============================================================================
 
   /**
-   * Enhanced normalizer that applies user's normalizer
+   * Apply the user's normalizer and return the merged node
    */
-  const enhancedNormalizerPreInit = (raw: RawNode): any => {
+  const normalizeRawNode = (raw: RawNode): any => {
     return {
       ...raw,
-      ...(props.normalizer ? props.normalizer(raw, instanceId.value) : {}),
+      ...(props.normalizer ? props.normalizer(raw, getInstanceId()) : {}),
     }
+  }
+
+  const getValueArray = (): any[] => {
+    if (props.modelValue == null) return []
+    if (props.multiple) return Array.isArray(props.modelValue) ? props.modelValue : []
+    return [props.modelValue]
   }
 
   /**
    * Extract checked node IDs from modelValue
    */
   const extractCheckedNodeIdsFromValue = (): NodeId[] => {
-    if (props.modelValue == null) return []
-
-    if (props.valueFormat === 'id') {
-      return props.multiple
-        ? props.modelValue.slice()
-        : [props.modelValue]
-    }
-
-    return (props.multiple ? props.modelValue : [props.modelValue])
-      .map((node: any) => enhancedNormalizerPreInit(node))
-      .map((node: any) => node.id)
-  }
-
-  // ============================================================================
-  // Initialize composables
-  // ============================================================================
-
-  // 1. Node traversal utilities (no dependencies)
-  const traversal = useNodeTraversal()
-
-  // 2. Forest state (needs extractCheckedNodeIdsFromValue)
-  const forestState = useForestState(extractCheckedNodeIdsFromValue)
-  const { forest, isSelected } = forestState
-
-  // 3. Get node function (accesses forest.nodeMap)
-  const getNode = (nodeId: NodeId): NormalizedNode | null => {
-    warning(
-      () => nodeId != null,
-      () => `Invalid node id: ${nodeId}`
-    )
-
-    if (nodeId == null) return null
-
-    return nodeId in forest.nodeMap
-      ? forest.nodeMap[nodeId]
-      : createFallbackNode(nodeId)
+    const valueArray = getValueArray()
+    if (props.valueFormat === 'id') return valueArray.slice()
+    return valueArray.map((node: any) => normalizeRawNode(node).id)
   }
 
   /**
-   * Create fallback node for nodes not yet loaded
+   * Raw nodes from modelValue indexed by ID (only for valueFormat: 'object')
+   */
+  const rawNodesFromValue = computed(() => {
+    const map = createMap<RawNode>()
+    if (props.valueFormat === 'id') return map
+    getValueArray().forEach((node: any) => {
+      if (!node) return
+      const id = normalizeRawNode(node).id
+      if (!(id in map)) map[id] = node
+    })
+    return map
+  })
+
+  /**
+   * Extract raw node from modelValue by ID
+   */
+  const extractNodeFromValue = (id: NodeId): RawNode => {
+    return rawNodesFromValue.value[id] || ({ id } as RawNode)
+  }
+
+  // ============================================================================
+  // Forest
+  // ============================================================================
+
+  const forestState = useForestState(props, extractCheckedNodeIdsFromValue())
+  const { forest, isSelected, getCheckedState, buildForestState, setSelectedNodeIds } = forestState
+
+  /**
+   * Create fallback node for nodes not (yet) present in options
    */
   const createFallbackNode = (id: NodeId): NormalizedNode => {
     const raw = extractNodeFromValue(id)
-    const label = enhancedNormalizerPreInit(raw).label || `${id} (unknown)`
-    const fallbackNode: any = {
+    const label = normalizeRawNode(raw).label || `${id} (unknown)`
+    const fallbackNode = shallowReactive<NormalizedNode>({
       id,
       label,
+      level: 0,
       ancestors: [],
+      index: [-1],
       parentNode: NO_PARENT_NODE,
+      lowerCased: {},
+      nestedSearchLabel: '',
       isFallbackNode: true,
       isRootNode: true,
       isLeaf: true,
       isBranch: false,
       isDisabled: false,
       isNew: false,
-      index: [-1],
-      level: 0,
+      isMatched: false,
+      isHighlighted: false,
       raw,
-    }
+    })
 
+    // nodeMap is a plain (non-reactive) object: caching here doesn't trigger effects
     forest.nodeMap[id] = fallbackNode
     return fallbackNode
   }
 
   /**
-   * Extract raw node from modelValue by ID
+   * Get node by ID
    */
-  const extractNodeFromValue = (id: NodeId): any => {
-    const defaultNode = { id }
-
-    if (props.valueFormat === 'id') {
-      return defaultNode
+  const getNode = (nodeId: NodeId): NormalizedNode | null => {
+    if (nodeId == null) {
+      warning(() => false, () => `Invalid node id: ${nodeId}`)
+      return null
     }
 
-    const valueArray = props.multiple
-      ? Array.isArray(props.modelValue) ? props.modelValue : []
-      : props.modelValue ? [props.modelValue] : []
-
-    const matched = find(
-      valueArray,
-      (node: any) => node && enhancedNormalizerPreInit(node).id === id
-    )
-
-    return matched || defaultNode
+    const { nodeMap } = forest
+    return nodeId in nodeMap ? nodeMap[nodeId] : createFallbackNode(nodeId)
   }
 
   // Forward declarations for circular dependencies
-  let loadChildrenOptions: (node: NormalizedNode) => void
-  let resetHighlightedOptionWhenNecessary: (forceReset?: boolean) => void
-  let loadRootOptions: () => void
-  let callLoadOptionsProp: (params: any) => void
-  let initialize: () => void
-  let buildForestState: () => void
+  let resetHighlightedOptionWhenNecessary: (forceReset?: boolean) => void = () => {}
 
-  // 4. Async options (needs getNode, instanceId, resetHighlightedOptionWhenNecessary placeholder)
+  // ============================================================================
+  // Async options
+  // ============================================================================
+
+  /**
+   * Children of a node have been loaded into the raw options.
+   * Reactive options passed to the component are re-initialized by the deep
+   * `options` watcher. Non-reactive options (plain arrays, `shallowRef`, `markRaw`)
+   * and async search results need an explicit re-initialization.
+   */
+  const handleChildrenLoaded = (): void => {
+    if (props.async || !isReactive(props.options)) initialize()
+  }
+
   const asyncOptions = useAsyncOptions(
     props,
     getNode,
-    instanceId.value,
-    (forceReset) => resetHighlightedOptionWhenNecessary(forceReset)
+    getInstanceId,
+    (forceReset) => resetHighlightedOptionWhenNecessary(forceReset),
+    handleChildrenLoaded
   )
-  loadRootOptions = asyncOptions.loadRootOptions
-  loadChildrenOptions = asyncOptions.loadChildrenOptions
-  callLoadOptionsProp = asyncOptions.callLoadOptionsProp
-  const { rootOptionsStates } = asyncOptions
+  const { rootOptionsStates, loadRootOptions, loadChildrenOptions, callLoadOptionsProp } = asyncOptions
 
-  // 5. Node normalization (needs forest, instanceId, loadChildrenOptions)
-  const normalization = useNodeNormalization(
-    props,
-    forest,
-    instanceId,
-    loadChildrenOptions
-  )
-  const { normalize, enhancedNormalizer } = normalization
+  // ============================================================================
+  // Normalization, value and initialization
+  // ============================================================================
 
-  // 6. Value management (needs forest, getNode, isSelected, traverseDescendantsBFS, enhancedNormalizer)
-  const value = useValue(
-    props,
-    forest,
-    getNode,
-    isSelected,
-    traversal.traverseDescendantsBFS,
-    enhancedNormalizer
-  )
-  const { selectedNodes, single, internalValue, hasValue, getValue, fixSelectedNodeIds } = value
+  const { normalize } = useNodeNormalization(props, forest, getInstanceId, loadChildrenOptions)
 
-  // 7. Build forest state helper
-  buildForestState = () => {
-    // Wrap traverseAllNodesByIndex to match expected signature
-    const wrappedTraverse = (callback: (node: NormalizedNode) => void) => {
-      traversal.traverseAllNodesByIndex(forest.normalizedOptions, callback)
+  const value = useValue(props, forest, getNode, isSelected, traverseDescendantsBFS)
+  const { selectedNodes, single, internalValue, hasValue, getValue, computeSelectedNodeIds } = value
+
+  /**
+   * Fix selectedNodeIds based on valueConsistsOf mode
+   * @param nodeIdListOfPrevValue - Node IDs of the value
+   * @param rebuild - Rebuild all selection state (after options have changed)
+   */
+  const fixSelectedNodeIds = (nodeIdListOfPrevValue: NodeId[], rebuild = false): void => {
+    const nextSelectedNodeIds = computeSelectedNodeIds(nodeIdListOfPrevValue)
+
+    if (rebuild) {
+      if (quickDiff(forest.selectedNodeIds, nextSelectedNodeIds)) {
+        forest.selectedNodeIds = nextSelectedNodeIds
+      }
+      buildForestState()
+    } else if (quickDiff(forest.selectedNodeIds, nextSelectedNodeIds)) {
+      setSelectedNodeIds(nextSelectedNodeIds)
     }
-
-    forestState.buildForestState(
-      props,
-      selectedNodes.value,
-      wrappedTraverse,
-      isSelected
-    )
   }
 
-  // 8. Initialize function
-  const keepDataOfSelectedNodes = (prevNodeMap: any): void => {
-    // Keep data of selected nodes that are not in new options
+  /**
+   * Keep data of selected nodes that are not in the new options
+   */
+  const keepDataOfSelectedNodes = (prevNodeMap: NodeMap): void => {
     forest.selectedNodeIds.forEach(id => {
-      if (!prevNodeMap[id]) return
-      forest.nodeMap[id] = {
-        ...prevNodeMap[id],
+      const prev = prevNodeMap[id]
+      if (!prev) return
+      forest.nodeMap[id] = shallowReactive({
+        ...prev,
         isFallbackNode: true,
-      }
+      })
     })
   }
 
-  const getRemoteSearchOptions = (): RawNode[] | null => {
-    if (!props.async) return null
-    // Will be implemented by useRemoteSearch
-    return null
-  }
+  // Assigned below, after remote search has been set up
+  let getRemoteSearchEntry: () => { options: RawNode[] }
 
-  initialize = () => {
+  /**
+   * (Re)initialize the normalized tree from the options
+   */
+  const initialize = (): void => {
     const options = props.async
-      ? getRemoteSearchOptions() || []
-      : props.options || []
+      ? getRemoteSearchEntry().options
+      : props.options
 
     if (Array.isArray(options)) {
+      // In case we are re-initializing options, keep the old state tree temporarily
       const prevNodeMap = forest.nodeMap
       forest.nodeMap = createMap()
       keepDataOfSelectedNodes(prevNodeMap)
       forest.normalizedOptions = normalize(NO_PARENT_NODE, options, prevNodeMap)
-      fixSelectedNodeIds(internalValue.value, buildForestState)
+      // Cases that need fixing `selectedNodeIds`:
+      //   1) Children options of a checked node have been delayed loaded,
+      //      we should also mark these children as checked. (multi-select mode)
+      //   2) Root options have been delayed loaded, we need to initialize states
+      //      of these nodes. (multi-select mode)
+      //   3) Async search mode.
+      fixSelectedNodeIds(internalValue.value, true)
     } else {
       forest.normalizedOptions = []
     }
   }
 
-  // 9. Remote search (needs trigger, callLoadOptionsProp, initialize, resetHighlightedOptionWhenNecessary placeholder)
+  // ============================================================================
+  // Search
+  // ============================================================================
+
   const remoteSearch = useRemoteSearch(
     props,
     trigger,
@@ -248,61 +325,81 @@ export function useTreeselect(
     initialize,
     (forceReset) => resetHighlightedOptionWhenNecessary(forceReset)
   )
+  getRemoteSearchEntry = remoteSearch.getRemoteSearchEntry
   const { handleRemoteSearch } = remoteSearch
-
-  // 10. Local search (needs trigger, traverseAllNodesDFS, resetHighlightedOptionWhenNecessary placeholder)
-  const wrappedTraverseAllNodesDFS = (callback: (node: NormalizedNode) => void) => {
-    traversal.traverseAllNodesDFS(forest.normalizedOptions, callback)
-  }
 
   const localSearch = useLocalSearch(
     props,
     trigger,
-    wrappedTraverseAllNodesDFS,
+    () => forest.normalizedOptions,
     (forceReset) => resetHighlightedOptionWhenNecessary(forceReset)
   )
   const { handleLocalSearch } = localSearch
 
-  // 11. Menu (needs many things)
-  const wrappedTraverseAllNodesByIndex = (callback: (node: NormalizedNode) => boolean | void) => {
-    traversal.traverseAllNodesByIndex(forest.normalizedOptions, callback)
-  }
+  // ============================================================================
+  // Menu & selection
+  // ============================================================================
 
-  const menu = useMenu(
+  const menu = useMenu({
     props,
     emit,
     forest,
-    localSearch.localSearch,
+    localSearch: localSearch.localSearch,
     getNode,
-    wrappedTraverseAllNodesByIndex,
     getValue,
-    instanceId.value,
+    getInstanceId,
     resetSearchQuery,
     loadRootOptions,
     loadChildrenOptions,
     getMenuElement,
-    toggleClickOutsideEvent
-  )
+    toggleClickOutsideEvent,
+  })
   resetHighlightedOptionWhenNecessary = menu.resetHighlightedOptionWhenNecessary
 
-  // 12. Selection (needs many things)
-  const selection = useSelection(
+  const selection = useSelection({
     props,
     emit,
     forest,
     getNode,
-    isSelected,
-    traversal.traverseDescendantsBFS,
-    traversal.traverseDescendantsDFS,
-    buildForestState,
+    getCheckedState,
+    setSelectedNodeIds,
+    traverseDescendantsBFS,
+    traverseDescendantsDFS,
     resetSearchQuery,
-    menu.closeMenu,
-    () => hasValue.value,
-    () => internalValue.value,
-    () => single.value,
-    instanceId.value,
-    localSearch.localSearch
-  )
+    closeMenu: menu.closeMenu,
+    hasValue: () => hasValue.value,
+    internalValue: () => internalValue.value,
+    single: () => single.value,
+    getInstanceId,
+    localSearch: localSearch.localSearch,
+  })
+
+  // ============================================================================
+  // Derived state used by the components
+  // ============================================================================
+
+  /**
+   * Should show children count when searching?
+   */
+  const showCountOnSearchComputed = computed(() => {
+    return typeof props.showCountOnSearch === 'boolean'
+      ? props.showCountOnSearch
+      : !!props.showCount
+  })
+
+  /**
+   * Is there any branch node?
+   */
+  const hasBranchNodes = computed(() => {
+    return forest.normalizedOptions.some(rootNode => rootNode.isBranch)
+  })
+
+  /**
+   * Should the options be displayed without indentation?
+   */
+  const shouldFlattenOptions = computed(() => {
+    return localSearch.localSearch.active && !!props.flattenSearchResults
+  })
 
   // ============================================================================
   // Watchers
@@ -313,34 +410,36 @@ export function useTreeselect(
     else menu.closeMenu()
   })
 
-  watch(() => props.branchNodesFirst, () => {
-    initialize()
-  })
-
   watch(() => props.disabled, (newValue) => {
     if (newValue && menu.menu.isOpen) menu.closeMenu()
     else if (!newValue && !menu.menu.isOpen && props.alwaysOpen) menu.openMenu()
   })
 
-  watch(() => props.flat, () => {
-    initialize()
-  })
+  watch(
+    [
+      () => props.branchNodesFirst,
+      () => props.flat,
+      // Compare by content: inline arrays in templates are recreated on every render
+      () => (props.matchKeys || []).join('\u0000'),
+      () => props.searchNested,
+    ],
+    () => initialize()
+  )
 
   watch(internalValue, (newValue, oldValue) => {
     const hasChanged = quickDiff(newValue, oldValue)
     if (hasChanged) {
-      emit('update:modelValue', getValue(), instanceId.value)
+      emit('update:modelValue', getValue(), getInstanceId())
     }
   })
 
-  watch(() => props.matchKeys, () => {
-    initialize()
+  watch([() => props.multiple, () => props.disableBranchNodes], () => {
+    buildForestState()
   })
 
-  watch(() => props.multiple, (newValue) => {
-    if (newValue) buildForestState()
-  })
-
+  // Note: for large trees prefer non-reactive options (`shallowRef` / `markRaw`)
+  // and replace the array to update them. Deep watching is kept for compatibility
+  // with code that mutates reactive options in place.
   watch(() => props.options, () => {
     if (props.async) return
     initialize()
@@ -353,14 +452,14 @@ export function useTreeselect(
     } else {
       handleLocalSearch()
     }
-    emit('search-change', trigger.searchQuery, instanceId.value)
+    emit('search-change', trigger.searchQuery, getInstanceId())
   })
 
   watch(() => props.modelValue, () => {
     const nodeIdsFromValue = extractCheckedNodeIdsFromValue()
     const hasChanged = quickDiff(nodeIdsFromValue, internalValue.value)
     if (hasChanged) {
-      fixSelectedNodeIds(nodeIdsFromValue, buildForestState)
+      fixSelectedNodeIds(nodeIdsFromValue)
     }
   })
 
@@ -370,7 +469,7 @@ export function useTreeselect(
 
   onMounted(() => {
     if (props.autoFocus) {
-      // focusInput() - will be implemented by parent component
+      focusInput()
     }
     if (!props.options && !props.async && props.autoLoadRootOptions) {
       loadRootOptions()
@@ -393,11 +492,11 @@ export function useTreeselect(
 
   return {
     // State
-    forest: toRef(() => forest),
+    forest,
     trigger,
-    menu: toRef(() => menu.menu),
-    localSearch: toRef(() => localSearch.localSearch),
-    remoteSearch: toRef(() => remoteSearch.remoteSearch),
+    menu: menu.menu,
+    localSearch: localSearch.localSearch,
+    remoteSearch: remoteSearch.remoteSearch,
     rootOptionsStates,
 
     // Computed
@@ -405,18 +504,25 @@ export function useTreeselect(
     single,
     internalValue,
     hasValue,
+    menuRows: menu.menuRows,
     visibleOptionIds: menu.visibleOptionIds,
     hasVisibleOptions: menu.hasVisibleOptions,
+    showCountOnSearchComputed,
+    hasBranchNodes,
+    shouldFlattenOptions,
 
     // Node methods
     getNode,
     isSelected,
+    getCheckedState,
 
     // Traversal
-    traverseDescendantsBFS: traversal.traverseDescendantsBFS,
-    traverseDescendantsDFS: traversal.traverseDescendantsDFS,
-    traverseAllNodesDFS: traversal.traverseAllNodesDFS,
-    traverseAllNodesByIndex: traversal.traverseAllNodesByIndex,
+    traverseDescendantsBFS,
+    traverseDescendantsDFS,
+    traverseAllNodesDFS: (callback: (node: NormalizedNode) => void) =>
+      traverseAllNodesDFS(forest.normalizedOptions, callback),
+    traverseAllNodesByIndex: (callback: (node: NormalizedNode) => boolean | void) =>
+      traverseAllNodesByIndex(forest.normalizedOptions, callback),
 
     // Value
     getValue,
@@ -436,6 +542,7 @@ export function useTreeselect(
     toggleExpanded: menu.toggleExpanded,
     shouldExpand: menu.shouldExpand,
     shouldShowOptionInMenu: menu.shouldShowOptionInMenu,
+    setScrollToOptionHandler: menu.setScrollToOptionHandler,
 
     // Highlighting
     setCurrentHighlightedOption: menu.setCurrentHighlightedOption,
@@ -448,6 +555,7 @@ export function useTreeselect(
     // Search
     handleLocalSearch,
     handleRemoteSearch,
+    getRemoteSearchEntry: remoteSearch.getRemoteSearchEntry,
     resetSearchQuery,
 
     // Async
@@ -462,5 +570,8 @@ export function useTreeselect(
     // DOM helpers
     getMenu: getMenuElement,
     getControl: getControlElement,
+    getInstanceId,
   }
 }
+
+export type TreeselectApi = ReturnType<typeof useTreeselect>

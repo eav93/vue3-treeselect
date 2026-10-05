@@ -1,29 +1,24 @@
 <template>
   <div v-if="shouldShowValue" class="vue-treeselect__single-value">
     <!-- Custom value label renderer -->
-    <component
-      v-if="customValueLabelRenderer"
-      :is="customValueLabelRenderer"
-      :node="selectedNode"
-    />
+    <SlotRenderer v-if="treeselect.slots['value-label']" :render-slot="treeselect.slots['value-label']" :scope="{ node: selectedNode }" />
     <!-- Default label -->
     <template v-else>
       {{ selectedNode.label }}
     </template>
   </div>
   <Placeholder />
-  <Input ref="inputRef" />
+  <Input />
 </template>
 
 <script setup lang="ts">
-import { computed, inject, useSlots, ref } from 'vue'
+import { computed } from 'vue'
+import { useTreeselectContext } from '@/context'
+import SlotRenderer from '@/components/SlotRenderer'
 import Input from '@/components/Input.vue'
 import Placeholder from '@/components/Placeholder.vue'
-import type { TreeselectInstance } from '@/types'
-import type { InstanceType } from 'vue'
 
-const treeselect = inject<TreeselectInstance>('treeselect')!
-const slots = useSlots()
+const treeselect = useTreeselectContext()
 
 const shouldShowValue = computed(() => {
   return treeselect.hasValue.value && !treeselect.trigger.searchQuery
@@ -31,23 +26,5 @@ const shouldShowValue = computed(() => {
 
 const selectedNode = computed(() => {
   return treeselect.selectedNodes.value[0]
-})
-
-const customValueLabelRenderer = computed(() => {
-  return slots['value-label']
-})
-
-// ============================================================================
-// Template refs
-// ============================================================================
-
-const inputRef = ref<InstanceType<typeof Input>>()
-
-// ============================================================================
-// Expose for parent
-// ============================================================================
-
-defineExpose({
-  inputElement: inputRef,
 })
 </script>

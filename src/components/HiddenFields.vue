@@ -3,17 +3,18 @@
     v-for="(stringifiedValue, i) in stringifiedValues"
     :key="`hidden-field-${i}`"
     type="hidden"
-    :name="treeselect.name"
+    :name="treeselect.props.name"
     :value="stringifiedValue"
   />
 </template>
 
 <script setup lang="ts">
-import { computed, inject } from 'vue'
+import { computed } from 'vue'
 import { isNaN } from '@/utils'
-import type { TreeselectInstance } from '@/types'
+import { useTreeselectContext } from '@/context'
 
-const treeselect = inject<TreeselectInstance>('treeselect')!
+const treeselect = useTreeselectContext()
+const props = treeselect.props
 
 function stringifyValue(value: any): string {
   if (typeof value === 'string') return value
@@ -22,14 +23,14 @@ function stringifyValue(value: any): string {
 }
 
 const stringifiedValues = computed(() => {
-  if (!treeselect.name || treeselect.disabled || !treeselect.hasValue.value) {
+  if (!props.name || props.disabled || !treeselect.hasValue.value) {
     return []
   }
 
   let values = treeselect.internalValue.value.map(stringifyValue)
 
-  if (treeselect.multiple && treeselect.joinValues) {
-    values = [values.join(treeselect.delimiter)]
+  if (props.multiple && props.joinValues) {
+    values = [values.join(props.delimiter)]
   }
 
   return values

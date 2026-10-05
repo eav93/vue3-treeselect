@@ -1,52 +1,40 @@
-import { reactive } from 'vue'
+import { shallowReactive } from 'vue'
 import fuzzysearch from 'fuzzysearch'
-import { createMap, includes } from '@/utils'
+import { createMap } from '@/utils'
 import {
-  NO_PARENT_NODE,
   ALL_CHILDREN,
   ALL_DESCENDANTS,
   LEAF_CHILDREN,
   LEAF_DESCENDANTS,
 } from '@/constants'
 import type {
+  CountMap,
   LocalSearchState,
+  NodeId,
   NormalizedNode,
   TreeselectProps,
   TriggerState,
 } from '@/types'
 
 /**
- * Match a search query against a string
- * @param enableFuzzyMatch - Whether to use fuzzy matching
- * @param needle - Search query
- * @param haystack - String to search in
- * @returns True if matched
- */
-function match(enableFuzzyMatch: boolean, needle: string, haystack: string): boolean {
-  return enableFuzzyMatch
-    ? fuzzysearch(needle, haystack)
-    : includes(haystack, needle)
-}
-
-/**
  * Composable for local search functionality
  *
  * @param props - Component props
  * @param trigger - Trigger state
- * @param traverseAllNodesDFS - Function to traverse all nodes in DFS order
+ * @param getNormalizedOptions - Getter for the root nodes
  * @param resetHighlightedOptionWhenNecessary - Function to reset highlighted option
  * @returns Local search state and methods
  */
 export function useLocalSearch(
   props: TreeselectProps,
   trigger: TriggerState,
-  traverseAllNodesDFS: (callback: (node: NormalizedNode) => void) => void,
+  getNormalizedOptions: () => NormalizedNode[],
   resetHighlightedOptionWhenNecessary: (forceReset?: boolean) => void
 ) {
   /**
    * Local search state
    */
-  const localSearch = reactive<LocalSearchState>({
+  const localSearch = shallowReactive<LocalSearchState>({
     active: false,
     noResults: true,
     countMap: createMap(),
@@ -54,7 +42,7 @@ export function useLocalSearch(
 
   /**
    * Handle local search
-   * Searches through options and updates match states
+   * Searches through options and updates match states in a single post-order pass
    */
   const handleLocalSearch = (): void => {
     const { searchQuery } = trigger
@@ -69,72 +57,88 @@ export function useLocalSearch(
     // Enter local search mode
     localSearch.active = true
 
-    // Reset states
-    localSearch.noResults = true
-    traverseAllNodesDFS(node => {
-      if (node.isBranch) {
-        node.isExpandedOnSearch = false
-        node.showAllChildrenOnSearch = false
-        node.isMatched = false
-        node.hasMatchedDescendants = false
+    const lowerCasedSearchQuery = searchQuery.trim().toLocaleLowerCase()
+    const splitSearchQuery = lowerCasedSearchQuery.replace(/\s+/g, ' ').split(' ')
+    const useNestedSearch = !!props.searchNested && splitSearchQuery.length > 1
+    const matchKeys = props.matchKeys || ['label']
+    const enableFuzzyMatch = !props.disableFuzzyMatching
 
-        localSearch.countMap[node.id] = {
+    const countMap = createMap<CountMap>()
+    let noResults = true
+
+    const isMatched = (node: NormalizedNode): boolean => {
+      if (useNestedSearch) {
+        // Multi-word nested search
+        for (let i = 0; i < splitSearchQuery.length; i++) {
+          if (node.nestedSearchLabel.indexOf(splitSearchQuery[i]) === -1) return false
+        }
+        return true
+      }
+      // Single-word search across match keys
+      for (let i = 0; i < matchKeys.length; i++) {
+        const haystack = node.lowerCased[matchKeys[i]]
+        if (haystack == null) continue
+        if (enableFuzzyMatch
+          ? fuzzysearch(lowerCasedSearchQuery, haystack)
+          : haystack.indexOf(lowerCasedSearchQuery) !== -1) return true
+      }
+      return false
+    }
+
+    // Returns whether this node is matched or expanded on search
+    // (that's what makes its parent expanded on search)
+    const visit = (node: NormalizedNode): boolean => {
+      const matched = isMatched(node)
+      if (matched) noResults = false
+
+      if (node.isBranch) {
+        const count: CountMap = {
           [ALL_CHILDREN]: 0,
           [ALL_DESCENDANTS]: 0,
           [LEAF_CHILDREN]: 0,
           [LEAF_DESCENDANTS]: 0,
         }
-      }
-    })
+        let expandedOnSearch = false
+        const children = node.children || []
 
-    // Perform search
-    const lowerCasedSearchQuery = searchQuery.trim().toLocaleLowerCase()
-    const splitSearchQuery = lowerCasedSearchQuery.replace(/\s+/g, ' ').split(' ')
+        for (let i = 0; i < children.length; i++) {
+          const child = children[i]
+          if (visit(child)) expandedOnSearch = true
 
-    traverseAllNodesDFS(node => {
-      if (props.searchNested && splitSearchQuery.length > 1) {
-        // Multi-word nested search
-        node.isMatched = splitSearchQuery.every(filterValue =>
-          match(false, filterValue, node.nestedSearchLabel)
-        )
-      } else {
-        // Single-word search across match keys
-        node.isMatched = (props.matchKeys || ['label']).some(matchKey =>
-          match(!props.disableFuzzyMatching, lowerCasedSearchQuery, node.lowerCased[matchKey])
-        )
-      }
-
-      if (node.isMatched) {
-        localSearch.noResults = false
-
-        // Update ancestor counts
-        node.ancestors.forEach(ancestor => {
-          localSearch.countMap[ancestor.id][ALL_DESCENDANTS]++
-        })
-        if (node.isLeaf) {
-          node.ancestors.forEach(ancestor => {
-            localSearch.countMap[ancestor.id][LEAF_DESCENDANTS]++
-          })
-        }
-
-        // Update parent counts
-        if (node.parentNode !== NO_PARENT_NODE) {
-          localSearch.countMap[node.parentNode.id][ALL_CHILDREN] += 1
-          if (node.isLeaf) {
-            localSearch.countMap[node.parentNode.id][LEAF_CHILDREN] += 1
+          const childMatched = child.isMatched
+          if (child.isLeaf) {
+            if (childMatched) {
+              count[ALL_CHILDREN]++
+              count[ALL_DESCENDANTS]++
+              count[LEAF_CHILDREN]++
+              count[LEAF_DESCENDANTS]++
+            }
+          } else {
+            const childCount = countMap[child.id]
+            if (childMatched) {
+              count[ALL_CHILDREN]++
+              count[ALL_DESCENDANTS]++
+            }
+            count[ALL_DESCENDANTS] += childCount[ALL_DESCENDANTS]
+            count[LEAF_DESCENDANTS] += childCount[LEAF_DESCENDANTS]
           }
         }
+
+        countMap[node.id] = count
+        node.isExpandedOnSearch = expandedOnSearch
+        node.hasMatchedDescendants = expandedOnSearch
+        node.showAllChildrenOnSearch = false
       }
 
-      // Expand ancestors if this node is matched or expanded on search
-      if (
-        (node.isMatched || (node.isBranch && node.isExpandedOnSearch)) &&
-        node.parentNode !== NO_PARENT_NODE
-      ) {
-        node.parentNode.isExpandedOnSearch = true
-        node.parentNode.hasMatchedDescendants = true
-      }
-    })
+      node.isMatched = matched
+      return matched || (node.isBranch && !!node.isExpandedOnSearch)
+    }
+
+    const roots = getNormalizedOptions()
+    for (let i = 0; i < roots.length; i++) visit(roots[i])
+
+    localSearch.countMap = countMap as Record<NodeId, CountMap>
+    localSearch.noResults = noResults
 
     done()
   }

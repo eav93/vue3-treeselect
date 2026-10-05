@@ -10,6 +10,7 @@ export { warning } from './warning'
 
 export { onLeftClick } from './onLeftClick'
 export { scrollIntoView } from './scrollIntoView'
+export { cssEscape } from './cssEscape'
 export { debounce } from './debounce'
 export { watchSize } from './watchSize'
 export { setupResizeAndScrollEventListeners } from './setupResizeAndScrollEventListeners'
@@ -22,14 +23,7 @@ export { isNaN } from './isNaN'
 export { isPromise } from './isPromise'
 export { once } from './once'
 export { noop } from './noop'
-export { identity } from './identity'
-export { constant } from './constant'
 export { createMap } from './createMap'
-export { deepExtend } from './deepExtend'
-export { last, getLast } from './last'
-export { includes } from './includes'
-export { find } from './find'
-export { removeFromArray } from './removeFromArray'
 
 // ========================
 // Other Utilities

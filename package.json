@@ -1,9 +1,12 @@
 {
   "name": "@eav93/vue3-treeselect",
-  "version": "0.2.5",
+  "version": "0.3.0",
   "main": "./dist/vue3-treeselect.js",
   "module": "./dist/vue3-treeselect.mjs",
+  "types": "./dist/types/index.d.ts",
+  "unpkg": "./dist/vue3-treeselect.umd.js",
   "style": "./dist/vue3-treeselect.css",
+  "sass": "./sass/style.scss",
   "description": "Tree select hierarchical component for vue 3 (next)",
   "author": "megafetis",
   "license": "MIT",
@@ -28,37 +31,39 @@
     "dev": "vite",
     "build": "vite build",
     "type-check": "vue-tsc --noEmit",
-    "prepublishOnly": "npm run type-check && npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepublishOnly": "npm run type-check && npm test && npm run build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "bench": "vitest run --config bench/vitest.config.ts",
+    "bench:browser": "node bench/browser/run.mjs"
   },
   "files": [
-    "css",
     "assets",
     "sass",
     "dist"
   ],
   "dependencies": {
-    "fuzzysearch": "1.0.3",
-    "is-promise": "4.0.0",
-    "lodash": "^4.17.23",
     "material-colors": "^1.2.6",
     "sass-easing": "^1.0.3"
   },
   "peerDependencies": {
     "vue": "^3.5.0"
   },
-  "peerDependenciesMeta": {
-    "vue": {
-      "optional": false
-    }
-  },
   "devDependencies": {
     "@types/lodash": "^4.17.23",
     "@types/node": "^25.0.10",
     "@vitejs/plugin-vue": "^6.0.3",
+    "@vue/test-utils": "^2.5.1",
+    "fuzzysearch": "1.0.3",
+    "happy-dom": "^20.14.5",
+    "is-promise": "4.0.0",
+    "lodash": "^4.17.23",
+    "playwright-core": "^1.63.0",
     "sass": "^1.97.3",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
+    "vite-plugin-dts": "^5.1.2",
+    "vitest": "^5.0.3",
     "vue": "^3.5.27",
     "vue-tsc": "^3.2.3",
     "watch-size": "2.0.0"

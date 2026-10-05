@@ -1,12 +1,12 @@
 import { computed } from 'vue'
-import { quickDiff, find, createMap } from '@/utils'
+import { createMap } from '@/utils'
+import {
+  ALL,
+  BRANCH_PRIORITY,
+  LEAF_PRIORITY,
+  ALL_WITH_INDETERMINATE,
+} from '@/constants'
 import type { NodeId, NormalizedNode, ForestState, TreeselectProps } from '@/types'
-
-// Constants - will be imported from constants.ts later
-const ALL = 'ALL'
-const BRANCH_PRIORITY = 'BRANCH_PRIORITY'
-const LEAF_PRIORITY = 'LEAF_PRIORITY'
-const ALL_WITH_INDETERMINATE = 'ALL_WITH_INDETERMINATE'
 
 /**
  * Sort nodes by index order
@@ -32,7 +32,6 @@ function sortValueByLevel(a: NormalizedNode, b: NormalizedNode): number {
 
 /**
  * Expand nodes up to parents when all siblings are selected
- * Helper to avoid code duplication in fixSelectedNodeIds
  */
 function expandNodesUpToParents(
   queue: NodeId[],
@@ -40,19 +39,20 @@ function expandNodesUpToParents(
   getNode: (id: NodeId) => NormalizedNode | null
 ): void {
   const map = createMap<number>()
-  while (queue.length) {
-    const nodeId = queue.shift()!
+  for (let head = 0; head < queue.length; head++) {
+    const nodeId = queue[head]
     const node = getNode(nodeId)
     if (!node) continue
 
     result.push(nodeId)
-    if (node.isRootNode) continue
+    if (node.isRootNode || !node.parentNode) continue
 
-    if (!(node.parentNode!.id in map)) {
-      map[node.parentNode!.id] = node.parentNode!.children!.length
+    const parentNode = node.parentNode
+    if (!(parentNode.id in map)) {
+      map[parentNode.id] = parentNode.children!.length
     }
-    if (--map[node.parentNode!.id] === 0) {
-      queue.push(node.parentNode!.id)
+    if (--map[parentNode.id] === 0) {
+      queue.push(parentNode.id)
     }
   }
 }
@@ -65,7 +65,6 @@ function expandNodesUpToParents(
  * @param getNode - Function to get node by ID
  * @param isSelected - Function to check if node is selected
  * @param traverseDescendantsBFS - Function to traverse descendants
- * @param enhancedNormalizer - Function to normalize raw nodes
  * @returns Value management methods and computed properties
  */
 export function useValue(
@@ -73,8 +72,7 @@ export function useValue(
   forest: ForestState,
   getNode: (id: NodeId) => NormalizedNode | null,
   isSelected: (node: NormalizedNode) => boolean,
-  traverseDescendantsBFS: (node: NormalizedNode, callback: (node: NormalizedNode) => void) => void,
-  enhancedNormalizer: (raw: any) => any
+  traverseDescendantsBFS: (node: NormalizedNode, callback: (node: NormalizedNode) => void) => void
 ) {
   /**
    * Selected nodes (full objects)
@@ -102,8 +100,8 @@ export function useValue(
       internalValue = forest.selectedNodeIds.filter(id => {
         const node = getNode(id)
         if (!node) return false
-        if (node.isRootNode) return true
-        return !isSelected(node.parentNode!)
+        if (node.isRootNode || !node.parentNode) return true
+        return !isSelected(node.parentNode)
       })
     } else if (props.valueConsistsOf === LEAF_PRIORITY) {
       // Only include leaves or empty branches
@@ -115,14 +113,18 @@ export function useValue(
       })
     } else if (props.valueConsistsOf === ALL_WITH_INDETERMINATE) {
       // Include all selected + indeterminate ancestors
-      const indeterminateNodeIds: NodeId[] = []
       internalValue = forest.selectedNodeIds.slice()
+      const seen = createMap<true>()
+      for (let i = 0; i < internalValue.length; i++) seen[internalValue[i]] = true
+      const indeterminateNodeIds: NodeId[] = []
       selectedNodes.value.forEach(selectedNode => {
-        selectedNode.ancestors.forEach(ancestor => {
-          if (indeterminateNodeIds.includes(ancestor.id)) return
-          if (internalValue.includes(ancestor.id)) return
-          indeterminateNodeIds.push(ancestor.id)
-        })
+        const ancestors = selectedNode.ancestors
+        for (let i = 0; i < ancestors.length; i++) {
+          const ancestorId = ancestors[i].id
+          if (seen[ancestorId]) continue
+          seen[ancestorId] = true
+          indeterminateNodeIds.push(ancestorId)
+        }
       })
       internalValue.push(...indeterminateNodeIds)
     } else {
@@ -130,10 +132,12 @@ export function useValue(
     }
 
     // Apply sorting
-    if (props.sortValueBy === 'LEVEL') {
-      internalValue.sort((a, b) => sortValueByLevel(getNode(a)!, getNode(b)!))
-    } else if (props.sortValueBy === 'INDEX') {
-      internalValue.sort((a, b) => sortValueByIndex(getNode(a)!, getNode(b)!))
+    if (props.sortValueBy === 'LEVEL' || props.sortValueBy === 'INDEX') {
+      const compare = props.sortValueBy === 'LEVEL' ? sortValueByLevel : sortValueByIndex
+      internalValue = internalValue
+        .map(id => getNode(id)!)
+        .sort(compare)
+        .map(node => node.id)
     }
 
     return internalValue
@@ -159,59 +163,16 @@ export function useValue(
   }
 
   /**
-   * Extract node IDs from modelValue prop
-   */
-  const extractCheckedNodeIdsFromValue = (): NodeId[] => {
-    if (props.modelValue == null) return []
-
-    if (props.valueFormat === 'id') {
-      return props.multiple
-        ? props.modelValue.slice()
-        : [props.modelValue]
-    }
-
-    return (props.multiple ? props.modelValue : [props.modelValue])
-      .map((node: any) => enhancedNormalizer(node))
-      .map((node: any) => node.id)
-  }
-
-  /**
-   * Extract raw node from modelValue by ID
-   */
-  const extractNodeFromValue = (id: NodeId): any => {
-    const defaultNode = { id }
-
-    if (props.valueFormat === 'id') {
-      return defaultNode
-    }
-
-    const valueArray = props.multiple
-      ? Array.isArray(props.modelValue) ? props.modelValue : []
-      : props.modelValue ? [props.modelValue] : []
-
-    const matched = find(
-      valueArray,
-      (node: any) => node && enhancedNormalizer(node).id === id
-    )
-
-    return matched || defaultNode
-  }
-
-  /**
-   * Fix selectedNodeIds based on valueConsistsOf mode
+   * Compute selectedNodeIds based on valueConsistsOf mode
    * This expands/contracts the selection based on the mode
    *
    * @param nodeIdListOfPrevValue - Previous value node IDs
-   * @param buildForestState - Function to rebuild forest state
    */
-  const fixSelectedNodeIds = (
-    nodeIdListOfPrevValue: NodeId[],
-    buildForestState: () => void
-  ): void => {
-    let nextSelectedNodeIds: NodeId[] = []
+  const computeSelectedNodeIds = (nodeIdListOfPrevValue: NodeId[]): NodeId[] => {
+    const nextSelectedNodeIds: NodeId[] = []
 
     if (single.value || props.flat || props.disableBranchNodes || props.valueConsistsOf === ALL) {
-      nextSelectedNodeIds = nodeIdListOfPrevValue
+      return nodeIdListOfPrevValue
     } else if (props.valueConsistsOf === BRANCH_PRIORITY) {
       // Expand to include all descendants of selected branches
       nodeIdListOfPrevValue.forEach(nodeId => {
@@ -235,12 +196,7 @@ export function useValue(
       expandNodesUpToParents(initialQueue, nextSelectedNodeIds, getNode)
     }
 
-    const hasChanged = quickDiff(forest.selectedNodeIds, nextSelectedNodeIds)
-    if (hasChanged) {
-      forest.selectedNodeIds = nextSelectedNodeIds
-    }
-
-    buildForestState()
+    return nextSelectedNodeIds
   }
 
   return {
@@ -249,8 +205,6 @@ export function useValue(
     internalValue,
     hasValue,
     getValue,
-    extractCheckedNodeIdsFromValue,
-    extractNodeFromValue,
-    fixSelectedNodeIds,
+    computeSelectedNodeIds,
   }
 }

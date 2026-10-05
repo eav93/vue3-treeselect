@@ -1,6 +1,6 @@
 import { nextTick } from 'vue'
-import { removeFromArray, getLast } from '@/utils'
-import { NO_PARENT_NODE, UNCHECKED } from '@/constants'
+import { createMap } from '@/utils'
+import { UNCHECKED } from '@/constants'
 import type {
   NormalizedNode,
   ForestState,
@@ -8,45 +8,59 @@ import type {
   TreeselectEmits,
   NodeId,
   LocalSearchState,
+  CheckedState,
 } from '@/types'
 
 /**
- * Composable for managing node selection
- *
- * @param props - Component props
- * @param emit - Emit function
- * @param forest - Forest state
- * @param getNode - Function to get node by ID
- * @param isSelected - Function to check if node is selected
- * @param traverseDescendantsBFS - Function to traverse descendants breadth-first
- * @param traverseDescendantsDFS - Function to traverse descendants depth-first
- * @param buildForestState - Function to rebuild forest state maps
- * @param resetSearchQuery - Function to reset search query
- * @param closeMenu - Function to close the menu
- * @param hasValue - Computed for whether any value is selected
- * @param internalValue - Computed for internal value
- * @param single - Computed for single mode
- * @param instanceId - Instance ID
- * @param localSearch - Local search state
- * @returns Selection methods
+ * Mutable working copy of the selection.
+ * All changes of one operation are collected here and committed at once,
+ * which keeps every operation O(changes) instead of O(changes * selected).
  */
-export function useSelection(
-  props: TreeselectProps,
-  emit: TreeselectEmits,
-  forest: ForestState,
-  getNode: (id: NodeId) => NormalizedNode | null,
-  isSelected: (node: NormalizedNode) => boolean,
-  traverseDescendantsBFS: (node: NormalizedNode, callback: (node: NormalizedNode) => void) => void,
-  traverseDescendantsDFS: (node: NormalizedNode, callback: (node: NormalizedNode) => void) => void,
-  buildForestState: () => void,
-  resetSearchQuery: () => void,
-  closeMenu: () => void,
-  hasValue: () => boolean,
-  internalValue: () => NodeId[],
-  single: () => boolean,
-  instanceId: string | number,
+interface SelectionDraft {
+  has: (node: NormalizedNode) => boolean
+  add: (node: NormalizedNode) => void
+  remove: (node: NormalizedNode) => void
+  commit: () => void
+}
+
+/**
+ * Composable for managing node selection
+ */
+export function useSelection(options: {
+  props: TreeselectProps
+  emit: TreeselectEmits
+  forest: ForestState
+  getNode: (id: NodeId) => NormalizedNode | null
+  getCheckedState: (node: NormalizedNode) => CheckedState | undefined
+  setSelectedNodeIds: (ids: NodeId[]) => void
+  traverseDescendantsBFS: (node: NormalizedNode, callback: (node: NormalizedNode) => void) => void
+  traverseDescendantsDFS: (node: NormalizedNode, callback: (node: NormalizedNode) => void) => void
+  resetSearchQuery: () => void
+  closeMenu: () => void
+  hasValue: () => boolean
+  internalValue: () => NodeId[]
+  single: () => boolean
+  getInstanceId: () => NodeId
   localSearch: LocalSearchState
-) {
+}) {
+  const {
+    props,
+    emit,
+    forest,
+    getNode,
+    getCheckedState,
+    setSelectedNodeIds,
+    traverseDescendantsBFS,
+    traverseDescendantsDFS,
+    resetSearchQuery,
+    closeMenu,
+    hasValue,
+    internalValue,
+    single,
+    getInstanceId,
+    localSearch,
+  } = options
+
   /**
    * Flags for internal state
    */
@@ -62,20 +76,38 @@ export function useSelection(
     return shouldBlur
   }
 
-  /**
-   * Add a node to selection
-   */
-  const addValue = (node: NormalizedNode): void => {
-    forest.selectedNodeIds.push(node.id)
-    forest.selectedNodeMap[node.id] = true
-  }
+  const createDraft = (initialIds: NodeId[] = forest.selectedNodeIds): SelectionDraft => {
+    const prevIds = initialIds
+    const set = createMap<true>()
+    for (let i = 0; i < prevIds.length; i++) set[prevIds[i]] = true
+    const added: NodeId[] = []
+    const addedSet = createMap<true>()
 
-  /**
-   * Remove a node from selection
-   */
-  const removeValue = (node: NormalizedNode): void => {
-    removeFromArray(forest.selectedNodeIds, node.id)
-    delete forest.selectedNodeMap[node.id]
+    return {
+      has: node => set[node.id] === true,
+      add: node => {
+        if (set[node.id]) return
+        set[node.id] = true
+        if (!addedSet[node.id]) {
+          addedSet[node.id] = true
+          added.push(node.id)
+        }
+      },
+      remove: node => {
+        delete set[node.id]
+      },
+      commit: () => {
+        const next: NodeId[] = []
+        for (let i = 0; i < prevIds.length; i++) {
+          const id = prevIds[i]
+          if (set[id] && !addedSet[id]) next.push(id)
+        }
+        for (let i = 0; i < added.length; i++) {
+          if (set[added[i]]) next.push(added[i])
+        }
+        setSelectedNodeIds(next)
+      },
+    }
   }
 
   /**
@@ -85,43 +117,36 @@ export function useSelection(
     if (!hasValue()) return
 
     if (single() || props.allowClearingDisabled) {
-      forest.selectedNodeIds = []
+      setSelectedNodeIds([])
     } else {
       // Multi mode: keep disabled nodes
-      forest.selectedNodeIds = forest.selectedNodeIds.filter(nodeId => {
+      setSelectedNodeIds(forest.selectedNodeIds.filter(nodeId => {
         const node = getNode(nodeId)
         return node ? node.isDisabled : false
-      })
+      }))
     }
-
-    buildForestState()
   }
 
   /**
-   * Select a node (private - called by select())
-   * Handles cascading selection logic
+   * Select a node, handling cascading selection logic
    */
-  const _selectNode = (node: NormalizedNode): void => {
+  const selectNode = (draft: SelectionDraft, node: NormalizedNode): void => {
     // Single mode or disableBranchNodes: just add value
     if (single() || props.disableBranchNodes) {
-      return addValue(node)
+      return draft.add(node)
     }
 
     // Flat mode
     if (props.flat) {
-      addValue(node)
+      draft.add(node)
 
       if (props.autoSelectAncestors) {
         node.ancestors.forEach(ancestor => {
-          if (!isSelected(ancestor) && !ancestor.isDisabled) {
-            addValue(ancestor)
-          }
+          if (!draft.has(ancestor) && !ancestor.isDisabled) draft.add(ancestor)
         })
       } else if (props.autoSelectDescendants) {
         traverseDescendantsBFS(node, descendant => {
-          if (!isSelected(descendant) && !descendant.isDisabled) {
-            addValue(descendant)
-          }
+          if (!draft.has(descendant) && !descendant.isDisabled) draft.add(descendant)
         })
       }
 
@@ -132,18 +157,21 @@ export function useSelection(
     const isFullyChecked = (
       node.isLeaf ||
       !node.hasDisabledDescendants ||
-      props.allowSelectingDisabledDescendants
+      !!props.allowSelectingDisabledDescendants
     )
 
     if (isFullyChecked) {
-      addValue(node)
+      draft.add(node)
     }
 
     // Select all descendants if branch
     if (node.isBranch) {
       traverseDescendantsBFS(node, descendant => {
         if (!descendant.isDisabled || props.allowSelectingDisabledDescendants) {
-          addValue(descendant)
+          // A branch containing disabled descendants can't become fully checked
+          if (descendant.isBranch && descendant.hasDisabledDescendants &&
+            !props.allowSelectingDisabledDescendants) return
+          draft.add(descendant)
         }
       })
     }
@@ -151,9 +179,9 @@ export function useSelection(
     // Auto-select ancestors if all siblings are selected
     if (isFullyChecked) {
       let curr: NormalizedNode | null = node
-      while ((curr = curr.parentNode) !== NO_PARENT_NODE) {
-        if (curr && curr.children!.every(isSelected)) {
-          addValue(curr)
+      while ((curr = curr.parentNode) !== null) {
+        if (curr.children!.every(draft.has)) {
+          draft.add(curr)
         } else {
           break
         }
@@ -162,30 +190,25 @@ export function useSelection(
   }
 
   /**
-   * Deselect a node (private - called by select())
-   * Handles cascading deselection logic
+   * Deselect a node, handling cascading deselection logic
    */
-  const _deselectNode = (node: NormalizedNode): void => {
+  const deselectNode = (draft: SelectionDraft, node: NormalizedNode): void => {
     // disableBranchNodes mode
     if (props.disableBranchNodes) {
-      return removeValue(node)
+      return draft.remove(node)
     }
 
     // Flat mode
     if (props.flat) {
-      removeValue(node)
+      draft.remove(node)
 
       if (props.autoDeselectAncestors) {
         node.ancestors.forEach(ancestor => {
-          if (isSelected(ancestor) && !ancestor.isDisabled) {
-            removeValue(ancestor)
-          }
+          if (draft.has(ancestor) && !ancestor.isDisabled) draft.remove(ancestor)
         })
       } else if (props.autoDeselectDescendants) {
         traverseDescendantsBFS(node, descendant => {
-          if (isSelected(descendant) && !descendant.isDisabled) {
-            removeValue(descendant)
-          }
+          if (draft.has(descendant) && !descendant.isDisabled) draft.remove(descendant)
         })
       }
 
@@ -197,7 +220,7 @@ export function useSelection(
     if (node.isBranch) {
       traverseDescendantsDFS(node, descendant => {
         if (!descendant.isDisabled || props.allowSelectingDisabledDescendants) {
-          removeValue(descendant)
+          draft.remove(descendant)
           hasUncheckedSomeDescendants = true
         }
       })
@@ -209,13 +232,13 @@ export function useSelection(
       hasUncheckedSomeDescendants ||
       (node.isBranch && node.children!.length === 0)
     ) {
-      removeValue(node)
+      draft.remove(node)
 
       // Auto-deselect ancestors
       let curr: NormalizedNode | null = node
-      while ((curr = curr.parentNode) !== NO_PARENT_NODE) {
-        if (curr && isSelected(curr)) {
-          removeValue(curr)
+      while ((curr = curr.parentNode) !== null) {
+        if (draft.has(curr)) {
+          draft.remove(curr)
         } else {
           break
         }
@@ -232,26 +255,25 @@ export function useSelection(
       return
     }
 
-    // Single mode: clear first
-    if (single()) {
-      clear()
-    }
+    // Single mode: start from an empty selection
+    const draft = createDraft(single() ? [] : forest.selectedNodeIds)
 
     // Determine next state
     const nextState = props.multiple && !props.flat
-      ? forest.checkedStateMap[node.id] === UNCHECKED
-      : !isSelected(node)
+      ? getCheckedState(node) === UNCHECKED
+      : !draft.has(node)
 
     // Apply selection/deselection
     if (nextState) {
-      _selectNode(node)
+      selectNode(draft, node)
     } else {
-      _deselectNode(node)
+      deselectNode(draft, node)
     }
 
-    buildForestState()
+    draft.commit()
 
     // Emit events
+    const instanceId = getInstanceId()
     void nextTick(() => {
       if (nextState) {
         emit('select', node.raw, instanceId)
@@ -282,8 +304,9 @@ export function useSelection(
     if (!hasValue()) return
     if (single()) return clear()
 
-    const lastValue = getLast(internalValue())
-    if (!lastValue) return
+    const value = internalValue()
+    const lastValue = value[value.length - 1]
+    if (lastValue == null) return
     const lastSelectedNode = getNode(lastValue)
     if (lastSelectedNode) {
       select(lastSelectedNode) // This will deselect it
@@ -293,8 +316,6 @@ export function useSelection(
   return {
     select,
     clear,
-    addValue,
-    removeValue,
     removeLastValue,
     resetFlags,
   }

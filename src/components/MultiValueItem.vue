@@ -1,16 +1,11 @@
 <template>
   <div class="vue-treeselect__multi-value-item-container">
     <div :class="itemClass" @mousedown="handleMouseDown">
-      <!-- Custom value label renderer -->
-      <component
-        v-if="customValueLabelRenderer"
-        :is="customValueLabelRenderer"
-        :node="node"
-        class="vue-treeselect__multi-value-label"
-      />
-      <!-- Default label -->
-      <span v-else class="vue-treeselect__multi-value-label">
-        {{ node.label }}
+      <span class="vue-treeselect__multi-value-label">
+        <!-- Custom value label renderer -->
+        <SlotRenderer v-if="treeselect.slots['value-label']" :render-slot="treeselect.slots['value-label']" :scope="{ node }" />
+        <!-- Default label -->
+        <template v-else>{{ node.label }}</template>
       </span>
       <span class="vue-treeselect__icon vue-treeselect__value-remove">
         <DeleteIcon />
@@ -20,29 +15,24 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, useSlots } from 'vue'
+import { computed } from 'vue'
 import { onLeftClick } from '@/utils'
+import { useTreeselectContext } from '@/context'
+import SlotRenderer from '@/components/SlotRenderer'
 import DeleteIcon from '@/components/icons/Delete.vue'
-import type { TreeselectInstance, NormalizedNode } from '@/types'
+import type { NormalizedNode } from '@/types'
 
-interface Props {
+const props = defineProps<{
   node: NormalizedNode
-}
+}>()
 
-const props = defineProps<Props>()
-const slots = useSlots()
-
-const treeselect = inject<TreeselectInstance>('treeselect')!
+const treeselect = useTreeselectContext()
 
 const itemClass = computed(() => ({
   'vue-treeselect__multi-value-item': true,
   'vue-treeselect__multi-value-item-disabled': props.node.isDisabled,
   'vue-treeselect__multi-value-item-new': props.node.isNew,
 }))
-
-const customValueLabelRenderer = computed(() => {
-  return slots['value-label']
-})
 
 const handleMouseDown = onLeftClick(function () {
   // Deselect this node

@@ -1,36 +1,40 @@
 <template>
   <div
-    v-if="searchable && !disabled"
+    v-if="searchable"
     class="vue-treeselect__input-container"
   >
-    <input
-      ref="inputRef"
-      class="vue-treeselect__input"
-      type="text"
-      autocomplete="off"
-      :tabindex="tabIndex"
-      :required="required && !hasValue"
-      v-model="value"
-      :style="inputStyle"
-      @focus="onFocus"
-      @input="onInput"
-      @blur="onBlur"
-      @keydown="onKeyDown"
-      @mousedown="onMouseDown"
-    />
-    <div
-      v-if="needAutoSize"
-      ref="sizerRef"
-      class="vue-treeselect__sizer"
-    >
-      {{ value }}
-    </div>
+    <template v-if="!disabled">
+      <input
+        ref="inputRef"
+        class="vue-treeselect__input"
+        type="text"
+        autocomplete="off"
+        :tabindex="props.tabIndex"
+        :required="props.required && !treeselect.hasValue.value"
+        :value="value"
+        :style="inputStyle"
+        @focus="onFocus"
+        @input="onInput"
+        @compositionstart="onCompositionStart"
+        @compositionend="onCompositionEnd"
+        @blur="onBlur"
+        @keydown="onKeyDown"
+        @mousedown="onMouseDown"
+      />
+      <div
+        v-if="needAutoSize"
+        ref="sizerRef"
+        class="vue-treeselect__sizer"
+      >
+        {{ value }}
+      </div>
+    </template>
   </div>
   <div
     v-else
     ref="inputRef"
     class="vue-treeselect__input-container"
-    :tabindex="!disabled ? tabIndex : undefined"
+    :tabindex="!disabled ? props.tabIndex : undefined"
     @focus="onFocus"
     @blur="onBlur"
     @keydown="onKeyDown"
@@ -38,39 +42,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, inject, nextTick } from 'vue'
-import { debounce, includes } from '@/utils'
+import { ref, computed, watch, nextTick, onBeforeUnmount } from 'vue'
+import { debounce } from '@/utils'
+import { useTreeselectContext } from '@/context'
 import { MIN_INPUT_WIDTH, KEYS, INPUT_DEBOUNCE_DELAY } from '@/constants'
-import type { TreeselectInstance } from '@/types'
 
-// ============================================================================
-// Inject treeselect instance
-// ============================================================================
-
-const treeselect = inject<TreeselectInstance>('treeselect')!
+const treeselect = useTreeselectContext()
+const props = treeselect.props
 
 // ============================================================================
 // Refs
 // ============================================================================
 
-const inputRef = ref<HTMLInputElement>()
+const inputRef = ref<HTMLElement | null>(null)
 const sizerRef = ref<HTMLDivElement>()
 const inputWidth = ref(MIN_INPUT_WIDTH)
-const value = ref('')
+const value = ref(treeselect.trigger.searchQuery)
+let isComposing = false
+
+// Register the focusable element with the root component
+watch(inputRef, (el, prevEl) => {
+  if (el) {
+    treeselect.setInputElement(el)
+  } else if (prevEl && treeselect.getInput() === prevEl) {
+    treeselect.setInputElement(null)
+  }
+}, { flush: 'sync' })
 
 // ============================================================================
 // Computed
 // ============================================================================
 
-const searchable = computed(() => treeselect.searchable)
-const disabled = computed(() => treeselect.disabled)
-const multiple = computed(() => treeselect.multiple)
-const tabIndex = computed(() => treeselect.tabIndex)
-const required = computed(() => treeselect.required)
-const hasValue = computed(() => treeselect.hasValue.value)
+const searchable = computed(() => props.searchable)
+const disabled = computed(() => props.disabled)
 
 const needAutoSize = computed(() => {
-  return searchable.value && !disabled.value && multiple.value
+  return searchable.value && !disabled.value && props.multiple
 })
 
 const inputStyle = computed(() => ({
@@ -81,7 +88,7 @@ const inputStyle = computed(() => ({
 // Keyboard navigation helpers
 // ============================================================================
 
-const keysThatRequireMenuBeingOpen = [
+const keysThatRequireMenuBeingOpen: string[] = [
   KEYS.ENTER,
   KEYS.END,
   KEYS.HOME,
@@ -110,6 +117,7 @@ const updateSearchQuery = (): void => {
 
 const clear = (): void => {
   value.value = ''
+  debouncedCallback.cancel()
   updateSearchQuery()
 }
 
@@ -120,9 +128,7 @@ const focus = (): void => {
 }
 
 const blur = (): void => {
-  if (inputRef.value) {
-    inputRef.value.blur()
-  }
+  inputRef.value?.blur()
 }
 
 // ============================================================================
@@ -131,13 +137,13 @@ const blur = (): void => {
 
 const onFocus = (): void => {
   treeselect.trigger.isFocused = true
-  if (treeselect.openOnFocus) {
+  if (props.openOnFocus) {
     treeselect.openMenu()
   }
 }
 
 const onBlur = (): void => {
-  const menu = treeselect.getMenu?.()
+  const menu = treeselect.getMenu()
 
   // Prevent blur if a menu has focus
   if (menu && document.activeElement === menu) {
@@ -150,11 +156,11 @@ const onBlur = (): void => {
 
 const debouncedCallback = debounce(
   updateSearchQuery,
-  INPUT_DEBOUNCE_DELAY,
+  props.searchDebounceDelay ?? INPUT_DEBOUNCE_DELAY,
   { leading: true, trailing: true }
 )
 
-const onInput = (): void => {
+const handleValueChange = (): void => {
   if (value.value) {
     debouncedCallback()
   } else {
@@ -163,38 +169,57 @@ const onInput = (): void => {
   }
 }
 
+const onInput = (evt: Event): void => {
+  value.value = (evt.target as HTMLInputElement).value
+  // Don't search with incomplete IME input (Chinese, Japanese, Korean...)
+  if (isComposing) return
+  handleValueChange()
+}
+
+const onCompositionStart = (): void => {
+  isComposing = true
+}
+
+const onCompositionEnd = (evt: CompositionEvent): void => {
+  isComposing = false
+  value.value = (evt.target as HTMLInputElement).value
+  handleValueChange()
+}
+
 const onKeyDown = (evt: KeyboardEvent): void => {
   const key = evt.key
 
-  if (evt.ctrlKey || evt.shiftKey || evt.altKey || evt.metaKey) {
+  if (evt.ctrlKey || evt.shiftKey || evt.altKey || evt.metaKey || isComposing) {
     return
   }
 
-  if (!treeselect.menu.value.isOpen && includes(keysThatRequireMenuBeingOpen, key)) {
+  if (!treeselect.menu.isOpen && keysThatRequireMenuBeingOpen.includes(key)) {
     evt.preventDefault()
     return treeselect.openMenu()
   }
 
   switch (key) {
     case KEYS.BACKSPACE: {
-      if (treeselect.backspaceRemoves && !value.value.length) {
+      if (props.backspaceRemoves && !value.value.length) {
         treeselect.removeLastValue()
       }
       break
     }
     case KEYS.ENTER: {
       evt.preventDefault()
-      if (treeselect.menu.value.current === null) return
-      const current = treeselect.getNode(treeselect.menu.value.current)
+      if (treeselect.menu.current === null) return
+      const current = treeselect.getNode(treeselect.menu.current)
       if (!current) return
-      if (current.isBranch && treeselect.disableBranchNodes) return
+      // The highlighted option may be hidden by the current search
+      if (!treeselect.shouldShowOptionInMenu(current)) return
+      if (current.isBranch && props.disableBranchNodes) return
       treeselect.select(current)
       break
     }
     case KEYS.ESCAPE: {
       if (value.value.length) {
         clear()
-      } else if (treeselect.menu.value.isOpen) {
+      } else if (treeselect.menu.isOpen) {
         treeselect.closeMenu()
       }
       break
@@ -210,17 +235,14 @@ const onKeyDown = (evt: KeyboardEvent): void => {
       break
     }
     case KEYS.ARROW_LEFT: {
-      const currentId = treeselect.menu.value.current
+      const currentId = treeselect.menu.current
       if (currentId === null) break
       const current = treeselect.getNode(currentId)
       if (current) {
         if (current.isBranch && treeselect.shouldExpand(current)) {
           evt.preventDefault()
           treeselect.toggleExpanded(current)
-        } else if (
-          !current.isRootNode &&
-          (current.isLeaf || (current.isBranch && !treeselect.shouldExpand(current)))
-        ) {
+        } else if (!current.isRootNode && current.parentNode) {
           evt.preventDefault()
           treeselect.setCurrentHighlightedOption(current.parentNode)
         }
@@ -233,14 +255,12 @@ const onKeyDown = (evt: KeyboardEvent): void => {
       break
     }
     case KEYS.ARROW_RIGHT: {
-      const currentId = treeselect.menu.value.current
+      const currentId = treeselect.menu.current
       if (currentId === null) break
       const current = treeselect.getNode(currentId)
-      if (current) {
-        if (current.isBranch && !treeselect.shouldExpand(current)) {
-          evt.preventDefault()
-          treeselect.toggleExpanded(current)
-        }
+      if (current && current.isBranch && !treeselect.shouldExpand(current)) {
+        evt.preventDefault()
+        treeselect.toggleExpanded(current)
       }
       break
     }
@@ -250,7 +270,7 @@ const onKeyDown = (evt: KeyboardEvent): void => {
       break
     }
     case KEYS.DELETE: {
-      if (treeselect.deleteRemoves && !value.value.length) {
+      if (props.deleteRemoves && !value.value.length) {
         treeselect.removeLastValue()
       }
       break
@@ -269,7 +289,7 @@ const onMouseDown = (evt: MouseEvent): void => {
 }
 
 // ============================================================================
-// Watchers
+// Watchers & lifecycle
 // ============================================================================
 
 watch(() => treeselect.trigger.searchQuery, (newValue: string) => {
@@ -282,14 +302,16 @@ watch(value, () => {
   }
 })
 
-// ============================================================================
-// Expose methods for parent
-// ============================================================================
+onBeforeUnmount(() => {
+  debouncedCallback.cancel()
+  if (inputRef.value && treeselect.getInput() === inputRef.value) {
+    treeselect.setInputElement(null)
+  }
+})
 
 defineExpose({
   clear,
   focus,
   blur,
-  inputElement: inputRef,
 })
 </script>

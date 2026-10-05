@@ -2,11 +2,11 @@
   <div
     ref="controlRef"
     class="vue-treeselect__control"
-    @mousedown="instance.handleMouseDown"
+    @mousedown="treeselect.handleMouseDown"
   >
     <div ref="valueContainerRef" class="vue-treeselect__value-container">
-      <SingleValue v-if="single" ref="valueComponentRef" />
-      <MultiValue v-else ref="valueComponentRef" />
+      <SingleValue v-if="treeselect.single.value" />
+      <MultiValue v-else />
     </div>
 
     <div
@@ -29,28 +29,36 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { onLeftClick, isPromise } from '@/utils'
+import { useTreeselectContext } from '@/context'
 import SingleValue from '@/components/SingleValue.vue'
 import MultiValue from '@/components/MultiValue.vue'
 import DeleteIcon from '@/components/icons/Delete.vue'
 import ArrowIcon from '@/components/icons/Arrow.vue'
-import type { TreeselectInstance } from '@/types'
 
-// ============================================================================
-// Inject treeselect instance
-// ============================================================================
+const treeselect = useTreeselectContext()
+const props = treeselect.props
 
-const treeselect = inject<TreeselectInstance>('treeselect')!
-// Used in template @mousedown="instance.handleMouseDown"
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const instance = inject<any>('instance')!
+const controlRef = ref<HTMLElement>()
+const valueContainerRef = ref<HTMLElement>()
+
+onMounted(() => {
+  treeselect.setControlElement(controlRef.value || null)
+  treeselect.setValueContainerElement(valueContainerRef.value || null)
+})
+
+let isUnmounted = false
+
+onBeforeUnmount(() => {
+  isUnmounted = true
+  treeselect.setControlElement(null)
+  treeselect.setValueContainerElement(null)
+})
 
 // ============================================================================
 // Computed
 // ============================================================================
-
-const single = computed(() => treeselect.single.value)
 
 /**
  * Has any undisabled option been selected?
@@ -58,7 +66,7 @@ const single = computed(() => treeselect.single.value)
 const hasUndisabledValue = computed(() => {
   return (
     treeselect.hasValue.value &&
-    treeselect.internalValue.value.some((id: any) => {
+    treeselect.internalValue.value.some(id => {
       const node = treeselect.getNode(id)
       return node && !node.isDisabled
     })
@@ -70,10 +78,10 @@ const hasUndisabledValue = computed(() => {
  */
 const shouldShowX = computed(() => {
   return (
-    treeselect.clearable &&
-    !treeselect.disabled &&
+    props.clearable &&
+    !props.disabled &&
     treeselect.hasValue.value &&
-    (hasUndisabledValue.value || treeselect.allowClearingDisabled)
+    (hasUndisabledValue.value || props.allowClearingDisabled)
   )
 })
 
@@ -81,21 +89,21 @@ const shouldShowX = computed(() => {
  * Should show the arrow button that toggles menu?
  */
 const shouldShowArrow = computed(() => {
-  if (!treeselect.alwaysOpen) return true
+  if (!props.alwaysOpen) return true
   // Even with alwaysOpen: true, sometimes the menu is still closed
   // e.g. when the control is disabled
-  return !treeselect.menu.value.isOpen
+  return !treeselect.menu.isOpen
 })
 
 const xTitle = computed(() => {
-  return treeselect.multiple
-    ? treeselect.clearAllText
-    : treeselect.clearValueText
+  return props.multiple
+    ? props.clearAllText
+    : props.clearValueText
 })
 
 const arrowClass = computed(() => ({
   'vue-treeselect__control-arrow': true,
-  'vue-treeselect__control-arrow--rotated': treeselect.menu.value.isOpen,
+  'vue-treeselect__control-arrow--rotated': treeselect.menu.isOpen,
 }))
 
 // ============================================================================
@@ -109,14 +117,14 @@ const handleMouseDownOnX = onLeftClick(function (evt: MouseEvent) {
   evt.stopPropagation()
   evt.preventDefault()
 
-  const result = treeselect.beforeClearAll()
+  const result = props.beforeClearAll ? props.beforeClearAll() : true
   const handler = (shouldClear: boolean) => {
-    if (shouldClear) treeselect.clear()
+    if (shouldClear && !isUnmounted) treeselect.clear()
   }
 
   if (isPromise(result)) {
     // Handle async beforeClearAll
-    void result.then((value) => handler(value as boolean))
+    void (result as Promise<boolean>).then(handler)
   } else {
     // Keep same behavior - call async
     setTimeout(() => handler(result as boolean), 0)
@@ -131,31 +139,7 @@ const handleMouseDownOnArrow = onLeftClick(function (evt: MouseEvent) {
   evt.stopPropagation()
 
   // Focus the input or prevent blurring
-  instance.focusInput()
+  treeselect.focusInput()
   treeselect.toggleMenu()
-})
-
-// ============================================================================
-// Template refs
-// ============================================================================
-
-const controlRef = ref<HTMLElement>()
-const valueContainerRef = ref<HTMLElement>()
-const valueComponentRef = ref<any>()
-
-// ============================================================================
-// Computed - Input element from value component
-// ============================================================================
-
-const inputElement = computed(() => valueComponentRef.value?.inputElement?.value?.inputElement)
-
-// ============================================================================
-// Expose public API for parent component
-// ============================================================================
-
-defineExpose({
-  controlElement: controlRef,
-  valueContainer: valueContainerRef,
-  inputElement,
 })
 </script>

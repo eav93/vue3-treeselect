@@ -1,5 +1,4 @@
 import watchSizeForBrowsersOtherThanIE9 from 'watch-size'
-import { removeFromArray } from './removeFromArray'
 
 interface SizeWatchItem {
   $el: HTMLElement
@@ -49,7 +48,8 @@ function watchSizeForIE9(
     lastHeight: null,
   }
   const unwatch = (): void => {
-    removeFromArray(registered, item)
+    const index = registered.indexOf(item)
+    if (index !== -1) registered.splice(index, 1)
     if (!registered.length) stop()
   }
 

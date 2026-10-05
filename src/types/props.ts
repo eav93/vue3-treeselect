@@ -5,16 +5,21 @@ import type { RawNode } from './node'
  */
 export type LoadOptionsFunction = (params: {
   /** The action being performed */
-  action: string
+  action: 'LOAD_ROOT_OPTIONS' | 'LOAD_CHILDREN_OPTIONS' | 'ASYNC_SEARCH'
   /** Parent node when loading children */
   parentNode?: any
   /** Search query for async search */
   searchQuery?: string
-  /** Callback to call when loading is complete */
-  callback: (error?: Error | string) => void
+  /**
+   * Callback to call when loading is complete.
+   * For `ASYNC_SEARCH` pass the loaded options as the second argument.
+   */
+  callback: (error?: Error | string | null, result?: any) => void
   /** Instance ID */
   instanceId: string | number
-}) => void | Promise<void>
+  /** Instance ID (alias kept for backward compatibility) */
+  id: string | number
+}) => void | Promise<any>
 
 /**
  * Function type for normalizing raw nodes
@@ -159,6 +164,8 @@ export interface TreeselectProps {
   searchNested?: boolean
   /** Search prompt text */
   searchPromptText?: string
+  /** Debounce delay (ms) for search input */
+  searchDebounceDelay?: number
   /** Show count next to labels */
   showCount?: boolean
   /** What type of count to show */
@@ -177,6 +184,13 @@ export interface TreeselectProps {
   valueFormat?: ValueFormat
   /** Z-index of menu */
   zIndex?: number | string
+  /**
+   * Render only the options inside the visible part of the menu.
+   * Recommended for large trees. Option rows must have a fixed height.
+   */
+  virtualScroll?: boolean
+  /** Option row height (px) used by `virtualScroll`. Measured automatically if omitted. */
+  optionHeight?: number
 }
 
 /**

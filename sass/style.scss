@@ -70,6 +70,22 @@ $treeselect-multi-input-font-size: $treeselect-multi-value-font-size !default;
 $treeselect-menu-bg: #fff !default;
 $treeselect-menu-padding-y: $treeselect-padding !default;
 $treeselect-menu-line-height: 180% !default;
+// `auto` lets the browser skip rendering of options outside the menu viewport (much faster
+// for large trees). It also clips content overflowing a row: set to `visible` if a custom
+// `option-label` slot renders something outside of the row.
+$treeselect-option-content-visibility: auto !default;
+// Estimated height of an option row (used by `contain-intrinsic-size`)
+@function treeselect-line-height-to-length($line-height) {
+  @if math.unit($line-height) == "%" {
+    @return math.div($line-height, 100%) * 1em;
+  }
+  @if math.is-unitless($line-height) {
+    @return $line-height * 1em;
+  }
+  @return $line-height;
+}
+
+$treeselect-option-intrinsic-height: treeselect-line-height-to-length($treeselect-menu-line-height) !default;
 $treeselect-menu-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06) !default;
 $treeselect-control-menu-divider-color: #f2f2f2 !default;
 
@@ -320,18 +336,6 @@ $treeselect-checkbox-icon-height: 8px !default;
   }
 }
 
-.vue-treeselect__list--transition {
-  &-enter-active,
-  &-leave-active {
-    // to be overriden
-  }
-
-  &-enter,
-  &-leave-to {
-    // to be overriden
-  }
-}
-
 
 /**
  * Namespace
@@ -480,6 +484,9 @@ $treeselect-checkbox-icon-height: 8px !default;
   font-size: $treeselect-multi-value-font-size;
   vertical-align: top; // stylelint-disable-line plugin/declaration-block-no-ignored-properties
 
+  // Note: this selector (inherited from vue-treeselect) never matches, so the hover variables have
+  // no effect. It's kept as is: a working hover rule would override the hover color of everyone
+  // who customizes `.vue-treeselect__multi-value-item` with plain CSS.
   .vue-treeselect:not(.vue-treeselect--disabled) &:not(.vue-treeselect__multi-value-item-disabled):hover &:not(.vue-treeselect__multi-value-item-new) &:not(.vue-treeselect__multi-value-item-new):hover {
     @include clickable;
 
@@ -779,7 +786,18 @@ $treeselect-checkbox-icon-height: 8px !default;
 }
 
 .vue-treeselect__option {
-  @include row;
+  @include horizontal-padding($treeselect-padding);
+
+  // Flex instead of `display: table`: size containment (and thus `content-visibility`)
+  // doesn't apply to tables
+  display: flex;
+  align-items: stretch;
+  // Let the browser skip style & layout of rows outside the visible part of the menu.
+  // The intrinsic size is only an estimate until a row has been rendered once.
+  content-visibility: $treeselect-option-content-visibility;
+  @if $treeselect-option-content-visibility == auto {
+    contain-intrinsic-size: auto $treeselect-option-intrinsic-height;
+  }
 }
 
 .vue-treeselect__option--highlight {
@@ -798,13 +816,15 @@ $treeselect-checkbox-icon-height: 8px !default;
   }
 }
 
-.vue-treeselect__option--hide {
-  display: none;
-}
-
 .vue-treeselect__option-arrow-container,
 .vue-treeselect__option-arrow-placeholder {
   @include narrow-cell;
+
+  // Centered like a table cell inside the flex row
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
 }
 
 .vue-treeselect__option-arrow-container {
@@ -851,6 +871,8 @@ $treeselect-checkbox-icon-height: 8px !default;
   @include clickable;
 
   display: table;
+  flex: 1 1 auto;
+  min-width: 0;
   width: 100%;
   table-layout: fixed;
   color: $treeselect-option-label-color;

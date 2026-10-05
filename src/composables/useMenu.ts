@@ -1,5 +1,5 @@
 import { reactive, computed, nextTick } from 'vue'
-import { scrollIntoView, getLast } from '@/utils'
+import { scrollIntoView, createMap, cssEscape } from '@/utils'
 import type {
   MenuState,
   NormalizedNode,
@@ -8,41 +8,41 @@ import type {
   TreeselectEmits,
   NodeId,
   LocalSearchState,
+  MenuRow,
 } from '@/types'
 
 /**
  * Composable for managing menu state and highlighting
- *
- * @param props - Component props
- * @param emit - Emit function
- * @param forest - Forest state
- * @param localSearch - Local search state
- * @param getNode - Function to get node by ID
- * @param traverseAllNodesByIndex - Function to traverse all nodes by index
- * @param getValue - Function to get current value
- * @param instanceId - Instance ID
- * @param resetSearchQuery - Function to reset search query
- * @param loadRootOptions - Function to load root options
- * @param loadChildrenOptions - Function to load children options
- * @param getMenuElement - Function to get menu DOM element
- * @param toggleClickOutsideEvent - Function to toggle click outside listener
- * @returns Menu state and methods
  */
-export function useMenu(
-  props: TreeselectProps,
-  emit: TreeselectEmits,
-  forest: ForestState,
-  localSearch: LocalSearchState,
-  getNode: (id: NodeId) => NormalizedNode | null,
-  traverseAllNodesByIndex: (callback: (node: NormalizedNode) => boolean | void) => void,
-  getValue: () => any,
-  instanceId: string | number,
-  resetSearchQuery: () => void,
-  loadRootOptions: () => void,
-  loadChildrenOptions: (node: NormalizedNode) => void,
-  getMenuElement: () => HTMLElement | null,
+export function useMenu(options: {
+  props: TreeselectProps
+  emit: TreeselectEmits
+  forest: ForestState
+  localSearch: LocalSearchState
+  getNode: (id: NodeId) => NormalizedNode | null
+  getValue: () => any
+  getInstanceId: () => NodeId
+  resetSearchQuery: () => void
+  loadRootOptions: () => void
+  loadChildrenOptions: (node: NormalizedNode) => void
+  getMenuElement: () => HTMLElement | null
   toggleClickOutsideEvent: (enabled: boolean) => void
-) {
+}) {
+  const {
+    props,
+    emit,
+    forest,
+    localSearch,
+    getNode,
+    getValue,
+    getInstanceId,
+    resetSearchQuery,
+    loadRootOptions,
+    loadChildrenOptions,
+    getMenuElement,
+    toggleClickOutsideEvent,
+  } = options
+
   /**
    * Menu state
    */
@@ -79,34 +79,90 @@ export function useMenu(
    * Should an option be shown in menu?
    */
   const shouldShowOptionInMenu = (node: NormalizedNode): boolean => {
-    return !(localSearch.active && !shouldOptionBeIncludedInSearchResult(node));
-
+    return !(localSearch.active && !shouldOptionBeIncludedInSearchResult(node))
   }
 
   /**
-   * Get all visible option IDs (for highlighting navigation)
+   * All rows of the menu in display order: shown options and the tips
+   * (no children / loading / error) of expanded branches.
+   * The menu renders these as a flat list; keyboard navigation uses them as well.
+   */
+  const menuRows = computed<MenuRow[]>(() => {
+    const rows: MenuRow[] = []
+    const searching = localSearch.active
+    const flatten = searching && !!props.flattenSearchResults
+
+    const walk = (nodes: NormalizedNode[]): void => {
+      for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i]
+        if (!searching || shouldOptionBeIncludedInSearchResult(node)) {
+          rows.push({ type: 'option', key: `option-${node.id}`, node, level: flatten ? 0 : node.level })
+        }
+        if (!node.isBranch || !shouldExpand(node)) continue
+
+        const states = node.childrenStates
+        const tipLevel = flatten ? 0 : node.level
+        if (!states || states.isLoaded) {
+          const children = node.children || []
+          walk(children)
+          if (states && !children.length) {
+            rows.push({ type: 'no-children', key: `no-children-${node.id}`, node, level: tipLevel })
+          }
+        }
+        if (states?.isLoading) {
+          rows.push({ type: 'loading', key: `loading-${node.id}`, node, level: tipLevel })
+        }
+        if (states?.loadingError) {
+          rows.push({ type: 'error', key: `error-${node.id}`, node, level: tipLevel })
+        }
+      }
+    }
+
+    walk(forest.normalizedOptions)
+    return rows
+  })
+
+  /**
+   * IDs of all options shown in the menu (for highlighting navigation)
    */
   const visibleOptionIds = computed<NodeId[]>(() => {
     const ids: NodeId[] = []
-
-    traverseAllNodesByIndex(node => {
-      if (!localSearch.active || shouldOptionBeIncludedInSearchResult(node)) {
-        ids.push(node.id)
-      }
-      // Skip descendants if branch is not expanded
-      if (node.isBranch && !shouldExpand(node)) {
-        return false
-      }
-      return undefined
-    })
-
+    const rows = menuRows.value
+    for (let i = 0; i < rows.length; i++) {
+      if (rows[i].type === 'option') ids.push(rows[i].node.id)
+    }
     return ids
   })
+
+  /**
+   * Position of each visible option (for O(1) keyboard navigation)
+   */
+  const visibleOptionIndex = computed(() => {
+    const map = createMap<number>()
+    visibleOptionIds.value.forEach((id, index) => {
+      map[id] = index
+    })
+    return map
+  })
+
+  const getCurrentVisibleIndex = (): number => {
+    if (menu.current == null) return -1
+    const index = visibleOptionIndex.value[menu.current]
+    return index === undefined ? -1 : index
+  }
 
   /**
    * Has any visible options?
    */
   const hasVisibleOptions = computed(() => visibleOptionIds.value.length !== 0)
+
+  /**
+   * Hook used by the option list to scroll to an option (it may not be rendered yet)
+   */
+  let onScrollToOption: ((node: NormalizedNode) => void) | null = null
+  const setScrollToOptionHandler = (handler: ((node: NormalizedNode) => void) | null): void => {
+    onScrollToOption = handler
+  }
 
   /**
    * Set currently highlighted option
@@ -130,10 +186,11 @@ export function useMenu(
         const $menu = getMenuElement()
         if (!$menu) return
 
-        const $option = $menu.querySelector(`.vue-treeselect__option[data-id="${node.id}"]`)
-        if ($option) {
-          scrollIntoView($menu, $option as HTMLElement)
-        }
+        // The option list knows how to reach rows that are not rendered yet
+        if (onScrollToOption) return onScrollToOption(node)
+
+        const $option = $menu.querySelector(`.vue-treeselect__option[data-id="${cssEscape(String(node.id))}"]`)
+        if ($option) scrollIntoView($menu, $option as HTMLElement)
       }
 
       // In case openMenu() was just called and menu is not rendered yet
@@ -163,7 +220,7 @@ export function useMenu(
   const highlightPrevOption = (): void => {
     if (!hasVisibleOptions.value) return
 
-    const currentIndex = visibleOptionIds.value.indexOf(menu.current!)
+    const currentIndex = getCurrentVisibleIndex()
     const prev = currentIndex - 1
     if (prev === -1) return highlightLastOption()
 
@@ -177,7 +234,7 @@ export function useMenu(
   const highlightNextOption = (): void => {
     if (!hasVisibleOptions.value) return
 
-    const currentIndex = visibleOptionIds.value.indexOf(menu.current!)
+    const currentIndex = getCurrentVisibleIndex()
     const next = currentIndex + 1
     if (next === visibleOptionIds.value.length) return highlightFirstOption()
 
@@ -191,9 +248,8 @@ export function useMenu(
   const highlightLastOption = (): void => {
     if (!hasVisibleOptions.value) return
 
-    const last = getLast(visibleOptionIds.value)
-    if (!last) return
-    const node = getNode(last)
+    const ids = visibleOptionIds.value
+    const node = getNode(ids[ids.length - 1])
     if (node) setCurrentHighlightedOption(node)
   }
 
@@ -243,7 +299,7 @@ export function useMenu(
     menu.isOpen = false
     toggleClickOutsideEvent(false)
     resetSearchQuery()
-    emit('close', getValue(), instanceId)
+    emit('close', getValue(), getInstanceId())
   }
 
   /**
@@ -261,7 +317,7 @@ export function useMenu(
     }
 
     toggleClickOutsideEvent(true)
-    emit('open', instanceId)
+    emit('open', getInstanceId())
   }
 
   /**
@@ -291,13 +347,16 @@ export function useMenu(
     }
 
     // Load children if expanded and not loaded yet
-    if (nextState && !node.childrenStates!.isLoaded) {
+    if (nextState && node.childrenStates && !node.childrenStates.isLoaded) {
       loadChildrenOptions(node)
     }
   }
 
   return {
     menu,
+    setScrollToOptionHandler,
+    shouldOptionBeIncludedInSearchResult,
+    menuRows,
     visibleOptionIds,
     hasVisibleOptions,
     shouldExpand,

@@ -1,47 +1,49 @@
 import { reactive, nextTick } from 'vue'
 import { isPromise, once } from '@/utils'
+import { LOAD_ROOT_OPTIONS, LOAD_CHILDREN_OPTIONS } from '@/constants'
+import { createAsyncOptionsStates } from './useNodeNormalization'
 import type {
   AsyncOptionsStates,
   TreeselectProps,
   NormalizedNode,
+  NodeId,
 } from '@/types'
-
-// Constants - will be imported from constants.ts later
-const LOAD_ROOT_OPTIONS = 'LOAD_ROOT_OPTIONS'
-const LOAD_CHILDREN_OPTIONS = 'LOAD_CHILDREN_OPTIONS'
 
 /**
  * Get error message from error object
  */
-function getErrorMessage(err: any): string {
+export function getErrorMessage(err: any): string {
   return err.message || String(err)
 }
 
-/**
- * Helper to create async options states
- */
-function createAsyncOptionsStates(): AsyncOptionsStates {
-  return {
-    isLoaded: false,
-    isLoading: false,
-    loadingError: '',
-  }
+export interface LoadOptionsCall {
+  action: typeof LOAD_ROOT_OPTIONS | typeof LOAD_CHILDREN_OPTIONS | 'ASYNC_SEARCH'
+  args?: Record<string, any>
+  isPending: () => boolean
+  start: () => void
+  succeed: (result?: any) => void
+  fail: (err: any) => void
+  end: () => void
 }
+
+export type CallLoadOptionsProp = (params: LoadOptionsCall) => void
 
 /**
  * Composable for async options loading
  *
  * @param props - Component props
  * @param getNode - Function to get node by ID
- * @param instanceId - Instance ID
+ * @param getInstanceId - Instance ID getter
  * @param resetHighlightedOptionWhenNecessary - Function to reset highlighted option
+ * @param onChildrenLoaded - Called after children of a node have been loaded
  * @returns Async options methods and state
  */
 export function useAsyncOptions(
   props: TreeselectProps,
-  getNode: (id: string | number) => NormalizedNode | null,
-  instanceId: string | number,
-  resetHighlightedOptionWhenNecessary: (forceReset?: boolean) => void
+  getNode: (id: NodeId) => NormalizedNode | null,
+  getInstanceId: () => NodeId,
+  resetHighlightedOptionWhenNecessary: (forceReset?: boolean) => void,
+  onChildrenLoaded: () => void
 ) {
   /**
    * Root options loading state
@@ -51,15 +53,7 @@ export function useAsyncOptions(
   /**
    * Call loadOptions prop with proper lifecycle handling
    */
-  const callLoadOptionsProp = (params: {
-    action: string
-    args?: any
-    isPending: () => boolean
-    start: () => void
-    succeed: (result?: any) => void
-    fail: (err: any) => void
-    end: () => void
-  }): void => {
+  const callLoadOptionsProp: CallLoadOptionsProp = (params) => {
     const { action, args, isPending, start, succeed, fail, end } = params
 
     // Don't load if already pending or loadOptions is not provided
@@ -78,9 +72,10 @@ export function useAsyncOptions(
       end()
     })
 
+    const instanceId = getInstanceId()
     const loadResult = props.loadOptions({
       id: instanceId,
-      instanceId: instanceId,
+      instanceId,
       action,
       ...args,
       callback,
@@ -88,15 +83,14 @@ export function useAsyncOptions(
 
     // Handle promise-based loadOptions
     if (isPromise(loadResult)) {
-      void loadResult
-        .then(() => {
-          callback()
-        })
+      (loadResult as Promise<any>)
+        .then(
+          // The resolved value is used as the result (e.g. options for ASYNC_SEARCH)
+          (result: any) => callback(null, result),
+          (err: any) => callback(err || new Error('Failed to load options'))
+        )
         .catch((err: any) => {
-          callback(err)
-        })
-        .catch((err: any) => {
-          // istanbul ignore next
+          // Errors thrown by our own success handlers
           console.error(err)
         })
     }
@@ -148,31 +142,32 @@ export function useAsyncOptions(
       },
       isPending: () => {
         const node = getNode(id)
-        return node ? node.childrenStates!.isLoading : false
+        return node?.childrenStates ? node.childrenStates.isLoading : false
       },
       start: () => {
         const node = getNode(id)
-        if (node) {
-          node.childrenStates!.isLoading = true
-          node.childrenStates!.loadingError = ''
+        if (node?.childrenStates) {
+          node.childrenStates.isLoading = true
+          node.childrenStates.loadingError = ''
         }
       },
       succeed: () => {
         const node = getNode(id)
-        if (node) {
-          node.childrenStates!.isLoaded = true
+        if (node?.childrenStates) {
+          node.childrenStates.isLoaded = true
         }
+        onChildrenLoaded()
       },
       fail: (err: any) => {
         const node = getNode(id)
-        if (node) {
-          node.childrenStates!.loadingError = getErrorMessage(err)
+        if (node?.childrenStates) {
+          node.childrenStates.loadingError = getErrorMessage(err)
         }
       },
       end: () => {
         const node = getNode(id)
-        if (node) {
-          node.childrenStates!.isLoading = false
+        if (node?.childrenStates) {
+          node.childrenStates.isLoading = false
         }
       },
     })

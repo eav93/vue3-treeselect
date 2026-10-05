@@ -38,11 +38,15 @@ export interface AsyncOptionsStates {
 }
 
 /**
- * Normalized node structure used internally
+ * Normalized node structure used internally.
+ *
+ * Nodes are `shallowReactive`: top-level fields are reactive, nested
+ * structures (`children`, `ancestors`, `count`, `raw`) are not proxied.
+ * `childrenStates` is a separate reactive object.
  */
 export interface NormalizedNode {
   // Basic properties
-  id: string | number
+  id: NodeId
   label: string
   level: number
   ancestors: NormalizedNode[]

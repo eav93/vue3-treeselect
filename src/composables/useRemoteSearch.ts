@@ -1,5 +1,8 @@
-import { ref, watch } from 'vue'
+import { shallowReactive } from 'vue'
 import { createMap } from '@/utils'
+import { ASYNC_SEARCH } from '@/constants'
+import { createAsyncOptionsStates } from './useNodeNormalization'
+import { getErrorMessage, type CallLoadOptionsProp } from './useAsyncOptions'
 import type {
   RemoteSearchState,
   RemoteSearchEntry,
@@ -8,26 +11,16 @@ import type {
   RawNode,
 } from '@/types'
 
-// Constants - will be imported from constants.ts later
-const ASYNC_SEARCH = 'ASYNC_SEARCH'
+const createEntry = (): RemoteSearchEntry => shallowReactive({
+  ...createAsyncOptionsStates(),
+  options: [],
+})
 
-/**
- * Get error message from error object
- */
-function getErrorMessage(err: any): string {
-  return err.message || String(err)
-}
-
-/**
- * Helper to create async options states
- */
-function createAsyncOptionsStates() {
-  return {
-    isLoaded: false,
-    isLoading: false,
-    loadingError: '',
-  }
-}
+// Returned for queries that have no entry yet (never mutated)
+const EMPTY_ENTRY: RemoteSearchEntry = Object.freeze({
+  ...createAsyncOptionsStates(),
+  options: [],
+}) as RemoteSearchEntry
 
 /**
  * Composable for remote (async) search functionality
@@ -42,57 +35,41 @@ function createAsyncOptionsStates() {
 export function useRemoteSearch(
   props: TreeselectProps,
   trigger: TriggerState,
-  callLoadOptionsProp: (params: any) => void,
+  callLoadOptionsProp: CallLoadOptionsProp,
   initialize: () => void,
   resetHighlightedOptionWhenNecessary: (forceReset?: boolean) => void
 ) {
   /**
    * Remote search state: map of search queries to search results
    */
-  const remoteSearch = ref<RemoteSearchState>(createMap())
+  const remoteSearch = shallowReactive<RemoteSearchState>(createMap())
 
   /**
-   * Key for triggering re-renders
-   */
-  const key = ref(0)
-
-  /**
-   * Get remote search entry for current search query
+   * Get remote search entry for the current search query.
+   * Side-effect free, so it can be used from computed properties and render.
    */
   const getRemoteSearchEntry = (): RemoteSearchEntry => {
-    const { searchQuery } = trigger
-    const entry: RemoteSearchEntry = remoteSearch.value[searchQuery] || {
-      ...createAsyncOptionsStates(),
-      options: [],
+    return remoteSearch[trigger.searchQuery] || EMPTY_ENTRY
+  }
+
+  /**
+   * Get or create the entry for a search query
+   */
+  const ensureRemoteSearchEntry = (searchQuery: string): RemoteSearchEntry => {
+    let entry = remoteSearch[searchQuery]
+    if (!entry) {
+      entry = createEntry()
+      remoteSearch[searchQuery] = entry
     }
 
-    // Watch for changes to entry.options
-    watch(
-      () => entry.options,
-      () => {
-        // Potential redundant re-initialization
-        if (trigger.searchQuery === searchQuery) {
-          initialize()
-        }
-      },
-      { deep: true }
-    )
-
-    // Handle empty search query
+    // Default options are always taken from the current prop value
     if (searchQuery === '') {
       if (Array.isArray(props.defaultOptions)) {
         entry.options = props.defaultOptions
         entry.isLoaded = true
-        return entry
       } else if (props.defaultOptions !== true) {
         entry.isLoaded = true
-        return entry
       }
-    }
-
-    // Create entry if it doesn't exist
-    if (!remoteSearch.value[searchQuery]) {
-      remoteSearch.value[searchQuery] = entry
     }
 
     return entry
@@ -104,7 +81,7 @@ export function useRemoteSearch(
    */
   const handleRemoteSearch = (): void => {
     const { searchQuery } = trigger
-    const entry = getRemoteSearchEntry()
+    const entry = ensureRemoteSearchEntry(searchQuery)
     const done = () => {
       initialize()
       resetHighlightedOptionWhenNecessary(true)
@@ -127,7 +104,7 @@ export function useRemoteSearch(
       },
       succeed: (options: RawNode[]) => {
         entry.isLoaded = true
-        entry.options = options
+        entry.options = Array.isArray(options) ? options : []
         // When the request completes, the search query may have changed
         // Only show these options if they are for the current search query
         if (trigger.searchQuery === searchQuery) {
@@ -138,7 +115,6 @@ export function useRemoteSearch(
         entry.loadingError = getErrorMessage(err)
       },
       end: () => {
-        key.value += 1
         entry.isLoading = false
       },
     })
@@ -146,7 +122,6 @@ export function useRemoteSearch(
 
   return {
     remoteSearch,
-    key,
     getRemoteSearchEntry,
     handleRemoteSearch,
   }

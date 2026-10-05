@@ -1,3 +1,5 @@
+import { NODE_ENV } from '@/utils/env'
+
 // Magic value that indicates a root level node.
 export const NO_PARENT_NODE = null
 
@@ -38,7 +40,7 @@ export const KEYS = {
 } as const
 
 // Other constants.
-export const INPUT_DEBOUNCE_DELAY = process.env.NODE_ENV === 'testing'
+export const INPUT_DEBOUNCE_DELAY = NODE_ENV === 'testing'
   ? /* to speed up unit testing */ 10
   : /* istanbul ignore next */ 200
 export const MIN_INPUT_WIDTH = 5

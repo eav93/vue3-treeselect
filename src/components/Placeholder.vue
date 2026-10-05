@@ -1,18 +1,18 @@
 <template>
   <div :class="placeholderClass">
-    {{ treeselect.placeholder }}
+    {{ treeselect.props.placeholder }}
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, inject } from 'vue'
-import type { TreeselectInstance } from '@/types'
+import { computed } from 'vue'
+import { useTreeselectContext } from '@/context'
 
-const treeselect = inject<TreeselectInstance>('treeselect')!
+const treeselect = useTreeselectContext()
 
 const placeholderClass = computed(() => ({
   'vue-treeselect__placeholder': true,
   'vue-treeselect-helper-zoom-effect-off': true,
-  'vue-treeselect-helper-hide': treeselect.hasValue.value || treeselect.trigger.searchQuery,
+  'vue-treeselect-helper-hide': treeselect.hasValue.value || !!treeselect.trigger.searchQuery,
 }))
 </script>
