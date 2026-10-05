@@ -1,7 +1,23 @@
-import { NodeId, TreeselectProps } from '../types';
-declare const _default: typeof __VLS_export;
-export default _default;
-declare const __VLS_export: import('vue').DefineComponent<TreeselectProps, {
+import { NodeId, NormalizedNode, TreeselectProps } from '../types';
+type __VLS_Slots = {
+    /** Label of an option in the menu */
+    'option-label'?: (scope: {
+        node: NormalizedNode;
+        shouldShowCount: boolean;
+        count: number;
+        labelClassName: string;
+        countClassName: string;
+    }) => any;
+    /** Label of a selected value */
+    'value-label'?: (scope: {
+        node: NormalizedNode;
+    }) => any;
+    /** Content above the options */
+    'before-list'?: () => any;
+    /** Content below the options */
+    'after-list'?: () => any;
+};
+declare const __VLS_base: import('vue').DefineComponent<TreeselectProps, {
     forest: import('vue').ShallowReactive<import('../types').ForestState>;
     menu: {
         isOpen: boolean;
@@ -14,21 +30,21 @@ declare const __VLS_export: import('vue').DefineComponent<TreeselectProps, {
         searchQuery: string;
     };
     localSearch: import('vue').ShallowReactive<import('../types').LocalSearchState>;
-    selectedNodes: import('vue').ComputedRef<import('../types').NormalizedNode[]>;
+    selectedNodes: import('vue').ComputedRef<NormalizedNode[]>;
     internalValue: import('vue').ComputedRef<NodeId[]>;
-    getNode: (nodeId: NodeId) => import('../types').NormalizedNode | null;
-    isSelected: (node: import('../types').NormalizedNode | null) => boolean;
-    traverseAllNodesDFS: (callback: (node: import('../types').NormalizedNode) => void) => void;
-    traverseAllNodesByIndex: (callback: (node: import('../types').NormalizedNode) => boolean | void) => void;
+    getNode: (nodeId: NodeId) => NormalizedNode | null;
+    isSelected: (node: NormalizedNode | null) => boolean;
+    traverseAllNodesDFS: (callback: (node: NormalizedNode) => void) => void;
+    traverseAllNodesByIndex: (callback: (node: NormalizedNode) => boolean | void) => void;
     traverseDescendantsBFS: typeof import('../composables/useNodeTraversal').traverseDescendantsBFS;
     traverseDescendantsDFS: typeof import('../composables/useNodeTraversal').traverseDescendantsDFS;
     openMenu: () => void;
-    closeMenu: () => void;
+    closeMenu: (force?: boolean) => void;
     toggleMenu: () => void;
-    toggleExpanded: (node: import('../types').NormalizedNode) => void;
+    toggleExpanded: (node: NormalizedNode) => void;
     getMenu: () => HTMLElement | null;
     getControl: () => HTMLElement | null;
-    select: (node: import('../types').NormalizedNode) => void;
+    select: (node: NormalizedNode) => void;
     clear: () => void;
     removeLastValue: () => void;
     getValue: () => any;
@@ -53,7 +69,7 @@ declare const __VLS_export: import('vue').DefineComponent<TreeselectProps, {
     onOpen?: ((instanceId: string | number) => any) | undefined;
 }>, {
     flat: boolean;
-    options: import('../types').RawNode[];
+    options: import('../types').TreeselectOptions;
     autoSelectAncestors: boolean;
     autoSelectDescendants: boolean;
     autoDeselectAncestors: boolean;
@@ -83,7 +99,7 @@ declare const __VLS_export: import('vue').DefineComponent<TreeselectProps, {
     clearValueText: string;
     closeOnSelect: boolean;
     defaultExpandLevel: number;
-    defaultOptions: boolean | import('../types').RawNode[];
+    defaultOptions: boolean | import('../types').TreeselectOptions;
     deleteRemoves: boolean;
     delimiter: string;
     flattenSearchResults: boolean;
@@ -117,3 +133,11 @@ declare const __VLS_export: import('vue').DefineComponent<TreeselectProps, {
     virtualScroll: boolean;
     optionHeight: number;
 }, {}, {}, {}, string, import('vue').ComponentProvideOptions, false, {}, any>;
+declare const __VLS_export: __VLS_WithSlots<typeof __VLS_base, __VLS_Slots>;
+declare const _default: typeof __VLS_export;
+export default _default;
+type __VLS_WithSlots<T, S> = T & {
+    new (): {
+        $slots: S;
+    };
+};

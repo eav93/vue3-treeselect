@@ -10,5 +10,5 @@ import { LocalSearchState, NormalizedNode, TreeselectProps, TriggerState } from 
  */
 export declare function useLocalSearch(props: TreeselectProps, trigger: TriggerState, getNormalizedOptions: () => NormalizedNode[], resetHighlightedOptionWhenNecessary: (forceReset?: boolean) => void): {
     localSearch: import('vue').ShallowReactive<LocalSearchState>;
-    handleLocalSearch: () => void;
+    handleLocalSearch: (keepExpanded?: boolean) => void;
 };

@@ -18,6 +18,7 @@ export declare function useSelection(options: {
     single: () => boolean;
     getInstanceId: () => NodeId;
     localSearch: LocalSearchState;
+    getSearchQuery: () => string;
 }): {
     select: (node: NormalizedNode) => void;
     clear: () => void;

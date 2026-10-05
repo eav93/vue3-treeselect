@@ -15,6 +15,8 @@ export declare function useMenu(options: {
     loadChildrenOptions: (node: NormalizedNode) => void;
     getMenuElement: () => HTMLElement | null;
     toggleClickOutsideEvent: (enabled: boolean) => void;
+    /** The selected node in single-select mode */
+    getSelectedNode: () => NormalizedNode | null;
 }): {
     menu: {
         isOpen: boolean;
@@ -30,7 +32,7 @@ export declare function useMenu(options: {
     shouldExpand: (node: NormalizedNode) => boolean;
     shouldShowOptionInMenu: (node: NormalizedNode) => boolean;
     openMenu: () => void;
-    closeMenu: () => void;
+    closeMenu: (force?: boolean) => void;
     toggleMenu: () => void;
     toggleExpanded: (node: NormalizedNode) => void;
     setCurrentHighlightedOption: (node: NormalizedNode | null, scroll?: boolean) => void;

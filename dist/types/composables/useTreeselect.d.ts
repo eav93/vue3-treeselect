@@ -65,7 +65,7 @@ export declare function useTreeselect(props: TreeselectProps, emit: TreeselectEm
     clear: () => void;
     removeLastValue: () => void;
     openMenu: () => void;
-    closeMenu: () => void;
+    closeMenu: (force?: boolean) => void;
     toggleMenu: () => void;
     toggleExpanded: (node: NormalizedNode) => void;
     shouldExpand: (node: NormalizedNode) => boolean;
@@ -77,7 +77,7 @@ export declare function useTreeselect(props: TreeselectProps, emit: TreeselectEm
     highlightPrevOption: () => void;
     highlightNextOption: () => void;
     highlightLastOption: () => void;
-    handleLocalSearch: () => void;
+    handleLocalSearch: (keepExpanded?: boolean) => void;
     handleRemoteSearch: () => void;
     getRemoteSearchEntry: () => import('../types').RemoteSearchEntry;
     resetSearchQuery: () => void;

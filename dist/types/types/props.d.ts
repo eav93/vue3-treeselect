@@ -24,6 +24,11 @@ export type LoadOptionsFunction = (params: {
  */
 export type NormalizerFunction = (node: any, instanceId: string | number) => any;
 /**
+ * Options as passed to the component. Any object shape is accepted when a `normalizer`
+ * maps it to `RawNode` fields; readonly arrays (e.g. `as const`) are accepted too.
+ */
+export type TreeselectOptions = ReadonlyArray<RawNode | Record<string, any>>;
+/**
  * Value format type
  */
 export type ValueFormat = 'id' | 'object';
@@ -90,7 +95,7 @@ export interface TreeselectProps {
     /** How many levels of branch nodes to expand by default */
     defaultExpandLevel?: number;
     /** Default options for async search */
-    defaultOptions?: boolean | RawNode[];
+    defaultOptions?: boolean | TreeselectOptions;
     /** Allow delete key to remove last item */
     deleteRemoves?: boolean;
     /** Delimiter for joining multiple values */
@@ -140,7 +145,7 @@ export interface TreeselectProps {
     /** Open the menu on focus */
     openOnFocus?: boolean;
     /** Options array */
-    options?: RawNode[];
+    options?: TreeselectOptions;
     /** Placeholder text */
     placeholder?: string;
     /** HTML5 required attribute */
