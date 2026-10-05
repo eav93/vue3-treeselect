@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script>window.process = { env: { NODE_ENV: 'production' } }</script>
+  <script src="/vue.js"></script>
+  <style>body { margin: 0; font-family: Arial, sans-serif; font-size: 14px } #app { width: 400px; margin: 10px }</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+  const build = new URLSearchParams(location.search).get('build')
+
+  window.loadBuild = () => new Promise((resolve, reject) => {
+    const link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = `/builds/${build}/vue3-treeselect.css`
+    document.head.appendChild(link)
+    const script = document.createElement('script')
+    script.src = `/builds/${build}/vue3-treeselect.umd.js`
+    script.onload = resolve
+    script.onerror = reject
+    document.head.appendChild(script)
+  })
+
+  function genTree(roots, branching, depth) {
+    let n = 0
+    const words = ['alpha', 'beta', 'gamma', 'delta', 'omega', 'sigma', 'kappa', 'theta']
+    const make = (level, path) => {
+      const id = 'n' + (n++)
+      const label = words[n % words.length] + ' ' + path + ' ' + id
+      if (level >= depth) return { id, label }
+      const children = []
+      for (let i = 0; i < branching; i++) children.push(make(level + 1, path + '.' + i))
+      return { id, label, children }
+    }
+    const options = []
+    for (let i = 0; i < roots; i++) options.push(make(0, '' + i))
+    return options
+  }
+
+  const frame = () => new Promise(resolve => requestAnimationFrame(() => resolve()))
+
+  // Mounts an open menu with all nodes expanded. Measures the time until the first paint,
+  // until all options are rendered, and the longest task blocking the main thread.
+  window.runMount = async (props) => {
+    const { Treeselect } = window.Vue3Treeselect
+    const options = Vue.markRaw(genTree(10, 10, 3))
+    const total = 11110
+    const app = Vue.createApp({
+      render: () => Vue.h(Treeselect, {
+        options,
+        multiple: true,
+        alwaysOpen: true,
+        defaultExpandLevel: Infinity,
+        modelValue: [],
+        ...props,
+      }),
+    })
+    let longestTask = 0
+    const observer = new PerformanceObserver(list => {
+      for (const entry of list.getEntries()) longestTask = Math.max(longestTask, entry.duration)
+    })
+    observer.observe({ type: 'longtask' })
+
+    await frame()
+    const start = performance.now()
+    app.mount('#app')
+    await Vue.nextTick()
+    await frame()
+    await frame()
+    const firstPaint = performance.now() - start
+
+    const rendered = () => document.querySelectorAll('.vue-treeselect__option').length
+    while (!props.virtualScroll && rendered() < total && performance.now() - start < 30000) await frame()
+    const complete = performance.now() - start
+    await new Promise(resolve => setTimeout(resolve, 100))
+    observer.disconnect()
+
+    return { firstPaint, complete, longestTask, options: rendered() }
+  }
+</script>
+</body>
+</html>
