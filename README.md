@@ -95,7 +95,8 @@ prop, or provide a locale once for the whole app:
 ```js
 import { TREESELECT_LOCALE } from '@eav93/vue3-treeselect'
 
-app.provide(TREESELECT_LOCALE, 'ru') // en, ru, uk, de, fr, es, it, pt, pl, tr, zh, ja
+app.provide(TREESELECT_LOCALE, 'ru')
+// en, ru, uk, de, fr, es, it, pt, pl, tr, zh, ja, ar, hi, ko, nl, sv, cs, vi, id, he, ro
 ```
 
 ```vue

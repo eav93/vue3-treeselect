@@ -191,10 +191,153 @@ export const ja: TreeselectTexts = {
   limitText: count => `他 ${count} 件`,
 }
 
+
+export const ar: TreeselectTexts = {
+  placeholder: 'اختر...',
+  noResultsText: 'لم يتم العثور على نتائج',
+  noOptionsText: 'لا توجد خيارات متاحة.',
+  noChildrenText: 'لا توجد خيارات فرعية.',
+  loadingText: 'جارٍ التحميل...',
+  searchPromptText: 'اكتب للبحث...',
+  retryText: 'إعادة المحاولة؟',
+  retryTitle: 'انقر لإعادة المحاولة',
+  clearAllText: 'مسح الكل',
+  clearValueText: 'مسح القيمة',
+  limitText: count => `و ${count} أخرى`,
+}
+
+export const hi: TreeselectTexts = {
+  placeholder: 'चुनें...',
+  noResultsText: 'कोई परिणाम नहीं मिला',
+  noOptionsText: 'कोई विकल्प उपलब्ध नहीं है।',
+  noChildrenText: 'कोई उप-विकल्प नहीं है।',
+  loadingText: 'लोड हो रहा है...',
+  searchPromptText: 'खोजने के लिए टाइप करें...',
+  retryText: 'पुनः प्रयास करें?',
+  retryTitle: 'पुनः प्रयास करने के लिए क्लिक करें',
+  clearAllText: 'सभी हटाएँ',
+  clearValueText: 'मान हटाएँ',
+  limitText: count => `और ${count} अन्य`,
+}
+
+export const ko: TreeselectTexts = {
+  placeholder: '선택하세요...',
+  noResultsText: '검색 결과가 없습니다',
+  noOptionsText: '선택 가능한 항목이 없습니다.',
+  noChildrenText: '하위 항목이 없습니다.',
+  loadingText: '불러오는 중...',
+  searchPromptText: '검색어를 입력하세요...',
+  retryText: '다시 시도할까요?',
+  retryTitle: '클릭하여 다시 시도',
+  clearAllText: '모두 지우기',
+  clearValueText: '지우기',
+  limitText: count => `외 ${count}개`,
+}
+
+export const nl: TreeselectTexts = {
+  placeholder: 'Selecteer...',
+  noResultsText: 'Geen resultaten gevonden',
+  noOptionsText: 'Geen opties beschikbaar.',
+  noChildrenText: 'Geen sub-opties.',
+  loadingText: 'Laden...',
+  searchPromptText: 'Typ om te zoeken...',
+  retryText: 'Opnieuw proberen?',
+  retryTitle: 'Klik om opnieuw te proberen',
+  clearAllText: 'Alles wissen',
+  clearValueText: 'Waarde wissen',
+  limitText: count => `en nog ${count}`,
+}
+
+export const sv: TreeselectTexts = {
+  placeholder: 'Välj...',
+  noResultsText: 'Inga resultat hittades',
+  noOptionsText: 'Inga alternativ tillgängliga.',
+  noChildrenText: 'Inga underalternativ.',
+  loadingText: 'Laddar...',
+  searchPromptText: 'Skriv för att söka...',
+  retryText: 'Försök igen?',
+  retryTitle: 'Klicka för att försöka igen',
+  clearAllText: 'Rensa alla',
+  clearValueText: 'Rensa värde',
+  limitText: count => `och ${count} till`,
+}
+
+export const cs: TreeselectTexts = {
+  placeholder: 'Vyberte...',
+  noResultsText: 'Nic nenalezeno',
+  noOptionsText: 'Žádné možnosti.',
+  noChildrenText: 'Žádné podřízené možnosti.',
+  loadingText: 'Načítání...',
+  searchPromptText: 'Pište pro vyhledávání...',
+  retryText: 'Zkusit znovu?',
+  retryTitle: 'Klikněte pro nový pokus',
+  clearAllText: 'Vymazat vše',
+  clearValueText: 'Vymazat hodnotu',
+  limitText: count => `a dalších ${count}`,
+}
+
+export const vi: TreeselectTexts = {
+  placeholder: 'Chọn...',
+  noResultsText: 'Không tìm thấy kết quả',
+  noOptionsText: 'Không có tùy chọn nào.',
+  noChildrenText: 'Không có tùy chọn con.',
+  loadingText: 'Đang tải...',
+  searchPromptText: 'Nhập để tìm kiếm...',
+  retryText: 'Thử lại?',
+  retryTitle: 'Nhấp để thử lại',
+  clearAllText: 'Xóa tất cả',
+  clearValueText: 'Xóa giá trị',
+  limitText: count => `và ${count} mục khác`,
+}
+
+export const id: TreeselectTexts = {
+  placeholder: 'Pilih...',
+  noResultsText: 'Tidak ada hasil',
+  noOptionsText: 'Tidak ada pilihan.',
+  noChildrenText: 'Tidak ada sub-pilihan.',
+  loadingText: 'Memuat...',
+  searchPromptText: 'Ketik untuk mencari...',
+  retryText: 'Coba lagi?',
+  retryTitle: 'Klik untuk mencoba lagi',
+  clearAllText: 'Hapus semua',
+  clearValueText: 'Hapus nilai',
+  limitText: count => `dan ${count} lainnya`,
+}
+
+export const he: TreeselectTexts = {
+  placeholder: 'בחירה...',
+  noResultsText: 'לא נמצאו תוצאות',
+  noOptionsText: 'אין אפשרויות זמינות.',
+  noChildrenText: 'אין תת-אפשרויות.',
+  loadingText: 'טוען...',
+  searchPromptText: 'הקלידו כדי לחפש...',
+  retryText: 'לנסות שוב?',
+  retryTitle: 'לחצו כדי לנסות שוב',
+  clearAllText: 'נקה הכול',
+  clearValueText: 'נקה ערך',
+  limitText: count => `ועוד ${count}`,
+}
+
+export const ro: TreeselectTexts = {
+  placeholder: 'Selectați...',
+  noResultsText: 'Niciun rezultat găsit',
+  noOptionsText: 'Nicio opțiune disponibilă.',
+  noChildrenText: 'Nicio sub-opțiune.',
+  loadingText: 'Se încarcă...',
+  searchPromptText: 'Tastați pentru a căuta...',
+  retryText: 'Reîncercați?',
+  retryTitle: 'Clic pentru a reîncerca',
+  clearAllText: 'Șterge tot',
+  clearValueText: 'Șterge valoarea',
+  limitText: count => `și încă ${count}`,
+}
+
 /**
  * Built-in locales by language code
  */
-export const locales: Record<string, TreeselectTexts> = { en, ru, uk, de, fr, es, it, pt, pl, tr, zh, ja }
+export const locales: Record<string, TreeselectTexts> = {
+  en, ru, uk, de, fr, es, it, pt, pl, tr, zh, ja, ar, hi, ko, nl, sv, cs, vi, id, he, ro,
+}
 
 /**
  * Provide a locale for all Treeselect components of an app:

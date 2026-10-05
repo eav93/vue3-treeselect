@@ -32,6 +32,16 @@ export declare const pl: TreeselectTexts;
 export declare const tr: TreeselectTexts;
 export declare const zh: TreeselectTexts;
 export declare const ja: TreeselectTexts;
+export declare const ar: TreeselectTexts;
+export declare const hi: TreeselectTexts;
+export declare const ko: TreeselectTexts;
+export declare const nl: TreeselectTexts;
+export declare const sv: TreeselectTexts;
+export declare const cs: TreeselectTexts;
+export declare const vi: TreeselectTexts;
+export declare const id: TreeselectTexts;
+export declare const he: TreeselectTexts;
+export declare const ro: TreeselectTexts;
 /**
  * Built-in locales by language code
  */

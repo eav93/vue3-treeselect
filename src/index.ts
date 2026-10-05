@@ -6,7 +6,7 @@ export { Treeselect };
 export default Treeselect;
 
 // Locales
-export { locales, en, ru, uk, de, fr, es, it, pt, pl, tr, zh, ja, TREESELECT_LOCALE, resolveLocale } from "@/locales";
+export { locales, en, ru, uk, de, fr, es, it, pt, pl, tr, zh, ja, ar, hi, ko, nl, sv, cs, vi, id, he, ro, TREESELECT_LOCALE, resolveLocale } from "@/locales";
 export type { TreeselectTexts, TreeselectLocale } from "@/locales";
 
 // Types

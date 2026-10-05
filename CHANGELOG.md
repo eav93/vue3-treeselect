@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.1
+
+- 10 more locales: `ar`, `hi`, `ko`, `nl`, `sv`, `cs`, `vi`, `id`, `he`, `ro` (22 in total).
+
 ## 0.5.0
 
 - Localization: built-in texts for `en`, `ru`, `uk`, `de`, `fr`, `es`, `it`, `pt`, `pl`, `tr`, `zh`, `ja`.

@@ -1,7 +1,7 @@
 import { default as Treeselect } from './components/Treeselect.vue';
 export { Treeselect };
 export default Treeselect;
-export { locales, en, ru, uk, de, fr, es, it, pt, pl, tr, zh, ja, TREESELECT_LOCALE, resolveLocale } from './locales';
+export { locales, en, ru, uk, de, fr, es, it, pt, pl, tr, zh, ja, ar, hi, ko, nl, sv, cs, vi, id, he, ro, TREESELECT_LOCALE, resolveLocale } from './locales';
 export type { TreeselectTexts, TreeselectLocale } from './locales';
 export * from './types';
 export type { TreeselectContext } from './context';
