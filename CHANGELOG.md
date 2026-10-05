@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.0
+
+- Checkbox marks are inline SVG instead of PNG images: no asset files and no `$treeselect-assets-path`
+  needed, crisp at any size and zoom, ~3.5 kB less CSS. New variables: `$treeselect-checkbox-icon-color`
+  (`-disabled`) for the colors and `$treeselect-checkbox-checked-image` / `-indeterminate-image`
+  (`-disabled-...`) for custom marks, e.g. the Bootstrap ones. The marks are centered in the checkbox
+  (they were 1 px off to the right) and can be sized in `%` (`$treeselect-checkbox-icon-width/height`).
+  The PNG icons are still shipped and used when `$treeselect-checkbox-checked-icon` & co. are set to a path.
+- `$treeselect-checkbox-border-radius` is applied (it was declared but unused).
+
 ## 0.3.2
 
 - Built with Vite 8 (Rolldown): the ES build is ~11% smaller. No changes in behavior or styles

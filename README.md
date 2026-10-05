@@ -94,7 +94,6 @@ Instead of the compiled CSS you can use the SCSS source and configure it with va
 
 ```scss
 @use "@eav93/vue3-treeselect/sass/style.scss" with (
-  $treeselect-assets-path: "@eav93/vue3-treeselect/assets",
   $treeselect-control-border-color: #ced4da,
   $treeselect-control-border-color-focus: #86b7fe,
   $treeselect-option-bg-highlight: #f5f6fe,
@@ -108,6 +107,22 @@ Instead of the compiled CSS you can use the SCSS source and configure it with va
 The SCSS needs the `material-colors` and `sass-easing` packages, which are installed as
 dependencies. Configuring variables is preferable to overriding the generated rules with CSS:
 it covers all states (hover, focus, disabled) and doesn't fight selector specificity.
+
+Checkbox marks are SVG; their colors are `$treeselect-checkbox-icon-color` / `-disabled`, and they can be
+replaced with any CSS image. For example, Bootstrap-like checkboxes:
+
+```scss
+@use "@eav93/vue3-treeselect/sass/style.scss" with (
+  $treeselect-checkbox-size: 1em,
+  $treeselect-checkbox-border-radius: 0.25em,
+  $treeselect-checkbox-color: var(--bs-border-color),
+  $treeselect-checkbox-color-highlight: var(--bs-primary),
+  $treeselect-checkbox-icon-width: 100%,
+  $treeselect-checkbox-icon-height: 100%,
+  $treeselect-checkbox-checked-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e"),
+  $treeselect-checkbox-indeterminate-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3e%3c/svg%3e"),
+);
+```
 
 Option rows use `content-visibility: auto`, so the browser skips rendering of rows outside the
 menu viewport. It clips content overflowing a row; if a custom `option-label` slot renders

@@ -32,6 +32,26 @@ describe('styles', () => {
     expect(compile('$treeselect-multi-value-font-color-hover: #654321')).toContain(HOVER_SELECTOR)
   })
 
+  it('draws the checkbox marks as inline SVG by default', () => {
+    const css = compile()
+    expect(css).not.toContain('.png')
+    expect(css).toContain("data:image/svg+xml")
+    expect(css).toContain("stroke='%23fff'")
+    expect(css).toContain("stroke='%23e1e1e1'")
+  })
+
+  it('accepts custom mark images and colors', () => {
+    const css = compile(`$treeselect-checkbox-icon-color: red, $treeselect-checkbox-checked-image: url("data:image/svg+xml,custom")`)
+    expect(css).toContain('url("data:image/svg+xml,custom")')
+    expect(css).toContain("stroke='red'")
+  })
+
+  it('still supports the PNG icons of vue-treeselect', () => {
+    const css = compile(`$treeselect-checkbox-checked-icon: "/img/checkbox-checked.png"`)
+    expect(css).toContain('url("/img/checkbox-checked.png")')
+    expect(css).toContain('url("/img/checkbox-checked@2x.png")')
+  })
+
   it('option rows skip rendering outside the viewport unless disabled', () => {
     expect(compile()).toContain('content-visibility: auto')
     expect(compile('$treeselect-option-content-visibility: visible')).not.toContain('contain-intrinsic-size')

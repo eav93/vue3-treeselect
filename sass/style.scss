@@ -112,18 +112,20 @@ $treeselect-checkbox-border-color-hover: $treeselect-checkbox-color-highlight !d
 $treeselect-checkbox-bg-hover: $treeselect-checkbox-bg !default;
 $treeselect-checkbox-indeterminate-border-color: $treeselect-checkbox-color-highlight !default;
 $treeselect-checkbox-indeterminate-bg: $treeselect-checkbox-color-highlight !default;
-$treeselect-checkbox-indeterminate-icon: "#{$treeselect-assets-path}/checkbox-indeterminate.png" !default;
+// PNG icons of vue-treeselect: set a path (e.g. "#{$treeselect-assets-path}/checkbox-checked.png")
+// to use them instead of the SVG icons
+$treeselect-checkbox-indeterminate-icon: null !default;
 $treeselect-checkbox-indeterminate-border-color-hover: $treeselect-checkbox-color-highlight !default;
 $treeselect-checkbox-indeterminate-bg-hover: $treeselect-checkbox-color-highlight !default;
 $treeselect-checkbox-checked-border-color: $treeselect-checkbox-color-highlight !default;
 $treeselect-checkbox-checked-bg: $treeselect-checkbox-color-highlight !default;
-$treeselect-checkbox-checked-icon: "#{$treeselect-assets-path}/checkbox-checked.png" !default;
+$treeselect-checkbox-checked-icon: null !default;
 $treeselect-checkbox-checked-border-color-hover: $treeselect-checkbox-color-highlight !default;
 $treeselect-checkbox-checked-bg-hover: $treeselect-checkbox-color-highlight !default;
 $treeselect-checkbox-disabled-border-color: $treeselect-checkbox-border-color !default;
 $treeselect-checkbox-disabled-bg-color: color.scale($treeselect-checkbox-bg, $lightness: -3%) !default;
-$treeselect-checkbox-disabled-indeterminate-icon: "#{$treeselect-assets-path}/checkbox-indeterminate-disabled.png" !default;
-$treeselect-checkbox-disabled-checked-icon: "#{$treeselect-assets-path}/checkbox-checked-disabled.png" !default;
+$treeselect-checkbox-disabled-indeterminate-icon: null !default;
+$treeselect-checkbox-disabled-checked-icon: null !default;
 $treeselect-option-label-color: inherit !default;
 $treeselect-option-label-color-disabled: rgba(0, 0, 0, 0.25) !default;
 
@@ -137,8 +139,17 @@ $treeselect-tip-font-size: $treeselect-font-size-sm !default;
 $treeselect-retry-text-color: $md-light-blue-600 !default;
 
 // Checkbox icon sizes (fixed values)
+// Size of the check / minus mark, centered in the checkbox (e.g. 100% to fill the checkbox)
 $treeselect-checkbox-icon-width: 10px !default;
 $treeselect-checkbox-icon-height: 8px !default;
+// Colors of the default SVG marks
+$treeselect-checkbox-icon-color: #fff !default;
+$treeselect-checkbox-icon-color-disabled: #e1e1e1 !default;
+// Custom marks: any CSS image, e.g. url("data:image/svg+xml,..."). `null` uses the default SVG marks.
+$treeselect-checkbox-checked-image: null !default;
+$treeselect-checkbox-indeterminate-image: null !default;
+$treeselect-checkbox-disabled-checked-image: null !default;
+$treeselect-checkbox-disabled-indeterminate-image: null !default;
 
 /**
  * Mixins
@@ -251,6 +262,36 @@ $treeselect-checkbox-icon-height: 8px !default;
   }
 
   @return $string;
+}
+
+// Encode an SVG document for a data URI
+@function treeselect-svg-url($svg) {
+  $encoded: $svg;
+  @each $char, $replacement in ("%": "%25", "<": "%3c", ">": "%3e", "#": "%23", "(": "%28", ")": "%29") {
+    $encoded: str-replace($encoded, $char, $replacement);
+  }
+  @return url("data:image/svg+xml,#{$encoded}");
+}
+
+// Default check mark (drawn in a 10x8 box)
+@function treeselect-check-mark-svg($color) {
+  @return treeselect-svg-url("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 8'><path fill='none' stroke='#{$color}' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' d='M1.2 4.4 3.7 6.7 8.8 1.3'/></svg>");
+}
+
+// Default minus mark (drawn in a 10x8 box)
+@function treeselect-minus-mark-svg($color) {
+  @return treeselect-svg-url("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 8'><path fill='none' stroke='#{$color}' stroke-width='2' stroke-linecap='round' d='M1.2 4h7.6'/></svg>");
+}
+
+// Background image of a checkbox mark: PNG icon (if configured), custom image or default SVG
+@mixin treeselect-checkbox-mark($png, $image, $default) {
+  @if $png {
+    @include retina($png, 3);
+  } @else if $image {
+    background-image: $image;
+  } @else {
+    background-image: $default;
+  }
 }
 
 /**
@@ -900,7 +941,7 @@ $treeselect-checkbox-icon-height: 8px !default;
   height: $treeselect-checkbox-size;
   border-width: 1px;
   border-style: solid;
-  border-radius: $treeselect-border-radius-sm;
+  border-radius: $treeselect-checkbox-border-radius;
   position: relative;
   transition: $treeselect-transition-duration all $easeOutCirc;
 }
@@ -909,38 +950,49 @@ $treeselect-checkbox-icon-height: 8px !default;
 .vue-treeselect__minus-mark {
   display: block;
   position: absolute;
-  left: 1px;
-  top: 1px;
+  // Centered in the checkbox
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  width: $treeselect-checkbox-icon-width;
+  height: $treeselect-checkbox-icon-height;
   background-repeat: no-repeat;
+  background-position: center;
+  background-size: $treeselect-checkbox-icon-width $treeselect-checkbox-icon-height;
   opacity: 0;
   transition: $treeselect-transition-duration all ease;
 }
 
 .vue-treeselect__minus-mark {
-  width: $treeselect-checkbox-icon-width;
-  height: $treeselect-checkbox-icon-height;
-  // Svg icons are rendered differently in different browsers thus unacceptable.
-  // Png provides the best consistency with a drawback that
-  // its color can't be controlled by CSS.
-  @include retina($treeselect-checkbox-indeterminate-icon, 3);
-  background-size: $treeselect-checkbox-icon-width $treeselect-checkbox-icon-height;
+  @include treeselect-checkbox-mark(
+    $treeselect-checkbox-indeterminate-icon,
+    $treeselect-checkbox-indeterminate-image,
+    treeselect-minus-mark-svg($treeselect-checkbox-icon-color)
+  );
 
   .vue-treeselect__checkbox--indeterminate > & {
     opacity: 1;
   }
 
   .vue-treeselect__checkbox--disabled & {
-    @include retina($treeselect-checkbox-disabled-indeterminate-icon, 3);
+    @include treeselect-checkbox-mark(
+      $treeselect-checkbox-disabled-indeterminate-icon,
+      $treeselect-checkbox-disabled-indeterminate-image,
+      treeselect-minus-mark-svg($treeselect-checkbox-icon-color-disabled)
+    );
   }
 }
 
 .vue-treeselect__check-mark {
-  width: $treeselect-checkbox-icon-width;
-  height: $treeselect-checkbox-icon-height;
-  @include retina($treeselect-checkbox-checked-icon, 3);
-  background-size: $treeselect-checkbox-icon-width $treeselect-checkbox-icon-height;
-  // Set initial height to 1px.
-  transform: scaleY(math.div(1, $treeselect-checkbox-icon-height));
+  @include treeselect-checkbox-mark(
+    $treeselect-checkbox-checked-icon,
+    $treeselect-checkbox-checked-image,
+    treeselect-check-mark-svg($treeselect-checkbox-icon-color)
+  );
+  // Grows from a 1px high line
+  transform: scaleY(0.125);
 
   .vue-treeselect__checkbox--checked > & {
     opacity: 1;
@@ -948,7 +1000,11 @@ $treeselect-checkbox-icon-height: 8px !default;
   }
 
   .vue-treeselect__checkbox--disabled & {
-    @include retina($treeselect-checkbox-disabled-checked-icon, 3);
+    @include treeselect-checkbox-mark(
+      $treeselect-checkbox-disabled-checked-icon,
+      $treeselect-checkbox-disabled-checked-image,
+      treeselect-check-mark-svg($treeselect-checkbox-icon-color-disabled)
+    );
   }
 }
 
