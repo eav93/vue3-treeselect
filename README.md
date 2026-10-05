@@ -89,24 +89,68 @@ A UMD build is available as `dist/vue3-treeselect.umd.js` (global `Vue3Treeselec
 
 ## Localization
 
-Texts are English by default. Pass a built-in language code or your own texts with the `locale`
-prop, or provide a locale once for the whole app:
+All texts are English by default. Other languages are separate entry points, so only the
+languages you import end up in your bundle (each one is under 1 kB).
+
+**For the whole app** (recommended): provide the locale once, every `<Treeselect>` picks it up.
 
 ```js
+import { createApp } from 'vue'
 import { TREESELECT_LOCALE } from '@eav93/vue3-treeselect'
+import { ru } from '@eav93/vue3-treeselect/locales/ru'
 
-app.provide(TREESELECT_LOCALE, 'ru')
-// en, ru, uk, de, fr, es, it, pt, pl, tr, zh, ja, ar, hi, ko, nl, sv, cs, vi, id, he, ro
+createApp(App)
+  .provide(TREESELECT_LOCALE, ru)
+  .mount('#app')
+```
+
+**For one component**: the `locale` prop.
+
+```vue
+<script setup>
+import { de } from '@eav93/vue3-treeselect/locales/de'
+</script>
+
+<template>
+  <Treeselect :options="options" :locale="de" />
+</template>
+```
+
+**By language code**: register the locales you use, then pass the code. Regional codes
+(`ru-RU`) map to the language.
+
+```js
+import { registerLocale } from '@eav93/vue3-treeselect'
+import { ru } from '@eav93/vue3-treeselect/locales/ru'
+import { uk } from '@eav93/vue3-treeselect/locales/uk'
+
+registerLocale('ru', ru)
+registerLocale('uk', uk)
 ```
 
 ```vue
-<Treeselect locale="de" />
+<Treeselect :options="options" :locale="currentLanguage" />  <!-- 'ru', 'uk', 'en' -->
+```
+
+**Your own texts**: pass an object; missing texts stay English. Everything can be overridden,
+including the texts of an imported locale:
+
+```vue
 <Treeselect :locale="{ placeholder: 'Pick one', noResultsText: 'Nothing found' }" />
+<Treeselect :locale="{ ...ru, placeholder: 'Город' }" />
 ```
 
 The text props (`placeholder`, `noResultsText`, `noOptionsText`, `noChildrenText`, `loadingText`,
-`searchPromptText`, `retryText`, `retryTitle`, `clearAllText`, `clearValueText`, `limitText`) take
-precedence over the locale, so `placeholder` can still be set per component.
+`searchPromptText`, `retryText`, `retryTitle`, `clearAllText`, `clearValueText`, `limitText`)
+take precedence over the locale, so `placeholder` can still be set per component. Order of
+precedence: text prop → `locale` prop → app-wide locale → English.
+
+Available locales (`@eav93/vue3-treeselect/locales/<code>`): `ar`, `cs`, `de`, `es`, `fr`, `he`,
+`hi`, `id`, `it`, `ja`, `ko`, `nl`, `pl`, `pt`, `ro`, `ru`, `sv`, `tr`, `uk`, `vi`, `zh`
+(`en` is exported from the package root). `ar` and `he` are right-to-left: set `dir="rtl"` on
+a parent element, the menu follows it (also with `appendToBody`).
+
+With the UMD build (no bundler) there are no locale files: pass your texts as an object.
 
 ## Customizing styles
 

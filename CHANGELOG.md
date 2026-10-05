@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0
+
+- Locales are separate entry points: `import { ru } from '@eav93/vue3-treeselect/locales/ru'`.
+  Only English is in the main bundle, other languages are bundled only when imported (each < 1 kB).
+  **Breaking:** language codes with the `locale` prop (`locale="ru"`) require `registerLocale('ru', ru)`
+  first; `locales` is no longer exported from the package root. Pass the locale object instead
+  (`:locale="ru"`, `app.provide(TREESELECT_LOCALE, ru)`).
+
 ## 0.5.1
 
 - 10 more locales: `ar`, `hi`, `ko`, `nl`, `sv`, `cs`, `vi`, `id`, `he`, `ro` (22 in total).
