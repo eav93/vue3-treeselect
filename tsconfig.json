@@ -13,9 +13,8 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "types": ["vite/client", "node"],
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
     "noUnusedLocals": true,
     "noImplicitReturns": true,

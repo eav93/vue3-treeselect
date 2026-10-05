@@ -3,7 +3,7 @@ import { resolve } from 'path'
 import { pathToFileURL } from 'url'
 import * as sass from 'sass'
 
-const root = resolve(__dirname, '..')
+const root = resolve(import.meta.dirname, '..')
 
 function compile(config = ''): string {
   return sass.compileString(`@use "sass/style"${config ? ` with (${config})` : ''};`, {

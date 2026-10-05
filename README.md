@@ -124,6 +124,8 @@ something outside of the row, set `$treeselect-option-content-visibility: visibl
 
 ## Development
 
+Requires Node.js 20.19+ or 22.12+ (Vite 8).
+
 ```sh
 npm install
 npm test               # tests (vitest + happy-dom)

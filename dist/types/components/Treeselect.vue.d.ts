@@ -75,13 +75,11 @@ declare const __VLS_base: import('vue').DefineComponent<TreeselectProps, {
     autoDeselectAncestors: boolean;
     autoDeselectDescendants: boolean;
     name: string;
-    searchable: boolean;
-    disabled: boolean;
     required: boolean;
-    limitText: (count: number) => string;
     placeholder: string;
-    zIndex: number | string;
+    zIndex: string | number;
     maxHeight: number;
+    disabled: boolean;
     allowClearingDisabled: boolean;
     allowSelectingDisabledDescendants: boolean;
     alwaysOpen: boolean;
@@ -108,6 +106,7 @@ declare const __VLS_base: import('vue').DefineComponent<TreeselectProps, {
     instanceId: string | number;
     joinValues: boolean;
     limit: number;
+    limitText: (count: number) => string;
     loadingText: string;
     matchKeys: string[];
     multiple: boolean;
@@ -120,6 +119,7 @@ declare const __VLS_base: import('vue').DefineComponent<TreeselectProps, {
     openOnFocus: boolean;
     retryText: string;
     retryTitle: string;
+    searchable: boolean;
     searchNested: boolean;
     searchPromptText: string;
     searchDebounceDelay: number;

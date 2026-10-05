@@ -7,15 +7,15 @@ export default defineConfig({
     plugins: [
         vue(),
         dts({
-            tsconfigPath: resolve(__dirname, "tsconfig.json"),
+            tsconfigPath: resolve(import.meta.dirname, "tsconfig.json"),
             entryRoot: "src",
             outDirs: "dist/types",
         }),
     ],
-    resolve: {alias: {"@": resolve(__dirname, "src")}},
+    resolve: {alias: {"@": resolve(import.meta.dirname, "src")}},
     build: {
         lib: {
-            entry: resolve(__dirname, "src/index.ts"),
+            entry: resolve(import.meta.dirname, "src/index.ts"),
             name: "Vue3Treeselect",
             fileName: "vue3-treeselect",
             formats: ["es", "cjs", "umd"],

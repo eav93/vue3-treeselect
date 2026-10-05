@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.2
+
+- Built with Vite 8 (Rolldown): the ES build is ~11% smaller. No changes in behavior or styles
+  (checked with the test suite and pixel comparison of rendered menus).
+- Tooling: Vue 3.5.43, TypeScript 6 (TypeScript 7 doesn't provide the JS API that `vue-tsc` and
+  the type declaration generator need yet), Sass 1.105, Vitest 5; configs are ESM (`.mts`).
+
 ## 0.3.1
 
 Bugs reported in [riophae/vue-treeselect](https://github.com/riophae/vue-treeselect) and the Vue 3 ports that also affected this fork:
