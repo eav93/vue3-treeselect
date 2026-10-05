@@ -27,6 +27,8 @@ export function useMenu(options: {
   loadChildrenOptions: (node: NormalizedNode) => void
   getMenuElement: () => HTMLElement | null
   toggleClickOutsideEvent: (enabled: boolean) => void
+  /** The selected node in single-select mode */
+  getSelectedNode: () => NormalizedNode | null
 }) {
   const {
     props,
@@ -41,6 +43,7 @@ export function useMenu(options: {
     loadChildrenOptions,
     getMenuElement,
     toggleClickOutsideEvent,
+    getSelectedNode,
   } = options
 
   /**
@@ -265,7 +268,24 @@ export function useMenu(options: {
       !(current in forest.nodeMap) ||
       !shouldShowOptionInMenu(getNode(current)!)
     ) {
+      // During a search, prefer the first match over ancestors shown only because of their matches
+      if (localSearch.active) {
+        const firstMatch = menuRows.value.find(row => row.type === 'option' && row.node.isMatched)
+        if (firstMatch) return setCurrentHighlightedOption(firstMatch.node)
+      }
       highlightFirstOption()
+    }
+  }
+
+  /**
+   * Highlight the selected option (single-select) when the menu opens, otherwise the first one
+   */
+  const highlightOnOpen = (): void => {
+    const selected = getSelectedNode()
+    if (selected && shouldShowOptionInMenu(selected) && visibleOptionIndex.value[selected.id] !== undefined) {
+      setCurrentHighlightedOption(selected, false)
+    } else {
+      resetHighlightedOptionWhenNecessary()
     }
   }
 
@@ -291,9 +311,11 @@ export function useMenu(options: {
 
   /**
    * Close the menu
+   * @param force - Also close a menu that is always open (e.g. when deactivated by <KeepAlive>)
    */
-  const closeMenu = (): void => {
-    if (!menu.isOpen || (!props.disabled && props.alwaysOpen)) return
+  const closeMenu = (force = false): void => {
+    // `=== true`: the method may be bound as an event handler and receive an event
+    if (!menu.isOpen || (force !== true && !props.disabled && props.alwaysOpen)) return
 
     saveMenuScrollPosition()
     menu.isOpen = false
@@ -309,7 +331,7 @@ export function useMenu(options: {
     if (props.disabled || menu.isOpen) return
 
     menu.isOpen = true
-    void nextTick(resetHighlightedOptionWhenNecessary)
+    void nextTick(highlightOnOpen)
     void nextTick(restoreMenuScrollPosition)
 
     if (!props.options && !props.async) {
@@ -339,7 +361,9 @@ export function useMenu(options: {
 
     if (localSearch.active) {
       nextState = node.isExpandedOnSearch = !node.isExpandedOnSearch
-      if (nextState) {
+      // A branch without matches shows all its children when expanded during a search;
+      // a branch with matches keeps showing only those
+      if (nextState && !node.hasMatchedDescendants) {
         node.showAllChildrenOnSearch = true
       }
     } else {

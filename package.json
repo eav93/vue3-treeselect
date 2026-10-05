@@ -1,10 +1,18 @@
 {
   "name": "@eav93/vue3-treeselect",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Tree select component with nested options for Vue 3.5+ (TypeScript). A fork of vue-treeselect with fixes and performance improvements for large trees.",
   "main": "./dist/vue3-treeselect.js",
   "module": "./dist/vue3-treeselect.mjs",
   "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/vue3-treeselect.mjs",
+      "require": "./dist/vue3-treeselect.js"
+    },
+    "./*": "./*"
+  },
   "unpkg": "./dist/vue3-treeselect.umd.js",
   "style": "./dist/vue3-treeselect.css",
   "sass": "./sass/style.scss",

@@ -196,7 +196,14 @@ export function useValue(
       expandNodesUpToParents(initialQueue, nextSelectedNodeIds, getNode)
     }
 
-    return nextSelectedNodeIds
+    // The expansion may reach the same node twice (e.g. a selected branch and its child,
+    // or a fallback copy of a branch whose children are now root options)
+    const seen = createMap<true>()
+    return nextSelectedNodeIds.filter(id => {
+      if (seen[id]) return false
+      seen[id] = true
+      return true
+    })
   }
 
   return {

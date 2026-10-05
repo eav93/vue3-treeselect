@@ -5,6 +5,7 @@
       :class="['vue-treeselect__portal-target', treeselect.wrapperClass.value]"
       :style="{ zIndex: props.zIndex }"
       :data-instance-id="treeselect.getInstanceId()"
+      :dir="direction"
     >
       <Menu ref="menuRef" />
     </div>
@@ -21,6 +22,15 @@ const treeselect = useTreeselectContext()
 const props = treeselect.props
 
 const portalRef = ref<HTMLElement | null>(null)
+// The menu is outside of the component, so it doesn't inherit `dir` from its ancestors (#495)
+const direction = ref<string | undefined>(undefined)
+
+const updateDirection = (): void => {
+  const $control = treeselect.getControl()
+  if (!$control) return
+  // An explicit `dir` attribute first, then the computed CSS direction
+  direction.value = $control.closest('[dir]')?.getAttribute('dir') || getComputedStyle($control).direction || undefined
+}
 const menuRef = ref<InstanceType<typeof Menu> | null>(null)
 
 let controlResizeAndScrollEventListeners: { remove: () => void } | null = null
@@ -50,6 +60,7 @@ const updateMenuContainerOffset = (): void => {
 }
 
 const setupHandlers = (): void => {
+  updateDirection()
   updateWidth()
   updateMenuContainerOffset()
 
@@ -90,6 +101,7 @@ watch(() => treeselect.menu.isOpen, (isOpen) => {
 watch(() => treeselect.menu.placement, updateMenuContainerOffset)
 
 onMounted(() => {
+  updateDirection()
   if (treeselect.menu.isOpen) void nextTick(setupHandlers)
 })
 

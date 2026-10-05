@@ -98,6 +98,13 @@ const keysThatRequireMenuBeingOpen: string[] = [
   KEYS.ARROW_DOWN,
 ]
 
+const keysThatMoveTheCaret: string[] = [
+  KEYS.HOME,
+  KEYS.END,
+  KEYS.ARROW_LEFT,
+  KEYS.ARROW_RIGHT,
+]
+
 // ============================================================================
 // Methods
 // ============================================================================
@@ -142,12 +149,20 @@ const onFocus = (): void => {
   }
 }
 
-const onBlur = (): void => {
+const onBlur = (evt: FocusEvent): void => {
   const menu = treeselect.getMenu()
 
   // Prevent blur if a menu has focus
   if (menu && document.activeElement === menu) {
     return focus()
+  }
+
+  // The focus moved to a form control in the menu (e.g. in the `before-list` slot):
+  // keep the menu open, it's closed by a click outside
+  const nextFocused = evt.relatedTarget as Node | null
+  if (menu && nextFocused && menu.contains(nextFocused)) {
+    treeselect.trigger.isFocused = false
+    return
   }
 
   treeselect.trigger.isFocused = false
@@ -190,6 +205,11 @@ const onKeyDown = (evt: KeyboardEvent): void => {
   const key = evt.key
 
   if (evt.ctrlKey || evt.shiftKey || evt.altKey || evt.metaKey || isComposing) {
+    return
+  }
+
+  // With text in the search input these keys move the caret
+  if (value.value.length && keysThatMoveTheCaret.includes(key) && treeselect.menu.isOpen) {
     return
   }
 

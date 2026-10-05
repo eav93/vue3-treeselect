@@ -1,4 +1,4 @@
-import { computed, isReactive, onMounted, onUnmounted, reactive, shallowReactive, watch } from 'vue'
+import { computed, isReactive, onActivated, onDeactivated, onMounted, onUnmounted, reactive, shallowReactive, watch } from 'vue'
 import { createMap, quickDiff, warning } from '@/utils'
 import { NO_PARENT_NODE } from '@/constants'
 import {
@@ -131,9 +131,14 @@ export function useTreeselect(
     }
   }
 
+  // Whether a node with this id exists (assigned once the forest exists)
+  let hasNode: (id: NodeId) => boolean = () => false
+
   const getValueArray = (): any[] => {
     if (props.modelValue == null) return []
     if (props.multiple) return Array.isArray(props.modelValue) ? props.modelValue : []
+    // An empty string is "no value" (e.g. from a form), unless an option has this id
+    if (props.modelValue === '' && !hasNode('')) return []
     return [props.modelValue]
   }
 
@@ -173,13 +178,17 @@ export function useTreeselect(
 
   const forestState = useForestState(props, extractCheckedNodeIdsFromValue())
   const { forest, isSelected, getCheckedState, buildForestState, setSelectedNodeIds } = forestState
+  hasNode = id => id in forest.nodeMap
 
   /**
    * Create fallback node for nodes not (yet) present in options
    */
   const createFallbackNode = (id: NodeId): NormalizedNode => {
-    const raw = extractNodeFromValue(id)
-    const label = normalizeRawNode(raw).label || `${id} (unknown)`
+    // Only nodes taken from the value go through the normalizer: a made-up `{ id }` would
+    // break normalizers that expect the shape of the user's data
+    const rawFromValue = rawNodesFromValue.value[id]
+    const raw = rawFromValue || ({ id } as RawNode)
+    const label = (rawFromValue && normalizeRawNode(rawFromValue).label) || `${id} (unknown)`
     const fallbackNode = shallowReactive<NormalizedNode>({
       id,
       label,
@@ -308,11 +317,18 @@ export function useTreeselect(
       //   2) Root options have been delayed loaded, we need to initialize states
       //      of these nodes. (multi-select mode)
       //   3) Async search mode.
-      fixSelectedNodeIds(internalValue.value, true)
+      //   4) An empty string value that has become the id of an option.
+      const valueIds = !props.multiple && props.modelValue === '' ? extractCheckedNodeIdsFromValue() : internalValue.value
+      fixSelectedNodeIds(valueIds, true)
+      // Options changed during a search: search the new options (#556)
+      if (!props.async) rerunLocalSearch()
     } else {
       forest.normalizedOptions = []
     }
   }
+
+  // Assigned once local search has been set up
+  let rerunLocalSearch = (): void => {}
 
   // ============================================================================
   // Search
@@ -335,6 +351,9 @@ export function useTreeselect(
     (forceReset) => resetHighlightedOptionWhenNecessary(forceReset)
   )
   const { handleLocalSearch } = localSearch
+  rerunLocalSearch = () => {
+    if (localSearch.localSearch.active) handleLocalSearch(true)
+  }
 
   // ============================================================================
   // Menu & selection
@@ -353,6 +372,7 @@ export function useTreeselect(
     loadChildrenOptions,
     getMenuElement,
     toggleClickOutsideEvent,
+    getSelectedNode: () => (single.value && forest.selectedNodeIds.length ? getNode(forest.selectedNodeIds[0]) : null),
   })
   resetHighlightedOptionWhenNecessary = menu.resetHighlightedOptionWhenNecessary
 
@@ -372,6 +392,7 @@ export function useTreeselect(
     single: () => single.value,
     getInstanceId,
     localSearch: localSearch.localSearch,
+    getSearchQuery: () => trigger.searchQuery,
   })
 
   // ============================================================================
@@ -455,12 +476,17 @@ export function useTreeselect(
     emit('search-change', trigger.searchQuery, getInstanceId())
   })
 
-  watch(() => props.modelValue, () => {
-    const nodeIdsFromValue = extractCheckedNodeIdsFromValue()
+  // Watching the extracted ids also tracks in-place changes of a reactive value array
+  watch(extractCheckedNodeIdsFromValue, (nodeIdsFromValue) => {
     const hasChanged = quickDiff(nodeIdsFromValue, internalValue.value)
     if (hasChanged) {
       fixSelectedNodeIds(nodeIdsFromValue)
     }
+  })
+
+  // New default options of async search are shown when nothing is typed
+  watch(() => props.defaultOptions, () => {
+    if (props.async && trigger.searchQuery === '') handleRemoteSearch()
   })
 
   // ============================================================================
@@ -484,6 +510,15 @@ export function useTreeselect(
 
   onUnmounted(() => {
     toggleClickOutsideEvent(false)
+  })
+
+  // <KeepAlive>: don't leave an open (possibly teleported) menu behind
+  onDeactivated(() => {
+    menu.closeMenu(true)
+  })
+
+  onActivated(() => {
+    if (props.alwaysOpen) menu.openMenu()
   })
 
   // ============================================================================

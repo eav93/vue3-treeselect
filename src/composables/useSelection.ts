@@ -42,6 +42,7 @@ export function useSelection(options: {
   single: () => boolean
   getInstanceId: () => NodeId
   localSearch: LocalSearchState
+  getSearchQuery: () => string
 }) {
   const {
     props,
@@ -59,6 +60,7 @@ export function useSelection(options: {
     single,
     getInstanceId,
     localSearch,
+    getSearchQuery,
   } = options
 
   /**
@@ -140,11 +142,13 @@ export function useSelection(options: {
     if (props.flat) {
       draft.add(node)
 
+      // (both can be enabled together)
       if (props.autoSelectAncestors) {
         node.ancestors.forEach(ancestor => {
           if (!draft.has(ancestor) && !ancestor.isDisabled) draft.add(ancestor)
         })
-      } else if (props.autoSelectDescendants) {
+      }
+      if (props.autoSelectDescendants) {
         traverseDescendantsBFS(node, descendant => {
           if (!draft.has(descendant) && !descendant.isDisabled) draft.add(descendant)
         })
@@ -202,11 +206,13 @@ export function useSelection(options: {
     if (props.flat) {
       draft.remove(node)
 
+      // (both can be enabled together)
       if (props.autoDeselectAncestors) {
         node.ancestors.forEach(ancestor => {
           if (draft.has(ancestor) && !ancestor.isDisabled) draft.remove(ancestor)
         })
-      } else if (props.autoDeselectDescendants) {
+      }
+      if (props.autoDeselectDescendants) {
         traverseDescendantsBFS(node, descendant => {
           if (draft.has(descendant) && !descendant.isDisabled) draft.remove(descendant)
         })
@@ -282,8 +288,8 @@ export function useSelection(options: {
       }
     })
 
-    // Reset search if needed
-    if (localSearch.active && nextState && (single() || props.clearOnSelect)) {
+    // Reset search if needed (also in async search mode, where the local search is never active)
+    if ((localSearch.active || getSearchQuery() !== '') && nextState && (single() || props.clearOnSelect)) {
       resetSearchQuery()
     }
 
@@ -302,7 +308,11 @@ export function useSelection(options: {
    */
   const removeLastValue = (): void => {
     if (!hasValue()) return
-    if (single()) return clear()
+    if (single()) {
+      // Backspace / Delete must not clear a value the user can't clear otherwise
+      if (props.clearable === false) return
+      return clear()
+    }
 
     const value = internalValue()
     const lastValue = value[value.length - 1]

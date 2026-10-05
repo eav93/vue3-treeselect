@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.3.1
+
+Bugs reported in [riophae/vue-treeselect](https://github.com/riophae/vue-treeselect) and the Vue 3 ports that also affected this fork:
+
+- The search is re-run when the options change while searching, keeping the branches the user expanded (riophae#556).
+- After a search the first match is highlighted, so Enter selects it instead of its ancestor (#445, #178, #471).
+- Collapsing and expanding a branch with matches during a search keeps showing only the matches (#313, #354).
+- Reopening a single select highlights the selected option (#197).
+- Home, End, ← and → move the caret while the search input has text.
+- `clearOnSelect` works in async search mode (#312, #435).
+- In flat mode `autoSelectAncestors` + `autoSelectDescendants` (and the deselect pair) can be combined (#260, #325).
+- No duplicate ids in the value after the options of a selected branch change (#376).
+- Backspace / Delete don't clear a single value when `clearable` is `false` (#235).
+- A value missing from the options doesn't go through the `normalizer` anymore, which crashed normalizers expecting the user's data shape (#550, #491).
+- `modelValue: ''` shows the placeholder in single mode, unless an option has the id `''` (#324, #173).
+- In-place changes of a reactive `modelValue` array are applied.
+- Changing `defaultOptions` is applied in async mode while the search is empty (#535, #203).
+- `mousedown` is not stopped anymore, so parent elements receive it (#454).
+- Form controls rendered in the `before-list` / `after-list` slots can be focused without closing the menu (#284, #516).
+- With `searchable: false`, clicking the control toggles the menu (#497).
+- `<KeepAlive>`: the menu is closed when the component is deactivated.
+- SSR: no hydration mismatch with `appendToBody` (the portal is rendered after mount), default instance ids come from `useId()`.
+- `appendToBody` keeps the text direction (`dir`) of the control (#495).
+- `import Treeselect from '@eav93/vue3-treeselect'` returns the component in Node (SSR, Nuxt, vitest): the package has an `exports` map. Any file of the package can still be imported (`./*`).
+- Types: `options` / `defaultOptions` accept readonly arrays and any object shape (for use with `normalizer`); slots are typed.
+
 ## 0.3.0
 
 ### Fixed (regressions of the Composition API rewrite)

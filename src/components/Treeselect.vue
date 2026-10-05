@@ -2,18 +2,14 @@
   <div ref="wrapper" :class="wrapperClass">
     <HiddenFields />
     <Control />
-    <MenuPortal v-if="appendToBody" />
+    <!-- Teleported after mount only: nothing to hydrate on the client (SSR) -->
+    <MenuPortal v-if="appendToBody && isMounted" />
     <Menu v-else />
   </div>
 </template>
 
-<script lang="ts">
-// Default instance IDs, same format as in the original vue-treeselect
-let instanceCounter = 0
-</script>
-
 <script setup lang="ts">
-import { computed, provide, ref, shallowRef, useSlots } from 'vue'
+import { computed, onMounted, provide, ref, shallowRef, useId, useSlots } from 'vue'
 import { onLeftClick } from '@/utils'
 import { useTreeselect } from '@/composables/useTreeselect'
 import { TREESELECT_CONTEXT } from '@/context'
@@ -22,7 +18,7 @@ import HiddenFields from '@/components/HiddenFields.vue'
 import Control from '@/components/Control.vue'
 import Menu from '@/components/Menu.vue'
 import MenuPortal from '@/components/MenuPortal.vue'
-import type { NodeId, TreeselectProps } from '@/types'
+import type { NodeId, NormalizedNode, TreeselectProps } from '@/types'
 
 defineOptions({ name: 'vue-treeselect' })
 
@@ -110,6 +106,23 @@ const emit = defineEmits<{
   'search-change': [searchQuery: string, instanceId: string | number]
 }>()
 
+defineSlots<{
+  /** Label of an option in the menu */
+  'option-label'?: (scope: {
+    node: NormalizedNode
+    shouldShowCount: boolean
+    count: number
+    labelClassName: string
+    countClassName: string
+  }) => any
+  /** Label of a selected value */
+  'value-label'?: (scope: { node: NormalizedNode }) => any
+  /** Content above the options */
+  'before-list'?: () => any
+  /** Content below the options */
+  'after-list'?: () => any
+}>()
+
 const slots = useSlots()
 
 // ============================================================================
@@ -123,7 +136,13 @@ const menuElement = shallowRef<HTMLElement | null>(null)
 const valueContainerElement = shallowRef<HTMLElement | null>(null)
 const controlElement = shallowRef<HTMLElement | null>(null)
 
-const defaultInstanceId = `${instanceCounter++}$$`
+// useId() is stable between server and client rendering
+const defaultInstanceId = `${useId()}$$`
+
+const isMounted = ref(false)
+onMounted(() => {
+  isMounted.value = true
+})
 const getInstanceId = (): NodeId => props.instanceId ?? defaultInstanceId
 
 const getMenuElement = (): HTMLElement | null => menuElement.value
@@ -176,16 +195,29 @@ const treeselect = useTreeselect(props, emit, {
 // Mouse down handler (control and menu)
 // ============================================================================
 
+// Form controls rendered in slots (e.g. a filter input in `before-list`) must get the focus
+const isFormControlInSlot = (target: Element): boolean =>
+  !!target.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])') &&
+  !target.closest('.vue-treeselect__input, .vue-treeselect__input-container')
+
 const handleMouseDown = onLeftClick(function (evt: MouseEvent) {
+  const target = evt.target as Element
+  if (isFormControlInSlot(target)) return
+
+  // Keep the focus in the input. (No stopPropagation: parent elements may need the event, #454)
   evt.preventDefault()
-  evt.stopPropagation()
 
   if (props.disabled) return
 
-  const isClickedOnValueContainer = !!valueContainerElement.value?.contains(evt.target as Node)
+  const isClickedOnValueContainer = !!valueContainerElement.value?.contains(target)
 
-  if (isClickedOnValueContainer && !treeselect.menu.isOpen && (props.openOnClick || treeselect.trigger.isFocused)) {
-    treeselect.openMenu()
+  if (isClickedOnValueContainer) {
+    if (!treeselect.menu.isOpen && (props.openOnClick || treeselect.trigger.isFocused)) {
+      treeselect.openMenu()
+    } else if (treeselect.menu.isOpen && !props.searchable) {
+      // Without a search input, clicking the control toggles the menu (#497)
+      treeselect.closeMenu()
+    }
   }
 
   if (treeselect.resetFlags()) {

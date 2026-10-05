@@ -136,11 +136,12 @@ describe('keyboard', () => {
     const w = mountTs({ options: opts })
     await openMenu(w)
     await typeSearch(w, 'bb')
-    expect(highlightedId()).toBe('b')
-    await keyDown(w, 'ArrowDown')
+    // The first match is highlighted, not its ancestor (riophae/vue-treeselect#445)
     expect(highlightedId()).toBe('bb')
     await keyDown(w, 'ArrowDown')
     expect(highlightedId()).toBe('b')
+    await keyDown(w, 'ArrowDown')
+    expect(highlightedId()).toBe('bb')
   })
 
   it('Escape clears search query first, then closes menu', async () => {

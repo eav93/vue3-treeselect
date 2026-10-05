@@ -44,9 +44,13 @@ export function useLocalSearch(
    * Handle local search
    * Searches through options and updates match states in a single post-order pass
    */
-  const handleLocalSearch = (): void => {
+  /**
+   * @param keepExpanded - Re-run the same search after the options have changed:
+   *   keep the branches the user has expanded and the highlighted option
+   */
+  const handleLocalSearch = (keepExpanded = false): void => {
     const { searchQuery } = trigger
-    const done = () => resetHighlightedOptionWhenNecessary(true)
+    const done = () => resetHighlightedOptionWhenNecessary(!keepExpanded)
 
     if (!searchQuery) {
       // Exit local search mode
@@ -125,9 +129,9 @@ export function useLocalSearch(
         }
 
         countMap[node.id] = count
-        node.isExpandedOnSearch = expandedOnSearch
+        node.isExpandedOnSearch = expandedOnSearch || (keepExpanded && !!node.isExpandedOnSearch)
         node.hasMatchedDescendants = expandedOnSearch
-        node.showAllChildrenOnSearch = false
+        if (!keepExpanded) node.showAllChildrenOnSearch = false
       }
 
       node.isMatched = matched

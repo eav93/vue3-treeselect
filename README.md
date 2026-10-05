@@ -66,6 +66,9 @@ A UMD build is available as `dist/vue3-treeselect.umd.js` (global `Vue3Treeselec
   `value-label` (`{ node }`), `before-list`, `after-list`.
 - `loadOptions` may return a promise; for `ASYNC_SEARCH` the resolved value is used as the options.
 - Selecting a branch never selects its disabled descendants, at any depth.
+- After a search the first match is highlighted (Enter selects it), and the options can change
+  during a search.
+- Works with SSR (`appendToBody` included) and `<KeepAlive>`; slots and props are typed.
 - New props:
 
   | Prop | Default | Description |
