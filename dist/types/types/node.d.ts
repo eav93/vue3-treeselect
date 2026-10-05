@@ -1,0 +1,78 @@
+/**
+ * Raw node data structure as provided by the user
+ */
+export interface RawNode {
+    /** Unique identifier for the node */
+    id: string | number;
+    /** Display label for the node */
+    label: string;
+    /** Child nodes (null for unloaded branches, undefined for leaves) */
+    children?: RawNode[] | null;
+    /** Whether the node is disabled */
+    isDisabled?: boolean;
+    /** Whether the node is marked as new */
+    isNew?: boolean;
+    /** Whether the node should be expanded by default */
+    isDefaultExpanded?: boolean;
+    /** Any additional custom properties */
+    [key: string]: any;
+}
+/**
+ * Count types for branch nodes
+ */
+export interface CountMap {
+    ALL_CHILDREN: number;
+    ALL_DESCENDANTS: number;
+    LEAF_CHILDREN: number;
+    LEAF_DESCENDANTS: number;
+}
+/**
+ * States for async loading of options
+ */
+export interface AsyncOptionsStates {
+    isLoaded: boolean;
+    isLoading: boolean;
+    loadingError: string;
+}
+/**
+ * Normalized node structure used internally.
+ *
+ * Nodes are `shallowReactive`: top-level fields are reactive, nested
+ * structures (`children`, `ancestors`, `count`, `raw`) are not proxied.
+ * `childrenStates` is a separate reactive object.
+ */
+export interface NormalizedNode {
+    id: NodeId;
+    label: string;
+    level: number;
+    ancestors: NormalizedNode[];
+    index: number[];
+    parentNode: NormalizedNode | null;
+    lowerCased: Record<string, string>;
+    nestedSearchLabel: string;
+    isDisabled: boolean;
+    isNew: boolean;
+    isMatched: boolean;
+    isHighlighted: boolean;
+    isBranch: boolean;
+    isLeaf: boolean;
+    isRootNode: boolean;
+    isFallbackNode?: boolean;
+    raw: RawNode;
+    children?: NormalizedNode[];
+    childrenStates?: AsyncOptionsStates;
+    isExpanded?: boolean;
+    hasMatchedDescendants?: boolean;
+    hasDisabledDescendants?: boolean;
+    isExpandedOnSearch?: boolean;
+    showAllChildrenOnSearch?: boolean;
+    count?: CountMap;
+}
+/**
+ * Node identifier type
+ */
+export type NodeId = string | number;
+/**
+ * Map of node IDs to normalized nodes
+ */
+export type NodeMap = Record<NodeId, NormalizedNode>;
