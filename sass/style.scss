@@ -484,14 +484,14 @@ $treeselect-checkbox-icon-height: 8px !default;
   font-size: $treeselect-multi-value-font-size;
   vertical-align: top; // stylelint-disable-line plugin/declaration-block-no-ignored-properties
 
-  // Note: this selector (inherited from vue-treeselect) never matches, so the hover variables have
-  // no effect. It's kept as is: a working hover rule would override the hover color of everyone
-  // who customizes `.vue-treeselect__multi-value-item` with plain CSS.
-  .vue-treeselect:not(.vue-treeselect--disabled) &:not(.vue-treeselect__multi-value-item-disabled):hover &:not(.vue-treeselect__multi-value-item-new) &:not(.vue-treeselect__multi-value-item-new):hover {
-    @include clickable;
-
-    background: $treeselect-multi-value-item-bg-hover;
-    color: $treeselect-multi-value-font-color-hover;
+  // Hover colors. The selector inherited from vue-treeselect never matched, so the rule is only
+  // emitted when the hover variables are configured: CSS overriding the item colors keeps working.
+  @if $treeselect-multi-value-item-bg-hover != $treeselect-multi-value-item-bg or
+    $treeselect-multi-value-font-color-hover != $treeselect-multi-value-font-color {
+    .vue-treeselect:not(.vue-treeselect--disabled) &:not(.vue-treeselect__multi-value-item-disabled):not(.vue-treeselect__multi-value-item-new):hover {
+      background: $treeselect-multi-value-item-bg-hover;
+      color: $treeselect-multi-value-font-color-hover;
+    }
   }
 
   &.vue-treeselect__multi-value-item-disabled {

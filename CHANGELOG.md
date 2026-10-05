@@ -25,6 +25,7 @@
 - Remote search no longer leaks a deep watcher per call.
 - Promise-based `loadOptions` can resolve with the options for `ASYNC_SEARCH`.
 - Children loaded with `loadOptions` appear for non-reactive options as well (plain arrays, `shallowRef`, `markRaw`).
+- `$treeselect-multi-value-item-bg-hover` / `$treeselect-multi-value-font-color-hover` work: the hover selector inherited from vue-treeselect never matched. The rule is only emitted when one of these variables is configured, so CSS overrides of the item colors are not affected.
 - UMD build no longer throws `process is not defined` when used without a bundler.
 
 ### Performance
