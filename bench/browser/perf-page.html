@@ -1,0 +1,244 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script>window.process = { env: { NODE_ENV: 'production' } }</script>
+  <script>
+    // ---- Instrumentation (installed before Vue / the component load) ----
+    (() => {
+      const instr = window.__instr = {
+        listeners: new Map(), // "target:type" -> count of distinct (fn, capture)
+        timeoutsFired: 0, intervalsFired: 0, rafFired: 0,
+        activeTimeouts: new Set(), activeIntervals: new Set(), activeRafs: new Set(),
+        observers: { MutationObserver: 0, ResizeObserver: 0, IntersectionObserver: 0 },
+        updates: 0,
+      }
+      const reg = new WeakMap()
+      const keyOf = t => t === window ? 'window' : t === document ? 'document'
+        : t === document.documentElement ? 'html' : (document.body && t === document.body) ? 'body'
+        : (t && t.nodeType === 1) ? 'el' : 'other'
+      const origAdd = EventTarget.prototype.addEventListener
+      const origRemove = EventTarget.prototype.removeEventListener
+      EventTarget.prototype.addEventListener = function (type, fn, opts) {
+        const capture = typeof opts === 'object' ? !!(opts && opts.capture) : !!opts
+        let m = reg.get(this); if (!m) reg.set(this, m = new Map())
+        const k = type + '|' + capture
+        let s = m.get(k); if (!s) m.set(k, s = new Set())
+        if (fn && !s.has(fn)) {
+          s.add(fn)
+          const lk = keyOf(this) + ':' + type
+          instr.listeners.set(lk, (instr.listeners.get(lk) || 0) + 1)
+        }
+        return origAdd.call(this, type, fn, opts)
+      }
+      EventTarget.prototype.removeEventListener = function (type, fn, opts) {
+        const capture = typeof opts === 'object' ? !!(opts && opts.capture) : !!opts
+        const m = reg.get(this); const s = m && m.get(type + '|' + capture)
+        if (s && s.has(fn)) {
+          s.delete(fn)
+          const lk = keyOf(this) + ':' + type
+          instr.listeners.set(lk, (instr.listeners.get(lk) || 0) - 1)
+        }
+        return origRemove.call(this, type, fn, opts)
+      }
+      const oST = window.setTimeout, oCT = window.clearTimeout, oSI = window.setInterval, oCI = window.clearInterval
+      const oRAF = window.requestAnimationFrame, oCAF = window.cancelAnimationFrame
+      window.setTimeout = function (fn, ms, ...a) {
+        const id = oST.call(window, function () { instr.activeTimeouts.delete(id); instr.timeoutsFired++; return typeof fn === 'function' ? fn.apply(this, arguments) : undefined }, ms, ...a)
+        instr.activeTimeouts.add(id); return id
+      }
+      window.clearTimeout = function (id) { instr.activeTimeouts.delete(id); return oCT.call(window, id) }
+      window.setInterval = function (fn, ms, ...a) {
+        const id = oSI.call(window, function () { instr.intervalsFired++; return fn.apply(this, arguments) }, ms, ...a)
+        instr.activeIntervals.add(id); return id
+      }
+      window.clearInterval = function (id) { instr.activeIntervals.delete(id); return oCI.call(window, id) }
+      window.requestAnimationFrame = function (fn) {
+        const id = oRAF.call(window, function (t) { instr.activeRafs.delete(id); instr.rafFired++; return fn(t) })
+        instr.activeRafs.add(id); return id
+      }
+      window.cancelAnimationFrame = function (id) { instr.activeRafs.delete(id); return oCAF.call(window, id) }
+      for (const name of Object.keys(instr.observers)) {
+        const Orig = window[name]
+        if (!Orig) continue
+        window[name] = class extends Orig { constructor(...a) { super(...a); instr.observers[name]++ } }
+      }
+      window.__snapshotInstr = () => ({
+        listeners: Object.fromEntries([...instr.listeners].filter(([k, v]) => v !== 0 && !k.startsWith('el:'))),
+        elListeners: [...instr.listeners].filter(([k, v]) => k.startsWith('el:')).reduce((s, [, v]) => s + v, 0),
+        timeoutsFired: instr.timeoutsFired, intervalsFired: instr.intervalsFired, rafFired: instr.rafFired,
+        activeTimeouts: instr.activeTimeouts.size, activeIntervals: instr.activeIntervals.size, activeRafs: instr.activeRafs.size,
+        observers: { ...instr.observers }, updates: instr.updates,
+      })
+    })()
+  </script>
+  <script src="/vue.js"></script>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; font-size: 14px }
+    #app { width: 400px; margin: 10px }
+  </style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+  const build = new URLSearchParams(location.search).get('build') || 'current'
+
+  window.loadBuild = () => new Promise((resolve, reject) => {
+    const link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = `/builds/${build}/vue3-treeselect.css`
+    document.head.appendChild(link)
+    const script = document.createElement('script')
+    script.src = `/builds/${build}/vue3-treeselect.umd.js`
+    script.onload = resolve
+    script.onerror = reject
+    document.head.appendChild(script)
+  })
+
+  // ---- Data ----
+  const WORDS = ['alpha', 'beta', 'gamma', 'delta', 'omega', 'sigma', 'kappa', 'theta']
+  function genTree(roots, branching, depth) {
+    let n = 0
+    const make = (level, path) => {
+      const id = 'n' + (n++)
+      const label = WORDS[n % WORDS.length] + ' ' + path + ' ' + id
+      if (level >= depth) return { id, label }
+      const children = []
+      for (let i = 0; i < branching; i++) children.push(make(level + 1, path + '.' + i))
+      return { id, label, children }
+    }
+    const options = []
+    for (let i = 0; i < roots; i++) options.push(make(0, '' + i))
+    return options
+  }
+  function genFlat(count) {
+    const options = []
+    for (let i = 0; i < count; i++) options.push({ id: 'f' + i, label: WORDS[i % WORDS.length] + ' ' + i })
+    return options
+  }
+  const TREES = {
+    '11k': () => genTree(10, 10, 3),          // 11110 nodes
+    '55k': () => genTree(50, 10, 3),          // 55550 nodes
+    'flat5k': () => genFlat(5000),
+  }
+  // ids of leaves with distinct parents (selecting them never completes a branch)
+  window.leafIdsDistinctParents = (count) => {
+    const ids = []
+    const walk = nodes => {
+      for (const node of nodes) {
+        if (ids.length >= count) return
+        if (node.children) {
+          const leaf = node.children.find(c => !c.children)
+          if (leaf) ids.push(leaf.id)
+          walk(node.children.filter(c => c.children))
+        } else {
+          ids.push(node.id)
+        }
+      }
+    }
+    walk(window.__rawTree)
+    return ids.slice(0, count)
+  }
+
+  // ---- Timing helpers ----
+  const tasks = []
+  const observer = new PerformanceObserver(list => { for (const e of list.getEntries()) tasks.push(e.duration) })
+  observer.observe({ type: 'longtask' })
+  const frame = () => new Promise(r => requestAnimationFrame(() => r()))
+  // resolves right after the next paint
+  const afterPaint = () => new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)))
+  window.afterPaint = afterPaint
+  window.begin = () => { tasks.length = 0; return performance.now() }
+  window.end = async (t0) => {
+    await Vue.nextTick()
+    await afterPaint()
+    const paint = performance.now() - t0
+    await new Promise(r => setTimeout(r, 0))
+    return { paint, longest: tasks.length ? Math.max(...tasks) : 0, longTasks: tasks.length }
+  }
+  // cheap: the list's direct children (rows + optional spacer); no document-wide queries
+  const listEl = () => document.querySelector('.vue-treeselect__list')
+  const rowsCollection = document.getElementsByClassName('vue-treeselect__list-item') // live collection
+  const optionCount = () => rowsCollection.length
+  const hasSpacer = () => { const l = listEl(); const last = l && l.lastElementChild; return !!(last && last.style && last.style.height && !last.classList.contains('vue-treeselect__list-item')) }
+  // waits until the progressive rendering of the menu has finished
+  window.waitComplete = async (t0 = performance.now(), timeout = 30000) => {
+    let last = -1, stable = 0
+    while (performance.now() - t0 < timeout) {
+      await frame()
+      const count = optionCount()
+      if (!hasSpacer() && count === last) { if (++stable >= 3) break } else stable = 0
+      last = count
+    }
+    await new Promise(r => setTimeout(r, 0))
+    return { complete: performance.now() - t0, options: last, longest: tasks.length ? Math.max(...tasks) : 0 }
+  }
+  // DOM composition of the first rows (elements / text / comment nodes per row)
+  window.rowComposition = (n = 20) => {
+    const l = listEl(); if (!l) return null
+    const res = { rows: 0, elements: 0, texts: 0, emptyTexts: 0, comments: 0, total: 0 }
+    const walker = (node) => {
+      res.total++
+      if (node.nodeType === 1) res.elements++
+      else if (node.nodeType === 3) { res.texts++; if (!node.data.trim()) res.emptyTexts++ }
+      else if (node.nodeType === 8) res.comments++
+      for (const c of node.childNodes) walker(c)
+    }
+    // the first n rows and the sibling nodes between them (fragment anchors)
+    const first = rowsCollection[0], last = rowsCollection[Math.min(n, rowsCollection.length) - 1]
+    if (!first) return res
+    for (let c = first; c; c = c.nextSibling) { if (c.nodeType === 1 && c.classList.contains('vue-treeselect__list-item')) res.rows++; walker(c); if (c === last) break }
+    return res
+  }
+
+  // ---- App ----
+  window.mountApp = ({ tree = '11k', optionsMode = 'markRaw', props = {} } = {}) => {
+    const { Treeselect } = window.Vue3Treeselect
+    const raw = TREES[tree]()
+    window.__rawTree = raw
+    const wrap = t => optionsMode === 'reactive' ? Vue.reactive(t) : optionsMode === 'plain' ? t : Vue.markRaw(t)
+    const state = Vue.shallowReactive({ value: [], options: wrap(raw) })
+    window.__state = state
+    window.__wrap = wrap
+    window.__gen = TREES[tree]
+    const app = Vue.createApp({
+      setup() {
+        const vm = Vue.ref(null)
+        window.__vmRef = vm
+        return () => Vue.h(Treeselect, {
+          ref: vm,
+          options: state.options,
+          modelValue: state.value,
+          'onUpdate:modelValue': v => { state.value = v; window.__instr.updates++ },
+          multiple: true,
+          ...props,
+        })
+      },
+    })
+    window.__app = app
+    app.mount('#app')
+    return true
+  }
+  window.vm = () => window.__vmRef.value
+  window.unmountApp = () => { window.__app.unmount(); window.__app = null; window.__vmRef = null; window.__state = null; window.__rawTree = null }
+
+  // dispatch a key on the search input
+  window.pressKey = (key) => {
+    const input = document.querySelector('.vue-treeselect__input')
+    input.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
+  }
+  window.hoverRow = (i) => {
+    const el = document.querySelectorAll('.vue-treeselect__label-container')[i]
+    if (!el) return false
+    el.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }))
+    return true
+  }
+  window.mousedownRow = (id) => {
+    const el = document.querySelector(`.vue-treeselect__option[data-id="${id}"] .vue-treeselect__label-container`)
+    if (!el) return false
+    el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, button: 0 }))
+    return true
+  }
+</script>
+</body>
+</html>

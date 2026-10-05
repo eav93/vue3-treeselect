@@ -14,6 +14,7 @@
         <div
           v-else
           :class="`vue-treeselect__list-item vue-treeselect__indent-level-${row.level}`"
+          :style="{ '--level': row.level }"
         >
           <Tip v-if="row.type === 'no-children'" type="no-children" icon="warning">
             {{ treeselect.texts.value.noChildrenText }}
@@ -40,6 +41,7 @@
         <div
           v-else
           :class="`vue-treeselect__list-item vue-treeselect__indent-level-${row.level}`"
+          :style="{ '--level': row.level }"
         >
           <Tip v-if="row.type === 'no-children'" type="no-children" icon="warning">
             {{ treeselect.texts.value.noChildrenText }}

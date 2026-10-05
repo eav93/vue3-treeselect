@@ -1,5 +1,6 @@
 <template>
-  <div :class="`vue-treeselect__list-item vue-treeselect__indent-level-${level}`">
+  <!-- `--level` drives the indentation in CSS; the class is kept for custom styles -->
+  <div :class="`vue-treeselect__list-item vue-treeselect__indent-level-${level}`" :style="{ '--level': level }">
     <div
       :class="{
         'vue-treeselect__option': true,
