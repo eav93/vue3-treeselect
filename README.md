@@ -87,6 +87,26 @@ A UMD build is available as `dist/vue3-treeselect.umd.js` (global `Vue3Treeselec
   `.vue-treeselect__indent-level-N` classes instead of being nested, and options hidden by
   a search are not rendered.
 
+## Localization
+
+Texts are English by default. Pass a built-in language code or your own texts with the `locale`
+prop, or provide a locale once for the whole app:
+
+```js
+import { TREESELECT_LOCALE } from '@eav93/vue3-treeselect'
+
+app.provide(TREESELECT_LOCALE, 'ru') // en, ru, uk, de, fr, es, it, pt, pl, tr, zh, ja
+```
+
+```vue
+<Treeselect locale="de" />
+<Treeselect :locale="{ placeholder: 'Pick one', noResultsText: 'Nothing found' }" />
+```
+
+The text props (`placeholder`, `noResultsText`, `noOptionsText`, `noChildrenText`, `loadingText`,
+`searchPromptText`, `retryText`, `retryTitle`, `clearAllText`, `clearValueText`, `limitText`) take
+precedence over the locale, so `placeholder` can still be set per component.
+
 ## Customizing styles
 
 Instead of the compiled CSS you can use the SCSS source and configure it with variables

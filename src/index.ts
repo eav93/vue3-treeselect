@@ -5,6 +5,10 @@ import Treeselect from "@/components/Treeselect.vue";
 export { Treeselect };
 export default Treeselect;
 
+// Locales
+export { locales, en, ru, uk, de, fr, es, it, pt, pl, tr, zh, ja, TREESELECT_LOCALE, resolveLocale } from "@/locales";
+export type { TreeselectTexts, TreeselectLocale } from "@/locales";
+
 // Types
 export * from "@/types";
 export type { TreeselectContext } from "@/context";

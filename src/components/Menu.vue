@@ -19,23 +19,23 @@
         <!-- Async search menu -->
         <template v-if="props.async">
           <Tip v-if="showSearchPrompt" type="search-prompt" icon="warning">
-            {{ props.searchPromptText }}
+            {{ treeselect.texts.value.searchPromptText }}
           </Tip>
           <Tip v-else-if="asyncEntry.isLoading" type="loading" icon="loader">
-            {{ props.loadingText }}
+            {{ treeselect.texts.value.loadingText }}
           </Tip>
           <Tip v-else-if="asyncEntry.loadingError" type="error" icon="error">
             {{ asyncEntry.loadingError }}
             <a
               class="vue-treeselect__retry"
-              :title="props.retryTitle"
+              :title="treeselect.texts.value.retryTitle"
               @click="treeselect.handleRemoteSearch"
             >
-              {{ props.retryText }}
+              {{ treeselect.texts.value.retryText }}
             </a>
           </Tip>
           <Tip v-else-if="showAsyncNoResults" type="no-results" icon="warning">
-            {{ props.noResultsText }}
+            {{ treeselect.texts.value.noResultsText }}
           </Tip>
           <OptionList v-else ref="optionListRef" :key="props.virtualScroll ? 'virtual' : 'list'" :virtual="props.virtualScroll" />
         </template>
@@ -43,16 +43,16 @@
         <!-- Local search / normal menu -->
         <template v-else>
           <Tip v-if="treeselect.rootOptionsStates.isLoading" type="loading" icon="loader">
-            {{ props.loadingText }}
+            {{ treeselect.texts.value.loadingText }}
           </Tip>
           <Tip v-else-if="treeselect.rootOptionsStates.loadingError" type="error" icon="error">
             {{ treeselect.rootOptionsStates.loadingError }}
             <a
               class="vue-treeselect__retry"
-              :title="props.retryTitle"
+              :title="treeselect.texts.value.retryTitle"
               @click="treeselect.loadRootOptions"
             >
-              {{ props.retryText }}
+              {{ treeselect.texts.value.retryText }}
             </a>
           </Tip>
           <Tip
@@ -60,14 +60,14 @@
             type="no-options"
             icon="warning"
           >
-            {{ props.noOptionsText }}
+            {{ treeselect.texts.value.noOptionsText }}
           </Tip>
           <Tip
             v-else-if="treeselect.localSearch.active && treeselect.localSearch.noResults"
             type="no-results"
             icon="warning"
           >
-            {{ props.noResultsText }}
+            {{ treeselect.texts.value.noResultsText }}
           </Tip>
           <OptionList v-else ref="optionListRef" :key="props.virtualScroll ? 'virtual' : 'list'" :virtual="props.virtualScroll" />
         </template>

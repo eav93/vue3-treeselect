@@ -1214,8 +1214,174 @@ function Q() {
 	return e;
 }
 //#endregion
+//#region src/locales.ts
+var Ct = {
+	placeholder: "Select...",
+	noResultsText: "No results found...",
+	noOptionsText: "No options available.",
+	noChildrenText: "No sub-options.",
+	loadingText: "Loading...",
+	searchPromptText: "Type to search...",
+	retryText: "Retry?",
+	retryTitle: "Click to retry",
+	clearAllText: "Clear all",
+	clearValueText: "Clear value",
+	limitText: (e) => `and ${e} more`
+}, wt = {
+	placeholder: "Выберите...",
+	noResultsText: "Ничего не найдено",
+	noOptionsText: "Нет вариантов",
+	noChildrenText: "Нет вложенных вариантов",
+	loadingText: "Загрузка...",
+	searchPromptText: "Введите текст для поиска",
+	retryText: "Повторить?",
+	retryTitle: "Нажмите, чтобы повторить",
+	clearAllText: "Очистить всё",
+	clearValueText: "Очистить",
+	limitText: (e) => `и ещё ${e}`
+}, Tt = {
+	placeholder: "Оберіть...",
+	noResultsText: "Нічого не знайдено",
+	noOptionsText: "Немає варіантів",
+	noChildrenText: "Немає вкладених варіантів",
+	loadingText: "Завантаження...",
+	searchPromptText: "Введіть текст для пошуку",
+	retryText: "Повторити?",
+	retryTitle: "Натисніть, щоб повторити",
+	clearAllText: "Очистити все",
+	clearValueText: "Очистити",
+	limitText: (e) => `і ще ${e}`
+}, Et = {
+	placeholder: "Auswählen...",
+	noResultsText: "Keine Ergebnisse gefunden",
+	noOptionsText: "Keine Optionen verfügbar.",
+	noChildrenText: "Keine Unteroptionen.",
+	loadingText: "Wird geladen...",
+	searchPromptText: "Zum Suchen tippen...",
+	retryText: "Erneut versuchen?",
+	retryTitle: "Klicken, um es erneut zu versuchen",
+	clearAllText: "Alle löschen",
+	clearValueText: "Wert löschen",
+	limitText: (e) => `und ${e} weitere`
+}, Dt = {
+	placeholder: "Sélectionner...",
+	noResultsText: "Aucun résultat",
+	noOptionsText: "Aucune option disponible.",
+	noChildrenText: "Aucune sous-option.",
+	loadingText: "Chargement...",
+	searchPromptText: "Tapez pour rechercher...",
+	retryText: "Réessayer ?",
+	retryTitle: "Cliquez pour réessayer",
+	clearAllText: "Tout effacer",
+	clearValueText: "Effacer la valeur",
+	limitText: (e) => `et ${e} de plus`
+}, Ot = {
+	placeholder: "Seleccionar...",
+	noResultsText: "No se encontraron resultados",
+	noOptionsText: "No hay opciones disponibles.",
+	noChildrenText: "Sin subopciones.",
+	loadingText: "Cargando...",
+	searchPromptText: "Escriba para buscar...",
+	retryText: "¿Reintentar?",
+	retryTitle: "Haga clic para reintentar",
+	clearAllText: "Borrar todo",
+	clearValueText: "Borrar valor",
+	limitText: (e) => `y ${e} más`
+}, kt = {
+	placeholder: "Seleziona...",
+	noResultsText: "Nessun risultato trovato",
+	noOptionsText: "Nessuna opzione disponibile.",
+	noChildrenText: "Nessuna sotto-opzione.",
+	loadingText: "Caricamento...",
+	searchPromptText: "Digita per cercare...",
+	retryText: "Riprovare?",
+	retryTitle: "Clicca per riprovare",
+	clearAllText: "Cancella tutto",
+	clearValueText: "Cancella valore",
+	limitText: (e) => `e altri ${e}`
+}, At = {
+	placeholder: "Selecionar...",
+	noResultsText: "Nenhum resultado encontrado",
+	noOptionsText: "Nenhuma opção disponível.",
+	noChildrenText: "Sem subopções.",
+	loadingText: "Carregando...",
+	searchPromptText: "Digite para pesquisar...",
+	retryText: "Tentar novamente?",
+	retryTitle: "Clique para tentar novamente",
+	clearAllText: "Limpar tudo",
+	clearValueText: "Limpar valor",
+	limitText: (e) => `e mais ${e}`
+}, jt = {
+	placeholder: "Wybierz...",
+	noResultsText: "Brak wyników",
+	noOptionsText: "Brak dostępnych opcji.",
+	noChildrenText: "Brak podopcji.",
+	loadingText: "Ładowanie...",
+	searchPromptText: "Wpisz, aby wyszukać...",
+	retryText: "Spróbować ponownie?",
+	retryTitle: "Kliknij, aby spróbować ponownie",
+	clearAllText: "Wyczyść wszystko",
+	clearValueText: "Wyczyść wartość",
+	limitText: (e) => `i jeszcze ${e}`
+}, Mt = {
+	placeholder: "Seçin...",
+	noResultsText: "Sonuç bulunamadı",
+	noOptionsText: "Seçenek yok.",
+	noChildrenText: "Alt seçenek yok.",
+	loadingText: "Yükleniyor...",
+	searchPromptText: "Aramak için yazın...",
+	retryText: "Tekrar denensin mi?",
+	retryTitle: "Tekrar denemek için tıklayın",
+	clearAllText: "Tümünü temizle",
+	clearValueText: "Değeri temizle",
+	limitText: (e) => `ve ${e} tane daha`
+}, Nt = {
+	placeholder: "请选择...",
+	noResultsText: "未找到结果",
+	noOptionsText: "没有可用选项。",
+	noChildrenText: "没有子选项。",
+	loadingText: "加载中...",
+	searchPromptText: "输入以搜索...",
+	retryText: "重试？",
+	retryTitle: "点击重试",
+	clearAllText: "清除全部",
+	clearValueText: "清除",
+	limitText: (e) => `及其他 ${e} 项`
+}, Pt = {
+	placeholder: "選択してください...",
+	noResultsText: "結果が見つかりません",
+	noOptionsText: "選択肢がありません。",
+	noChildrenText: "サブ項目がありません。",
+	loadingText: "読み込み中...",
+	searchPromptText: "入力して検索...",
+	retryText: "再試行しますか？",
+	retryTitle: "クリックして再試行",
+	clearAllText: "すべてクリア",
+	clearValueText: "クリア",
+	limitText: (e) => `他 ${e} 件`
+}, Ft = {
+	en: Ct,
+	ru: wt,
+	uk: Tt,
+	de: Et,
+	fr: Dt,
+	es: Ot,
+	it: kt,
+	pt: At,
+	pl: jt,
+	tr: Mt,
+	zh: Nt,
+	ja: Pt
+}, It = Symbol("vue-treeselect-locale");
+function Lt(e) {
+	return e ? typeof e == "string" ? Ft[e] || Ft[e.toLowerCase().split(/[-_]/)[0]] || Ct : {
+		...Ct,
+		...e
+	} : Ct;
+}
+//#endregion
 //#region src/components/HiddenFields.vue?vue&type=script&setup=true&lang.ts
-var Ct = ["name", "value"], wt = /* @__PURE__ */ d({
+var Rt = ["name", "value"], zt = /* @__PURE__ */ d({
 	__name: "HiddenFields",
 	setup(t) {
 		let n = Q(), r = n.props;
@@ -1232,20 +1398,20 @@ var Ct = ["name", "value"], wt = /* @__PURE__ */ d({
 			type: "hidden",
 			name: M(n).props.name,
 			value: e
-		}, null, 8, Ct))), 128));
+		}, null, 8, Rt))), 128));
 	}
-}), Tt = (e) => e.renderSlot(e.scope);
-Tt.props = ["renderSlot", "scope"];
+}), Bt = (e) => e.renderSlot(e.scope);
+Bt.props = ["renderSlot", "scope"];
 //#endregion
 //#region src/components/Input.vue?vue&type=script&setup=true&lang.ts
-var Et = {
+var Vt = {
 	key: 0,
 	class: "vue-treeselect__input-container"
-}, Dt = [
+}, Ht = [
 	"tabindex",
 	"required",
 	"value"
-], Ot = ["tabindex"], kt = /* @__PURE__ */ d({
+], Ut = ["tabindex"], Wt = /* @__PURE__ */ d({
 	__name: "Input",
 	setup(t, { expose: n }) {
 		let r = Q(), a = r.props, l = T(null), u = T(), d = T(5), f = T(r.trigger.searchQuery), p = !1;
@@ -1360,7 +1526,7 @@ var Et = {
 			clear: D,
 			focus: O,
 			blur: k
-		}), (t, n) => h.value ? (S(), s("div", Et, [_.value ? o("", !0) : (S(), s(e, { key: 0 }, [c("input", {
+		}), (t, n) => h.value ? (S(), s("div", Vt, [_.value ? o("", !0) : (S(), s(e, { key: 0 }, [c("input", {
 			ref_key: "inputRef",
 			ref: l,
 			class: "vue-treeselect__input",
@@ -1377,7 +1543,7 @@ var Et = {
 			onBlur: N,
 			onKeydown: B,
 			onMousedown: V
-		}, null, 44, Dt), y.value ? (S(), s("div", {
+		}, null, 44, Ht), y.value ? (S(), s("div", {
 			key: 0,
 			ref_key: "sizerRef",
 			ref: u,
@@ -1391,9 +1557,9 @@ var Et = {
 			onFocus: j,
 			onBlur: N,
 			onKeydown: B
-		}, null, 40, Ot));
+		}, null, 40, Ut));
 	}
-}), At = /* @__PURE__ */ d({
+}), Gt = /* @__PURE__ */ d({
 	__name: "Placeholder",
 	setup(e) {
 		let t = Q(), n = i(() => ({
@@ -1401,37 +1567,37 @@ var Et = {
 			"vue-treeselect-helper-zoom-effect-off": !0,
 			"vue-treeselect-helper-hide": t.hasValue.value || !!t.trigger.searchQuery
 		}));
-		return (e, r) => (S(), s("div", { class: h(n.value) }, A(M(t).props.placeholder), 3));
+		return (e, r) => (S(), s("div", { class: h(n.value) }, A(M(t).texts.value.placeholder), 3));
 	}
-}), jt = {
+}), Kt = {
 	key: 0,
 	class: "vue-treeselect__single-value"
-}, Mt = /* @__PURE__ */ d({
+}, qt = /* @__PURE__ */ d({
 	__name: "SingleValue",
 	setup(t) {
 		let n = Q(), r = i(() => n.hasValue.value && !n.trigger.searchQuery), c = i(() => n.selectedNodes.value[0]);
 		return (t, i) => (S(), s(e, null, [
-			r.value ? (S(), s("div", jt, [M(n).slots["value-label"] ? (S(), a(M(Tt), {
+			r.value ? (S(), s("div", Kt, [M(n).slots["value-label"] ? (S(), a(M(Bt), {
 				key: 0,
 				"render-slot": M(n).slots["value-label"],
 				scope: { node: c.value }
 			}, null, 8, ["render-slot", "scope"])) : (S(), s(e, { key: 1 }, [l(A(c.value.label), 1)], 64))])) : o("", !0),
-			u(At),
-			u(kt)
+			u(Gt),
+			u(Wt)
 		], 64));
 	}
-}), Nt = { name: "vue-treeselect--x" }, Pt = (e, t) => {
+}), Jt = { name: "vue-treeselect--x" }, Yt = (e, t) => {
 	let n = e.__vccOpts || e;
 	for (let [e, r] of t) n[e] = r;
 	return n;
-}, Ft = {
+}, Xt = {
 	xmlns: "http://www.w3.org/2000/svg",
 	viewBox: "0 0 348.333 348.333"
 };
-function It(e, t, n, r, i, a) {
-	return S(), s("svg", Ft, [...t[0] ||= [c("path", { d: "M336.559 68.611L231.016 174.165l105.543 105.549c15.699 15.705 15.699 41.145 0 56.85-7.844 7.844-18.128 11.769-28.407 11.769-10.296 0-20.581-3.919-28.419-11.769L174.167 231.003 68.609 336.563c-7.843 7.844-18.128 11.769-28.416 11.769-10.285 0-20.563-3.919-28.413-11.769-15.699-15.698-15.699-41.139 0-56.85l105.54-105.549L11.774 68.611c-15.699-15.699-15.699-41.145 0-56.844 15.696-15.687 41.127-15.687 56.829 0l105.563 105.554L279.721 11.767c15.705-15.687 41.139-15.687 56.832 0 15.705 15.699 15.705 41.145.006 56.844z" }, null, -1)]]);
+function Zt(e, t, n, r, i, a) {
+	return S(), s("svg", Xt, [...t[0] ||= [c("path", { d: "M336.559 68.611L231.016 174.165l105.543 105.549c15.699 15.705 15.699 41.145 0 56.85-7.844 7.844-18.128 11.769-28.407 11.769-10.296 0-20.581-3.919-28.419-11.769L174.167 231.003 68.609 336.563c-7.843 7.844-18.128 11.769-28.416 11.769-10.285 0-20.563-3.919-28.413-11.769-15.699-15.698-15.699-41.139 0-56.85l105.54-105.549L11.774 68.611c-15.699-15.699-15.699-41.145 0-56.844 15.696-15.687 41.127-15.687 56.829 0l105.563 105.554L279.721 11.767c15.705-15.687 41.139-15.687 56.832 0 15.705 15.699 15.705 41.145.006 56.844z" }, null, -1)]]);
 }
-var Lt = /*#__PURE__*/ Pt(Nt, [["render", It]]), Rt = { class: "vue-treeselect__multi-value-item-container" }, zt = { class: "vue-treeselect__multi-value-label" }, Bt = { class: "vue-treeselect__icon vue-treeselect__value-remove" }, Vt = /* @__PURE__ */ d({
+var Qt = /*#__PURE__*/ Yt(Jt, [["render", Zt]]), $t = { class: "vue-treeselect__multi-value-item-container" }, en = { class: "vue-treeselect__multi-value-label" }, tn = { class: "vue-treeselect__icon vue-treeselect__value-remove" }, nn = /* @__PURE__ */ d({
 	__name: "MultiValueItem",
 	props: { node: {} },
 	setup(t) {
@@ -1442,34 +1608,34 @@ var Lt = /*#__PURE__*/ Pt(Nt, [["render", It]]), Rt = { class: "vue-treeselect__
 		})), d = G(function() {
 			r.select(n.node);
 		});
-		return (n, i) => (S(), s("div", Rt, [c("div", {
+		return (n, i) => (S(), s("div", $t, [c("div", {
 			class: h(o.value),
 			onMousedown: i[0] ||= (...e) => M(d) && M(d)(...e)
-		}, [c("span", zt, [M(r).slots["value-label"] ? (S(), a(M(Tt), {
+		}, [c("span", en, [M(r).slots["value-label"] ? (S(), a(M(Bt), {
 			key: 0,
 			"render-slot": M(r).slots["value-label"],
 			scope: { node: t.node }
-		}, null, 8, ["render-slot", "scope"])) : (S(), s(e, { key: 1 }, [l(A(t.node.label), 1)], 64))]), c("span", Bt, [u(Lt)])], 34)]));
+		}, null, 8, ["render-slot", "scope"])) : (S(), s(e, { key: 1 }, [l(A(t.node.label), 1)], 64))]), c("span", tn, [u(Qt)])], 34)]));
 	}
-}), Ht = {
+}), rn = {
 	key: "exceed-limit-tip",
 	class: "vue-treeselect__limit-tip vue-treeselect-helper-zoom-effect-off"
-}, Ut = { class: "vue-treeselect__limit-tip-text" }, Wt = {
+}, an = { class: "vue-treeselect__limit-tip-text" }, on = {
 	key: 1,
 	class: "vue-treeselect__multi-value"
-}, Gt = {
+}, sn = {
 	key: "exceed-limit-tip",
 	class: "vue-treeselect__limit-tip vue-treeselect-helper-zoom-effect-off"
-}, Kt = { class: "vue-treeselect__limit-tip-text" }, qt = 50, Jt = /* @__PURE__ */ d({
+}, cn = { class: "vue-treeselect__limit-tip-text" }, ln = 50, un = /* @__PURE__ */ d({
 	__name: "MultiValue",
 	setup(t) {
 		let n = Q(), l = n.props, d = i(() => n.internalValue.value.slice(0, l.limit).map((e) => n.getNode(e)).filter((e) => e !== null)), f = T(!0);
 		I(() => {
-			n.trigger.isFocused || (f.value = d.value.length <= qt);
+			n.trigger.isFocused || (f.value = d.value.length <= ln);
 		});
 		let p = i(() => n.internalValue.value.length > (l.limit ?? Infinity)), m = i(() => {
 			let e = n.internalValue.value.length - (l.limit ?? Infinity);
-			return l.limitText ? l.limitText(e) : "";
+			return n.texts.value.limitText(e);
 		});
 		return (t, n) => f.value ? (S(), a(r, {
 			key: 0,
@@ -1479,33 +1645,33 @@ var Lt = /*#__PURE__*/ Pt(Nt, [["render", It]]), Rt = { class: "vue-treeselect__
 			appear: ""
 		}, {
 			default: L(() => [
-				(S(!0), s(e, null, E(d.value, (e) => (S(), a(Vt, {
+				(S(!0), s(e, null, E(d.value, (e) => (S(), a(nn, {
 					key: `multi-value-item-${e.id}`,
 					node: e
 				}, null, 8, ["node"]))), 128)),
-				p.value ? (S(), s("div", Ht, [c("span", Ut, A(m.value), 1)])) : o("", !0),
-				u(At, { key: "placeholder" }),
-				u(kt, { key: "input" })
+				p.value ? (S(), s("div", rn, [c("span", an, A(m.value), 1)])) : o("", !0),
+				u(Gt, { key: "placeholder" }),
+				u(Wt, { key: "input" })
 			]),
 			_: 1
-		})) : (S(), s("div", Wt, [
-			(S(!0), s(e, null, E(d.value, (e) => (S(), a(Vt, {
+		})) : (S(), s("div", on, [
+			(S(!0), s(e, null, E(d.value, (e) => (S(), a(nn, {
 				key: `multi-value-item-${e.id}`,
 				node: e
 			}, null, 8, ["node"]))), 128)),
-			p.value ? (S(), s("div", Gt, [c("span", Kt, A(m.value), 1)])) : o("", !0),
-			u(At, { key: "placeholder" }),
-			u(kt, { key: "input" })
+			p.value ? (S(), s("div", sn, [c("span", cn, A(m.value), 1)])) : o("", !0),
+			u(Gt, { key: "placeholder" }),
+			u(Wt, { key: "input" })
 		]));
 	}
-}), Yt = { name: "vue-treeselect--arrow" }, Xt = {
+}), dn = { name: "vue-treeselect--arrow" }, fn = {
 	xmlns: "http://www.w3.org/2000/svg",
 	viewBox: "0 0 292.362 292.362"
 };
-function Zt(e, t, n, r, i, a) {
-	return S(), s("svg", Xt, [...t[0] ||= [c("path", { d: "M286.935 69.377c-3.614-3.617-7.898-5.424-12.848-5.424H18.274c-4.952 0-9.233 1.807-12.85 5.424C1.807 72.998 0 77.279 0 82.228c0 4.948 1.807 9.229 5.424 12.847l127.907 127.907c3.621 3.617 7.902 5.428 12.85 5.428s9.233-1.811 12.847-5.428L286.935 95.074c3.613-3.617 5.427-7.898 5.427-12.847 0-4.948-1.814-9.229-5.427-12.85z" }, null, -1)]]);
+function pn(e, t, n, r, i, a) {
+	return S(), s("svg", fn, [...t[0] ||= [c("path", { d: "M286.935 69.377c-3.614-3.617-7.898-5.424-12.848-5.424H18.274c-4.952 0-9.233 1.807-12.85 5.424C1.807 72.998 0 77.279 0 82.228c0 4.948 1.807 9.229 5.424 12.847l127.907 127.907c3.621 3.617 7.902 5.428 12.85 5.428s9.233-1.811 12.847-5.428L286.935 95.074c3.613-3.617 5.427-7.898 5.427-12.847 0-4.948-1.814-9.229-5.427-12.85z" }, null, -1)]]);
 }
-var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE__ */ d({
+var mn = /*#__PURE__*/ Yt(dn, [["render", pn]]), hn = ["title"], gn = /* @__PURE__ */ d({
 	__name: "Control",
 	setup(e) {
 		let t = Q(), n = t.props, r = T(), l = T();
@@ -1519,7 +1685,7 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 		let f = i(() => t.hasValue.value && t.internalValue.value.some((e) => {
 			let n = t.getNode(e);
 			return n && !n.isDisabled;
-		})), p = i(() => n.clearable && !n.disabled && t.hasValue.value && (f.value || n.allowClearingDisabled)), m = i(() => !n.alwaysOpen || !t.menu.isOpen), g = i(() => n.multiple ? n.clearAllText : n.clearValueText), _ = i(() => ({
+		})), p = i(() => n.clearable && !n.disabled && t.hasValue.value && (f.value || n.allowClearingDisabled)), m = i(() => !n.alwaysOpen || !t.menu.isOpen), g = i(() => n.multiple ? t.texts.value.clearAllText : t.texts.value.clearValueText), _ = i(() => ({
 			"vue-treeselect__control-arrow": !0,
 			"vue-treeselect__control-arrow--rotated": t.menu.isOpen
 		})), y = G(function(e) {
@@ -1541,45 +1707,45 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 				ref_key: "valueContainerRef",
 				ref: l,
 				class: "vue-treeselect__value-container"
-			}, [M(t).single.value ? (S(), a(Mt, { key: 0 })) : (S(), a(Jt, { key: 1 }))], 512),
+			}, [M(t).single.value ? (S(), a(qt, { key: 0 })) : (S(), a(un, { key: 1 }))], 512),
 			p.value ? (S(), s("div", {
 				key: 0,
 				class: "vue-treeselect__x-container",
 				title: g.value,
 				onMousedown: n[0] ||= (...e) => M(y) && M(y)(...e)
-			}, [u(Lt, { class: "vue-treeselect__x" })], 40, $t)) : o("", !0),
+			}, [u(Qt, { class: "vue-treeselect__x" })], 40, hn)) : o("", !0),
 			m.value ? (S(), s("div", {
 				key: 1,
 				class: "vue-treeselect__control-arrow-container",
 				onMousedown: n[1] ||= (...e) => M(x) && M(x)(...e)
-			}, [u(Qt, { class: h(_.value) }, null, 8, ["class"])], 32)) : o("", !0)
+			}, [u(mn, { class: h(_.value) }, null, 8, ["class"])], 32)) : o("", !0)
 		], 544));
 	}
-}), tn = { class: "vue-treeselect__icon-container" }, $ = /* @__PURE__ */ d({
+}), _n = { class: "vue-treeselect__icon-container" }, $ = /* @__PURE__ */ d({
 	__name: "Tip",
 	props: {
 		type: {},
 		icon: {}
 	},
 	setup(e) {
-		return (t, n) => (S(), s("div", { class: h(`vue-treeselect__tip vue-treeselect__${e.type}-tip`) }, [c("div", tn, [c("span", { class: h(`vue-treeselect__icon-${e.icon}`) }, null, 2)]), c("span", { class: h(`vue-treeselect__tip-text vue-treeselect__${e.type}-tip-text`) }, [D(t.$slots, "default")], 2)], 2));
+		return (t, n) => (S(), s("div", { class: h(`vue-treeselect__tip vue-treeselect__${e.type}-tip`) }, [c("div", _n, [c("span", { class: h(`vue-treeselect__icon-${e.icon}`) }, null, 2)]), c("span", { class: h(`vue-treeselect__tip-text vue-treeselect__${e.type}-tip-text`) }, [D(t.$slots, "default")], 2)], 2));
 	}
-}), nn = ["data-id"], rn = {
+}), vn = ["data-id"], yn = {
 	key: 0,
 	class: "vue-treeselect__option-arrow-container"
-}, an = {
+}, bn = {
 	key: 1,
 	class: "vue-treeselect__option-arrow-placeholder"
-}, on = { class: "vue-treeselect__label-container" }, sn = {
+}, xn = { class: "vue-treeselect__label-container" }, Sn = {
 	key: 0,
 	class: "vue-treeselect__checkbox-container"
-}, cn = {
+}, Cn = {
 	key: 2,
 	class: "vue-treeselect__label"
-}, ln = {
+}, wn = {
 	key: 0,
 	class: "vue-treeselect__count"
-}, un = /* @__PURE__ */ d({
+}, Tn = /* @__PURE__ */ d({
 	name: "vue-treeselect--option",
 	__name: "Option",
 	props: {
@@ -1614,14 +1780,14 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 				"vue-treeselect__option--matched": M(n).localSearch.active && e.node.isMatched
 			}),
 			"data-id": e.node.id
-		}, [e.node.isBranch && !M(n).shouldFlattenOptions.value ? (S(), s("div", rn, [(S(), s("svg", {
+		}, [e.node.isBranch && !M(n).shouldFlattenOptions.value ? (S(), s("div", yn, [(S(), s("svg", {
 			xmlns: "http://www.w3.org/2000/svg",
 			viewBox: "0 0 292.362 292.362",
 			class: h({
 				"vue-treeselect__option-arrow": !0,
 				"vue-treeselect__option-arrow--rotated": M(n).shouldExpand(e.node)
 			})
-		}, [...f[0] ||= [c("path", { d: "M286.935 69.377c-3.614-3.617-7.898-5.424-12.848-5.424H18.274c-4.952 0-9.233 1.807-12.85 5.424C1.807 72.998 0 77.279 0 82.228c0 4.948 1.807 9.229 5.424 12.847l127.907 127.907c3.621 3.617 7.902 5.428 12.85 5.428s9.233-1.811 12.847-5.428L286.935 95.074c3.613-3.617 5.427-7.898 5.427-12.847 0-4.948-1.814-9.229-5.427-12.85z" }, null, -1)]], 2))])) : M(n).hasBranchNodes.value && !M(n).shouldFlattenOptions.value ? (S(), s("div", an, " \xA0 ")) : o("", !0), c("div", on, [!M(n).single.value && !(M(r).disableBranchNodes && e.node.isBranch) ? (S(), s("div", sn, [c("span", { class: h(i()) }, [...f[1] ||= [c("span", { class: "vue-treeselect__check-mark" }, null, -1), c("span", { class: "vue-treeselect__minus-mark" }, null, -1)]], 2)])) : o("", !0), M(n).slots["option-label"] ? (S(), a(M(Tt), {
+		}, [...f[0] ||= [c("path", { d: "M286.935 69.377c-3.614-3.617-7.898-5.424-12.848-5.424H18.274c-4.952 0-9.233 1.807-12.85 5.424C1.807 72.998 0 77.279 0 82.228c0 4.948 1.807 9.229 5.424 12.847l127.907 127.907c3.621 3.617 7.902 5.428 12.85 5.428s9.233-1.811 12.847-5.428L286.935 95.074c3.613-3.617 5.427-7.898 5.427-12.847 0-4.948-1.814-9.229-5.427-12.85z" }, null, -1)]], 2))])) : M(n).hasBranchNodes.value && !M(n).shouldFlattenOptions.value ? (S(), s("div", bn, " \xA0 ")) : o("", !0), c("div", xn, [!M(n).single.value && !(M(r).disableBranchNodes && e.node.isBranch) ? (S(), s("div", Sn, [c("span", { class: h(i()) }, [...f[1] ||= [c("span", { class: "vue-treeselect__check-mark" }, null, -1), c("span", { class: "vue-treeselect__minus-mark" }, null, -1)]], 2)])) : o("", !0), M(n).slots["option-label"] ? (S(), a(M(Bt), {
 			key: 1,
 			"render-slot": M(n).slots["option-label"],
 			scope: {
@@ -1631,13 +1797,13 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 				labelClassName: "vue-treeselect__label",
 				countClassName: "vue-treeselect__count"
 			}
-		}, null, 8, ["render-slot", "scope"])) : (S(), s("label", cn, [l(A(e.node.label) + " ", 1), u() ? (S(), s("span", ln, "(" + A(d()) + ")", 1)) : o("", !0)]))])], 10, nn)], 2));
+		}, null, 8, ["render-slot", "scope"])) : (S(), s("label", Cn, [l(A(e.node.label) + " ", 1), u() ? (S(), s("span", wn, "(" + A(d()) + ")", 1)) : o("", !0)]))])], 10, vn)], 2));
 	}
-}), dn = ["title", "data-id"], fn = ["title", "data-id"], pn = 8, mn = 32, hn = 3, gn = 100, _n = 25, vn = 1e3, yn = /* @__PURE__ */ d({
+}), En = ["title", "data-id"], Dn = ["title", "data-id"], On = 8, kn = 32, An = 3, jn = 100, Mn = 25, Nn = 1e3, Pn = /* @__PURE__ */ d({
 	__name: "OptionList",
 	props: { virtual: { type: Boolean } },
 	setup(t, { expose: n }) {
-		let r = t, u = Q(), d = u.props, f = T(null), p = T(0), _ = T(0), y = T(null), x = u.menuRows, C = i(() => d.optionHeight || y.value || mn), w = () => Math.max(gn, Math.ceil((d.maxHeight || 300) / 20) * hn), D = T(r.virtual ? Infinity : w()), O = 200, k = null, j = !1, N = () => D.value >= x.value.length, P = () => {
+		let r = t, u = Q(), d = u.props, f = T(null), p = T(0), _ = T(0), y = T(null), x = u.menuRows, C = i(() => d.optionHeight || y.value || kn), w = () => Math.max(jn, Math.ceil((d.maxHeight || 300) / 20) * An), D = T(r.virtual ? Infinity : w()), O = 200, k = null, j = !1, N = () => D.value >= x.value.length, P = () => {
 			k || j || N() || (k = setTimeout(I, 0));
 		};
 		async function I() {
@@ -1645,14 +1811,14 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 			let e = performance.now();
 			D.value = Math.min(x.value.length, D.value + O), await m();
 			let t = Math.max(1, performance.now() - e);
-			O = Math.min(2e3, Math.max(50, Math.round(O * _n / t))), P();
+			O = Math.min(2e3, Math.max(50, Math.round(O * Mn / t))), P();
 		}
 		let R = (e) => {
 			e < D.value || (D.value = Math.min(x.value.length, e + 1 + O), P());
 		};
 		r.virtual || F(x, (e, t) => {
 			let n = D.value >= t.length, r = e.length - t.length;
-			n && r <= Math.max(vn, t.length) ? D.value = e.length : D.value = Math.max(w(), Math.min(D.value, t.length)), P();
+			n && r <= Math.max(Nn, t.length) ? D.value = e.length : D.value = Math.max(w(), Math.min(D.value, t.length)), P();
 		});
 		let z = i(() => {
 			let e = x.value.length;
@@ -1662,8 +1828,8 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 			};
 			let t = C.value, n = u.getMenu()?.clientHeight || d.maxHeight || 300, i = Math.max(0, p.value - _.value);
 			return {
-				start: Math.max(0, Math.min(Math.floor(i / t), e) - pn),
-				end: Math.min(e, Math.ceil((i + n) / t) + pn)
+				start: Math.max(0, Math.min(Math.floor(i / t), e) - On),
+				end: Math.min(e, Math.ceil((i + n) / t) + On)
 			};
 		}), B = i(() => {
 			let { start: e, end: t } = z.value;
@@ -1747,7 +1913,7 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 		}, [t.virtual ? (S(), s("div", {
 			key: 0,
 			style: g(te.value)
-		}, [(S(!0), s(e, null, E(B.value, (t) => (S(), s(e, { key: t.key }, [t.type === "option" ? (S(), a(un, {
+		}, [(S(!0), s(e, null, E(B.value, (t) => (S(), s(e, { key: t.key }, [t.type === "option" ? (S(), a(Tn, {
 			key: 0,
 			node: t.node,
 			level: t.level
@@ -1759,14 +1925,14 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 			type: "no-children",
 			icon: "warning"
 		}, {
-			default: L(() => [l(A(M(d).noChildrenText), 1)]),
+			default: L(() => [l(A(M(u).texts.value.noChildrenText), 1)]),
 			_: 1
 		})) : t.type === "loading" ? (S(), a($, {
 			key: 1,
 			type: "loading",
 			icon: "loader"
 		}, {
-			default: L(() => [l(A(M(d).loadingText), 1)]),
+			default: L(() => [l(A(M(u).texts.value.loadingText), 1)]),
 			_: 1
 		})) : (S(), a($, {
 			key: 2,
@@ -1775,11 +1941,11 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 		}, {
 			default: L(() => [l(A(t.node.childrenStates.loadingError) + " ", 1), c("a", {
 				class: "vue-treeselect__retry",
-				title: M(d).retryTitle,
+				title: M(u).texts.value.retryTitle,
 				"data-id": t.node.id
-			}, A(M(d).retryText), 9, dn)]),
+			}, A(M(u).texts.value.retryText), 9, En)]),
 			_: 2
-		}, 1024))], 2))], 64))), 128))], 4)) : (S(), s(e, { key: 1 }, [(S(!0), s(e, null, E(B.value, (t) => (S(), s(e, { key: t.key }, [t.type === "option" ? (S(), a(un, {
+		}, 1024))], 2))], 64))), 128))], 4)) : (S(), s(e, { key: 1 }, [(S(!0), s(e, null, E(B.value, (t) => (S(), s(e, { key: t.key }, [t.type === "option" ? (S(), a(Tn, {
 			key: 0,
 			node: t.node,
 			level: t.level
@@ -1791,14 +1957,14 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 			type: "no-children",
 			icon: "warning"
 		}, {
-			default: L(() => [l(A(M(d).noChildrenText), 1)]),
+			default: L(() => [l(A(M(u).texts.value.noChildrenText), 1)]),
 			_: 1
 		})) : t.type === "loading" ? (S(), a($, {
 			key: 1,
 			type: "loading",
 			icon: "loader"
 		}, {
-			default: L(() => [l(A(M(d).loadingText), 1)]),
+			default: L(() => [l(A(M(u).texts.value.loadingText), 1)]),
 			_: 1
 		})) : (S(), a($, {
 			key: 2,
@@ -1807,16 +1973,16 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 		}, {
 			default: L(() => [l(A(t.node.childrenStates.loadingError) + " ", 1), c("a", {
 				class: "vue-treeselect__retry",
-				title: M(d).retryTitle,
+				title: M(u).texts.value.retryTitle,
 				"data-id": t.node.id
-			}, A(M(d).retryText), 9, fn)]),
+			}, A(M(u).texts.value.retryText), 9, Dn)]),
 			_: 2
 		}, 1024))], 2))], 64))), 128)), V.value ? (S(), s("div", {
 			key: 0,
 			style: g({ height: `${V.value}px` })
 		}, null, 4)) : o("", !0)], 64))], 38));
 	}
-}), bn = ["title"], xn = ["title"], Sn = /* @__PURE__ */ d({
+}), Fn = ["title"], In = ["title"], Ln = /* @__PURE__ */ d({
 	__name: "Menu",
 	setup(t, { expose: r }) {
 		let d = {
@@ -1879,7 +2045,7 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 				onMousedown: r[2] ||= (...e) => M(f).handleMouseDown && M(f).handleMouseDown(...e),
 				onScrollPassive: x
 			}, [
-				M(f).slots["before-list"] ? (S(), a(M(Tt), {
+				M(f).slots["before-list"] ? (S(), a(M(Bt), {
 					key: 0,
 					"render-slot": M(f).slots["before-list"]
 				}, null, 8, ["render-slot"])) : o("", !0),
@@ -1888,14 +2054,14 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 					type: "search-prompt",
 					icon: "warning"
 				}, {
-					default: L(() => [l(A(M(p).searchPromptText), 1)]),
+					default: L(() => [l(A(M(f).texts.value.searchPromptText), 1)]),
 					_: 1
 				})) : k.value.isLoading ? (S(), a($, {
 					key: 1,
 					type: "loading",
 					icon: "loader"
 				}, {
-					default: L(() => [l(A(M(p).loadingText), 1)]),
+					default: L(() => [l(A(M(f).texts.value.loadingText), 1)]),
 					_: 1
 				})) : k.value.loadingError ? (S(), a($, {
 					key: 2,
@@ -1904,18 +2070,18 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 				}, {
 					default: L(() => [l(A(k.value.loadingError) + " ", 1), c("a", {
 						class: "vue-treeselect__retry",
-						title: M(p).retryTitle,
+						title: M(f).texts.value.retryTitle,
 						onClick: r[0] ||= (...e) => M(f).handleRemoteSearch && M(f).handleRemoteSearch(...e)
-					}, A(M(p).retryText), 9, bn)]),
+					}, A(M(f).texts.value.retryText), 9, Fn)]),
 					_: 1
 				})) : N.value ? (S(), a($, {
 					key: 3,
 					type: "no-results",
 					icon: "warning"
 				}, {
-					default: L(() => [l(A(M(p).noResultsText), 1)]),
+					default: L(() => [l(A(M(f).texts.value.noResultsText), 1)]),
 					_: 1
-				})) : (S(), a(yn, {
+				})) : (S(), a(Pn, {
 					ref_key: "optionListRef",
 					ref: y,
 					key: M(p).virtualScroll ? "virtual" : "list",
@@ -1925,7 +2091,7 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 					type: "loading",
 					icon: "loader"
 				}, {
-					default: L(() => [l(A(M(p).loadingText), 1)]),
+					default: L(() => [l(A(M(f).texts.value.loadingText), 1)]),
 					_: 1
 				})) : M(f).rootOptionsStates.loadingError ? (S(), a($, {
 					key: 1,
@@ -1934,31 +2100,31 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 				}, {
 					default: L(() => [l(A(M(f).rootOptionsStates.loadingError) + " ", 1), c("a", {
 						class: "vue-treeselect__retry",
-						title: M(p).retryTitle,
+						title: M(f).texts.value.retryTitle,
 						onClick: r[1] ||= (...e) => M(f).loadRootOptions && M(f).loadRootOptions(...e)
-					}, A(M(p).retryText), 9, xn)]),
+					}, A(M(f).texts.value.retryText), 9, In)]),
 					_: 1
 				})) : O.value ? (S(), a($, {
 					key: 2,
 					type: "no-options",
 					icon: "warning"
 				}, {
-					default: L(() => [l(A(M(p).noOptionsText), 1)]),
+					default: L(() => [l(A(M(f).texts.value.noOptionsText), 1)]),
 					_: 1
 				})) : M(f).localSearch.active && M(f).localSearch.noResults ? (S(), a($, {
 					key: 3,
 					type: "no-results",
 					icon: "warning"
 				}, {
-					default: L(() => [l(A(M(p).noResultsText), 1)]),
+					default: L(() => [l(A(M(f).texts.value.noResultsText), 1)]),
 					_: 1
-				})) : (S(), a(yn, {
+				})) : (S(), a(Pn, {
 					ref_key: "optionListRef",
 					ref: y,
 					key: M(p).virtualScroll ? "virtual" : "list",
 					virtual: M(p).virtualScroll
 				}, null, 8, ["virtual"]))], 64)),
-				M(f).slots["after-list"] ? (S(), a(M(Tt), {
+				M(f).slots["after-list"] ? (S(), a(M(Bt), {
 					key: 3,
 					"render-slot": M(f).slots["after-list"]
 				}, null, 8, ["render-slot"])) : o("", !0)
@@ -1966,7 +2132,7 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 			_: 1
 		})], 4));
 	}
-}), Cn = ["data-instance-id", "dir"], wn = /* @__PURE__ */ d({
+}), Rn = ["data-instance-id", "dir"], zn = /* @__PURE__ */ d({
 	__name: "MenuPortal",
 	setup(e) {
 		let n = Q(), r = n.props, i = T(null), o = T(void 0), s = () => {
@@ -2000,12 +2166,12 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 			style: g({ zIndex: M(r).zIndex }),
 			"data-instance-id": M(n).getInstanceId(),
 			dir: o.value
-		}, [u(Sn, {
+		}, [u(Ln, {
 			ref_key: "menuRef",
 			ref: l
-		}, null, 512)], 14, Cn)]));
+		}, null, 512)], 14, Rn)]));
 	}
-}), Tn = /* @__PURE__ */ d({
+}), Bn = /* @__PURE__ */ d({
 	name: "vue-treeselect",
 	__name: "Treeselect",
 	props: {
@@ -2073,12 +2239,12 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 			type: Boolean,
 			default: !0
 		},
-		clearAllText: { default: "Clear all" },
+		clearAllText: { default: void 0 },
 		clearOnSelect: {
 			type: Boolean,
 			default: !1
 		},
-		clearValueText: { default: "Clear value" },
+		clearValueText: { default: void 0 },
 		closeOnSelect: {
 			type: Boolean,
 			default: !0
@@ -2118,12 +2284,13 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 			type: Boolean,
 			default: !1
 		},
+		locale: { default: void 0 },
 		limit: { default: Infinity },
 		limitText: {
 			type: Function,
-			default: (e) => `and ${e} more`
+			default: void 0
 		},
-		loadingText: { default: "Loading..." },
+		loadingText: { default: void 0 },
 		loadOptions: {},
 		matchKeys: { default: () => ["label"] },
 		maxHeight: { default: 300 },
@@ -2132,9 +2299,9 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 			default: !1
 		},
 		name: { default: void 0 },
-		noChildrenText: { default: "No sub-options." },
-		noOptionsText: { default: "No options available." },
-		noResultsText: { default: "No results found..." },
+		noChildrenText: { default: void 0 },
+		noOptionsText: { default: void 0 },
+		noResultsText: { default: void 0 },
 		normalizer: {
 			type: Function,
 			default: (e) => e
@@ -2149,13 +2316,13 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 			default: !1
 		},
 		options: { default: void 0 },
-		placeholder: { default: "Select..." },
+		placeholder: { default: void 0 },
 		required: {
 			type: Boolean,
 			default: !1
 		},
-		retryText: { default: "Retry?" },
-		retryTitle: { default: "Click to retry" },
+		retryText: { default: void 0 },
+		retryTitle: { default: void 0 },
 		searchable: {
 			type: Boolean,
 			default: !0
@@ -2164,7 +2331,7 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 			type: Boolean,
 			default: !1
 		},
-		searchPromptText: { default: "Type to search..." },
+		searchPromptText: { default: void 0 },
 		searchDebounceDelay: { default: void 0 },
 		showCount: {
 			type: Boolean,
@@ -2196,101 +2363,121 @@ var Qt = /*#__PURE__*/ Pt(Yt, [["render", Zt]]), $t = ["title"], en = /* @__PURE
 		"search-change"
 	],
 	setup(e, { expose: t, emit: n }) {
-		let r = e, o = n, c = P(), l = T(), d = k(null), f = k(null), p = k(null), m = k(null), g = `${N()}$$`, _ = T(!1);
+		let r = e, o = n, c = P(), l = T(), d = k(null), p = k(null), m = k(null), g = k(null), _ = `${N()}$$`, v = T(!1);
 		b(() => {
-			_.value = !0;
+			v.value = !0;
 		});
-		let v = () => r.instanceId ?? g, y = () => f.value, x = () => m.value, w = () => d.value, E = () => {
-			w()?.focus();
-		}, D = () => {
-			w()?.blur();
-		}, O = (e) => {
+		let y = () => r.instanceId ?? _, x = () => p.value, w = () => g.value, E = () => d.value, D = () => {
+			E()?.focus();
+		}, O = () => {
+			E()?.blur();
+		}, A = (e) => {
 			let t = e.target;
-			l.value && !l.value.contains(t) && (y()?.contains(t) || (D(), A.closeMenu()));
-		}, A = xt(r, o, {
-			getInstanceId: v,
-			getMenuElement: y,
-			getControlElement: x,
+			l.value && !l.value.contains(t) && (x()?.contains(t) || (O(), j.closeMenu()));
+		}, j = xt(r, o, {
+			getInstanceId: y,
+			getMenuElement: x,
+			getControlElement: w,
 			toggleClickOutsideEvent: (e) => {
-				e ? document.addEventListener("mousedown", O, !1) : document.removeEventListener("mousedown", O, !1);
+				e ? document.addEventListener("mousedown", A, !1) : document.removeEventListener("mousedown", A, !1);
 			},
-			focusInput: E
-		}), j = (e) => !!e.closest("input, textarea, select, [contenteditable]:not([contenteditable=\"false\"])") && !e.closest(".vue-treeselect__input, .vue-treeselect__input-container"), M = G(function(e) {
+			focusInput: D
+		}), M = (e) => !!e.closest("input, textarea, select, [contenteditable]:not([contenteditable=\"false\"])") && !e.closest(".vue-treeselect__input, .vue-treeselect__input-container"), F = G(function(e) {
 			let t = e.target;
-			j(t) || (e.preventDefault(), !r.disabled && (p.value?.contains(t) && (!A.menu.isOpen && (r.openOnClick || A.trigger.isFocused) ? A.openMenu() : A.menu.isOpen && !r.searchable && A.closeMenu()), A.resetFlags() ? D() : E()));
-		}), F = i(() => ({
+			M(t) || (e.preventDefault(), !r.disabled && (m.value?.contains(t) && (!j.menu.isOpen && (r.openOnClick || j.trigger.isFocused) ? j.openMenu() : j.menu.isOpen && !r.searchable && j.closeMenu()), j.resetFlags() ? O() : D()));
+		}), I = f(It, null), L = [
+			"placeholder",
+			"noResultsText",
+			"noOptionsText",
+			"noChildrenText",
+			"loadingText",
+			"searchPromptText",
+			"retryText",
+			"retryTitle",
+			"clearAllText",
+			"clearValueText",
+			"limitText"
+		], R = i(() => {
+			let e = { ...Lt(r.locale ?? I) };
+			for (let t of L) {
+				let n = r[t];
+				n != null && (e[t] = n);
+			}
+			return e;
+		}), z = i(() => ({
 			"vue-treeselect": !0,
-			"vue-treeselect--single": A.single.value,
+			"vue-treeselect--single": j.single.value,
 			"vue-treeselect--multi": r.multiple,
 			"vue-treeselect--searchable": r.searchable,
 			"vue-treeselect--disabled": r.disabled,
-			"vue-treeselect--focused": A.trigger.isFocused,
-			"vue-treeselect--has-value": A.hasValue.value,
-			"vue-treeselect--open": A.menu.isOpen,
-			"vue-treeselect--open-above": A.menu.placement === "top",
-			"vue-treeselect--open-below": A.menu.placement === "bottom",
+			"vue-treeselect--focused": j.trigger.isFocused,
+			"vue-treeselect--has-value": j.hasValue.value,
+			"vue-treeselect--open": j.menu.isOpen,
+			"vue-treeselect--open-above": j.menu.placement === "top",
+			"vue-treeselect--open-below": j.menu.placement === "bottom",
 			"vue-treeselect--branch-nodes-disabled": r.disableBranchNodes,
 			"vue-treeselect--append-to-body": r.appendToBody
-		})), I = {
-			...A,
+		})), B = {
+			...j,
 			props: r,
 			slots: c,
-			wrapperClass: F,
+			texts: R,
+			wrapperClass: z,
 			setInputElement: (e) => {
 				d.value = e;
 			},
 			setMenuElement: (e) => {
-				f.value = e;
-			},
-			setValueContainerElement: (e) => {
 				p.value = e;
 			},
-			setControlElement: (e) => {
+			setValueContainerElement: (e) => {
 				m.value = e;
 			},
-			getInput: w,
-			focusInput: E,
-			blurInput: D,
-			handleMouseDown: M
+			setControlElement: (e) => {
+				g.value = e;
+			},
+			getInput: E,
+			focusInput: D,
+			blurInput: O,
+			handleMouseDown: F
 		};
-		return C(St, I), t({
-			forest: A.forest,
-			menu: A.menu,
-			trigger: A.trigger,
-			localSearch: A.localSearch,
-			selectedNodes: A.selectedNodes,
-			internalValue: A.internalValue,
-			getNode: A.getNode,
-			isSelected: A.isSelected,
-			traverseAllNodesDFS: A.traverseAllNodesDFS,
-			traverseAllNodesByIndex: A.traverseAllNodesByIndex,
-			traverseDescendantsBFS: A.traverseDescendantsBFS,
-			traverseDescendantsDFS: A.traverseDescendantsDFS,
-			openMenu: A.openMenu,
-			closeMenu: A.closeMenu,
-			toggleMenu: A.toggleMenu,
-			toggleExpanded: A.toggleExpanded,
-			getMenu: A.getMenu,
-			getControl: A.getControl,
-			select: A.select,
-			clear: A.clear,
-			removeLastValue: A.removeLastValue,
-			getValue: A.getValue,
-			initialize: A.initialize,
-			loadRootOptions: A.loadRootOptions,
-			focusInput: E,
-			blurInput: D,
-			getInput: w
+		return C(St, B), t({
+			forest: j.forest,
+			menu: j.menu,
+			trigger: j.trigger,
+			localSearch: j.localSearch,
+			selectedNodes: j.selectedNodes,
+			internalValue: j.internalValue,
+			getNode: j.getNode,
+			isSelected: j.isSelected,
+			traverseAllNodesDFS: j.traverseAllNodesDFS,
+			traverseAllNodesByIndex: j.traverseAllNodesByIndex,
+			traverseDescendantsBFS: j.traverseDescendantsBFS,
+			traverseDescendantsDFS: j.traverseDescendantsDFS,
+			openMenu: j.openMenu,
+			closeMenu: j.closeMenu,
+			toggleMenu: j.toggleMenu,
+			toggleExpanded: j.toggleExpanded,
+			getMenu: j.getMenu,
+			getControl: j.getControl,
+			select: j.select,
+			clear: j.clear,
+			removeLastValue: j.removeLastValue,
+			getValue: j.getValue,
+			initialize: j.initialize,
+			loadRootOptions: j.loadRootOptions,
+			focusInput: D,
+			blurInput: O,
+			getInput: E
 		}), (t, n) => (S(), s("div", {
 			ref_key: "wrapper",
 			ref: l,
-			class: h(F.value)
+			class: h(z.value)
 		}, [
-			u(wt),
-			u(en),
-			e.appendToBody && _.value ? (S(), a(wn, { key: 0 })) : (S(), a(Sn, { key: 1 }))
+			u(zt),
+			u(gn),
+			e.appendToBody && v.value ? (S(), a(zn, { key: 0 })) : (S(), a(Ln, { key: 1 }))
 		], 2));
 	}
-}), En = Tn;
+}), Vn = Bn;
 //#endregion
-export { Ke as ALL, Ye as ALL_WITH_INDETERMINATE, Ge as ASYNC_SEARCH, qe as BRANCH_PRIORITY, Be as CHECKED, ze as INDETERMINATE, Je as LEAF_PRIORITY, We as LOAD_CHILDREN_OPTIONS, Ue as LOAD_ROOT_OPTIONS, Tn as Treeselect, Re as UNCHECKED, En as default };
+export { Ke as ALL, Ye as ALL_WITH_INDETERMINATE, Ge as ASYNC_SEARCH, qe as BRANCH_PRIORITY, Be as CHECKED, ze as INDETERMINATE, Je as LEAF_PRIORITY, We as LOAD_CHILDREN_OPTIONS, Ue as LOAD_ROOT_OPTIONS, It as TREESELECT_LOCALE, Bn as Treeselect, Re as UNCHECKED, Et as de, Vn as default, Ct as en, Ot as es, Dt as fr, kt as it, Pt as ja, Ft as locales, jt as pl, At as pt, Lt as resolveLocale, wt as ru, Mt as tr, Tt as uk, Nt as zh };

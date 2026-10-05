@@ -1,6 +1,6 @@
 <template>
   <div :class="placeholderClass">
-    {{ treeselect.props.placeholder }}
+    {{ treeselect.texts.value.placeholder }}
   </div>
 </template>
 

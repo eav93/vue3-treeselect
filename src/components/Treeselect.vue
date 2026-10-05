@@ -9,10 +9,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, provide, ref, shallowRef, useId, useSlots } from 'vue'
+import { computed, inject, onMounted, provide, ref, shallowRef, useId, useSlots } from 'vue'
 import { onLeftClick } from '@/utils'
 import { useTreeselect } from '@/composables/useTreeselect'
 import { TREESELECT_CONTEXT } from '@/context'
+import { TREESELECT_LOCALE, resolveLocale } from '@/locales'
+import type { TreeselectTexts } from '@/locales'
 import type { TreeselectContext } from '@/context'
 import HiddenFields from '@/components/HiddenFields.vue'
 import Control from '@/components/Control.vue'
@@ -43,9 +45,9 @@ const props = withDefaults(defineProps<TreeselectProps>(), {
   branchNodesFirst: false,
   cacheOptions: true,
   clearable: true,
-  clearAllText: 'Clear all',
+  clearAllText: undefined,
   clearOnSelect: false,
-  clearValueText: 'Clear value',
+  clearValueText: undefined,
   closeOnSelect: true,
   defaultExpandLevel: 0,
   defaultOptions: false,
@@ -59,27 +61,28 @@ const props = withDefaults(defineProps<TreeselectProps>(), {
   instanceId: undefined,
   joinValues: false,
   limit: Infinity,
-  limitText: (count: number) => `and ${count} more`,
-  loadingText: 'Loading...',
+  limitText: undefined,
+  locale: undefined,
+  loadingText: undefined,
   matchKeys: () => ['label'],
   maxHeight: 300,
   multiple: false,
   name: undefined,
-  noChildrenText: 'No sub-options.',
-  noOptionsText: 'No options available.',
-  noResultsText: 'No results found...',
+  noChildrenText: undefined,
+  noOptionsText: undefined,
+  noResultsText: undefined,
   normalizer: (node: any) => node,
   openDirection: 'auto',
   openOnClick: true,
   openOnFocus: false,
   options: undefined,
-  placeholder: 'Select...',
+  placeholder: undefined,
   required: false,
-  retryText: 'Retry?',
-  retryTitle: 'Click to retry',
+  retryText: undefined,
+  retryTitle: undefined,
   searchable: true,
   searchNested: false,
-  searchPromptText: 'Type to search...',
+  searchPromptText: undefined,
   searchDebounceDelay: undefined,
   showCount: false,
   showCountOf: 'ALL_CHILDREN',
@@ -229,6 +232,29 @@ const handleMouseDown = onLeftClick(function (evt: MouseEvent) {
 })
 
 // ============================================================================
+// Texts
+// ============================================================================
+
+const appLocale = inject(TREESELECT_LOCALE, null)
+
+const TEXT_PROPS = [
+  'placeholder', 'noResultsText', 'noOptionsText', 'noChildrenText', 'loadingText',
+  'searchPromptText', 'retryText', 'retryTitle', 'clearAllText', 'clearValueText', 'limitText',
+] as const
+
+/**
+ * Texts of the component: the locale (prop, then app-wide), overridden by the text props
+ */
+const texts = computed<TreeselectTexts>(() => {
+  const resolved = { ...resolveLocale(props.locale ?? appLocale) }
+  for (const key of TEXT_PROPS) {
+    const value = props[key]
+    if (value != null) (resolved as any)[key] = value
+  }
+  return resolved
+})
+
+// ============================================================================
 // Computed
 // ============================================================================
 
@@ -255,6 +281,7 @@ const context: TreeselectContext = {
   ...treeselect,
   props,
   slots,
+  texts,
   wrapperClass,
   setInputElement: el => { inputElement.value = el },
   setMenuElement: el => { menuElement.value = el },

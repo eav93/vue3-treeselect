@@ -1,4 +1,5 @@
 import type { RawNode } from './node'
+import type { TreeselectLocale } from '@/locales'
 
 /**
  * Function type for loading options asynchronously
@@ -124,6 +125,11 @@ export interface TreeselectProps {
   instanceId?: string | number
   /** Join multiple values into single field */
   joinValues?: boolean
+  /**
+   * Texts: a built-in language code (`'en'`, `'ru'`, `'de'`, ...) or (partial) texts.
+   * Can also be provided app-wide with `TREESELECT_LOCALE`. Text props take precedence.
+   */
+  locale?: TreeselectLocale
   /** Limit number of displayed selected items */
   limit?: number
   /** Function to generate limit text */

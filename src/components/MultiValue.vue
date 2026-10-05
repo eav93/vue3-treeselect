@@ -87,6 +87,6 @@ const exceedLimit = computed(() => {
  */
 const limitText = computed(() => {
   const count = treeselect.internalValue.value.length - (props.limit ?? Infinity)
-  return props.limitText ? props.limitText(count) : ''
+  return treeselect.texts.value.limitText(count)
 })
 </script>

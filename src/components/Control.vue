@@ -97,8 +97,8 @@ const shouldShowArrow = computed(() => {
 
 const xTitle = computed(() => {
   return props.multiple
-    ? props.clearAllText
-    : props.clearValueText
+    ? treeselect.texts.value.clearAllText
+    : treeselect.texts.value.clearValueText
 })
 
 const arrowClass = computed(() => ({

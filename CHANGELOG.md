@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0
+
+- Localization: built-in texts for `en`, `ru`, `uk`, `de`, `fr`, `es`, `it`, `pt`, `pl`, `tr`, `zh`, `ja`.
+  Use the `locale` prop (a language code or your own texts) or provide a locale app-wide with
+  `app.provide(TREESELECT_LOCALE, 'ru')`. The text props (`placeholder`, `noResultsText`, ...) keep
+  working and take precedence. Exported: `locales`, the individual locales, `TREESELECT_LOCALE`,
+  `resolveLocale`, types `TreeselectTexts` / `TreeselectLocale`.
+
 ## 0.4.0
 
 - Checkbox marks are inline SVG instead of PNG images: no asset files and no `$treeselect-assets-path`

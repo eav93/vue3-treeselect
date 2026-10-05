@@ -1,12 +1,15 @@
 import { ComputedRef, InjectionKey, Slots } from 'vue';
 import { TreeselectApi } from './composables/useTreeselect';
 import { TreeselectProps } from './types';
+import { TreeselectTexts } from './locales';
 /**
  * Everything child components need from the root Treeselect component
  */
 export interface TreeselectContext extends TreeselectApi {
     /** Root component props (with defaults applied) */
     props: TreeselectProps;
+    /** Texts (locale + text props) */
+    texts: ComputedRef<TreeselectTexts>;
     /** Root component slots (option-label, value-label, before-list, after-list) */
     slots: Slots;
     /** Classes of the root element (also applied to the portal target) */

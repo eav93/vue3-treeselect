@@ -16,19 +16,19 @@
           :class="`vue-treeselect__list-item vue-treeselect__indent-level-${row.level}`"
         >
           <Tip v-if="row.type === 'no-children'" type="no-children" icon="warning">
-            {{ props.noChildrenText }}
+            {{ treeselect.texts.value.noChildrenText }}
           </Tip>
           <Tip v-else-if="row.type === 'loading'" type="loading" icon="loader">
-            {{ props.loadingText }}
+            {{ treeselect.texts.value.loadingText }}
           </Tip>
           <Tip v-else type="error" icon="error">
             {{ row.node.childrenStates!.loadingError }}
             <a
               class="vue-treeselect__retry"
-              :title="props.retryTitle"
+              :title="treeselect.texts.value.retryTitle"
               :data-id="row.node.id"
             >
-              {{ props.retryText }}
+              {{ treeselect.texts.value.retryText }}
             </a>
           </Tip>
         </div>
@@ -42,19 +42,19 @@
           :class="`vue-treeselect__list-item vue-treeselect__indent-level-${row.level}`"
         >
           <Tip v-if="row.type === 'no-children'" type="no-children" icon="warning">
-            {{ props.noChildrenText }}
+            {{ treeselect.texts.value.noChildrenText }}
           </Tip>
           <Tip v-else-if="row.type === 'loading'" type="loading" icon="loader">
-            {{ props.loadingText }}
+            {{ treeselect.texts.value.loadingText }}
           </Tip>
           <Tip v-else type="error" icon="error">
             {{ row.node.childrenStates!.loadingError }}
             <a
               class="vue-treeselect__retry"
-              :title="props.retryTitle"
+              :title="treeselect.texts.value.retryTitle"
               :data-id="row.node.id"
             >
-              {{ props.retryText }}
+              {{ treeselect.texts.value.retryText }}
             </a>
           </Tip>
         </div>
