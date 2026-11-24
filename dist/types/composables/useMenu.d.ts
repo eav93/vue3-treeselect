@@ -42,6 +42,8 @@ export declare function useMenu(options: {
     highlightPrevOption: () => void;
     highlightNextOption: () => void;
     highlightLastOption: () => void;
+    isFirstOptionCurrent: () => boolean;
+    isLastOptionCurrent: () => boolean;
     saveMenuScrollPosition: () => void;
     restoreMenuScrollPosition: () => void;
 };

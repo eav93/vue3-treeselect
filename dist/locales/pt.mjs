@@ -10,7 +10,8 @@ var e = {
 	retryTitle: "Clique para tentar novamente",
 	clearAllText: "Limpar tudo",
 	clearValueText: "Limpar valor",
-	limitText: (e) => `e mais ${e}`
+	limitText: (e) => `e mais ${e}`,
+	createText: (e) => `Criar "${e}"`
 };
 //#endregion
 export { e as default, e as pt };

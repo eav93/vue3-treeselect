@@ -51,6 +51,11 @@ export declare function useTreeselect(props: TreeselectProps, emit: TreeselectEm
     showCountOnSearchComputed: import('vue').ComputedRef<boolean>;
     hasBranchNodes: import('vue').ComputedRef<boolean>;
     shouldFlattenOptions: import('vue').ComputedRef<boolean>;
+    createQuery: import('vue').ComputedRef<string>;
+    canCreate: import('vue').ComputedRef<boolean>;
+    createRow: {
+        isHighlighted: boolean;
+    };
     getNode: (nodeId: NodeId) => NormalizedNode | null;
     isSelected: (node: NormalizedNode | null) => boolean;
     getCheckedState: (node: NormalizedNode) => import('../types').CheckedState | undefined;
@@ -78,10 +83,14 @@ export declare function useTreeselect(props: TreeselectProps, emit: TreeselectEm
     highlightPrevOption: () => void;
     highlightNextOption: () => void;
     highlightLastOption: () => void;
+    isFirstOptionCurrent: () => boolean;
+    isLastOptionCurrent: () => boolean;
     handleLocalSearch: (keepExpanded?: boolean) => void;
     handleRemoteSearch: () => void;
     getRemoteSearchEntry: () => import('../types').RemoteSearchEntry;
     resetSearchQuery: () => void;
+    create: () => void;
+    highlightCreateRow: () => void;
     loadRootOptions: () => void;
     loadChildrenOptions: (parentNode: NormalizedNode) => void;
     initialize: () => void;

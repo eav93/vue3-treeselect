@@ -16,6 +16,21 @@
         <!-- Before list slot -->
         <SlotRenderer v-if="treeselect.slots['before-list']" :render-slot="treeselect.slots['before-list']" />
 
+        <!-- Create an option from the search query (`creatable`) -->
+        <div
+          v-if="treeselect.canCreate.value"
+          ref="createRowRef"
+          :class="['vue-treeselect__create', { 'vue-treeselect__create--highlight': treeselect.createRow.isHighlighted }]"
+          @mousedown.prevent
+          @mouseenter="treeselect.highlightCreateRow"
+          @click="treeselect.create"
+        >
+          <div class="vue-treeselect__icon-container">
+            <span class="vue-treeselect__icon-create" />
+          </div>
+          <span class="vue-treeselect__create-text">{{ treeselect.texts.value.createText(treeselect.createQuery.value) }}</span>
+        </div>
+
         <!-- Async search menu -->
         <template v-if="props.async">
           <Tip v-if="showSearchPrompt" type="search-prompt" icon="warning">
@@ -34,6 +49,7 @@
               {{ treeselect.texts.value.retryText }}
             </a>
           </Tip>
+          <template v-else-if="showAsyncNoResults && treeselect.canCreate.value" />
           <Tip v-else-if="showAsyncNoResults" type="no-results" icon="warning">
             {{ treeselect.texts.value.noResultsText }}
           </Tip>
@@ -62,6 +78,7 @@
           >
             {{ treeselect.texts.value.noOptionsText }}
           </Tip>
+          <template v-else-if="treeselect.localSearch.active && treeselect.localSearch.noResults && treeselect.canCreate.value" />
           <Tip
             v-else-if="treeselect.localSearch.active && treeselect.localSearch.noResults"
             type="no-results"
@@ -82,7 +99,7 @@
 <script setup lang="ts">
 import { computed, watch, onMounted, onBeforeUnmount, nextTick, ref } from 'vue'
 import { MENU_BUFFER } from '@/constants'
-import { watchSize, setupResizeAndScrollEventListeners } from '@/utils'
+import { watchSize, setupResizeAndScrollEventListeners, scrollIntoView } from '@/utils'
 import { useTreeselectContext } from '@/context'
 import Tip from '@/components/Tip.vue'
 import OptionList from '@/components/OptionList.vue'
@@ -105,6 +122,12 @@ const props = treeselect.props
 const menuRef = ref<HTMLElement | null>(null)
 const menuContainerRef = ref<HTMLElement | null>(null)
 const optionListRef = ref<InstanceType<typeof OptionList> | null>(null)
+const createRowRef = ref<HTMLElement | null>(null)
+
+// The create row highlighted with the keyboard (e.g. ArrowDown from the last option) is scrolled into view
+watch(() => treeselect.createRow.isHighlighted, (isHighlighted) => {
+  if (isHighlighted && menuRef.value && createRowRef.value) scrollIntoView(menuRef.value, createRowRef.value)
+})
 
 // Register the menu element with the root component (also works inside the portal)
 watch(menuRef, (el, prevEl) => {

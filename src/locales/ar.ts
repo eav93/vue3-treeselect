@@ -12,6 +12,7 @@ export const ar: TreeselectTexts = {
   clearAllText: 'مسح الكل',
   clearValueText: 'مسح القيمة',
   limitText: count => `و ${count} أخرى`,
+  createText: query => `إنشاء "${query}"`,
 }
 
 export default ar

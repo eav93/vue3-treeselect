@@ -1,5 +1,5 @@
 import { computed, onActivated, onDeactivated, onMounted, onUnmounted, reactive, shallowReactive, toRaw, watch } from 'vue'
-import { createMap, quickDiff, warning } from '@/utils'
+import { createMap, labelKey, quickDiff, warning } from '@/utils'
 import { NO_PARENT_NODE } from '@/constants'
 import {
   traverseAllNodesByIndex,
@@ -309,6 +309,7 @@ export function useTreeselect(
       // In case we are re-initializing options, keep the old state tree temporarily
       const prevNodeMap = forest.nodeMap
       forest.nodeMap = createMap()
+      forest.labelIndex = new Set()
       keepDataOfSelectedNodes(prevNodeMap)
       forest.normalizedOptions = normalize(NO_PARENT_NODE, options, prevNodeMap)
       // Cases that need fixing `selectedNodeIds`:
@@ -324,6 +325,8 @@ export function useTreeselect(
       if (!props.async) rerunLocalSearch()
     } else {
       forest.normalizedOptions = []
+      forest.labelIndex = new Set()
+      forest.labelIndexVersion++
     }
   }
 
@@ -420,6 +423,69 @@ export function useTreeselect(
    */
   const shouldFlattenOptions = computed(() => {
     return localSearch.localSearch.active && !!props.flattenSearchResults
+  })
+
+  // ============================================================================
+  // Create option from the search query (`creatable`)
+  // ============================================================================
+
+  /** The search query to create an option from: trimmed, empty unless `creatable` */
+  const createQuery = computed(() => (props.creatable ? trigger.searchQuery.trim() : ''))
+
+  /** The create row is highlighted (keyboard navigation and hover), instead of an option */
+  const createRow = reactive({ isHighlighted: false })
+
+  /**
+   * The query can be created: not empty, the options for it are loaded (async: the search for this query
+   * has succeeded — the response may contain it) and no option has exactly that label (`labelKey`, O(1))
+   */
+  const canCreate = computed(() => {
+    const query = createQuery.value
+    if (!query) return false
+
+    if (props.async) {
+      const entry = remoteSearch.getRemoteSearchEntry()
+      if (!entry.isLoaded || entry.isLoading || entry.loadingError) return false
+    } else if (!rootOptionsStates.isLoaded) {
+      return false
+    }
+
+    void forest.labelIndexVersion
+    return !forest.labelIndex.has(labelKey(query))
+  })
+
+  /** Emit `create` with the query (the parent adds the option) and clear the search */
+  const create = (): void => {
+    if (!canCreate.value) return
+    emit('create', createQuery.value, getInstanceId())
+    resetSearchQuery()
+  }
+
+  /** Highlight the create row instead of an option */
+  const highlightCreateRow = (): void => {
+    if (!canCreate.value) return
+    menu.setCurrentHighlightedOption(null)
+    createRow.isHighlighted = true
+  }
+
+  // One highlight at a time: any option highlighted (keyboard, hover, the search resetting it) or the
+  // query not creatable anymore takes it from the create row
+  watch(() => menu.menu.current, (current) => {
+    if (current !== null) createRow.isHighlighted = false
+  }, { flush: 'sync' })
+  watch(canCreate, (value) => {
+    if (!value) createRow.isHighlighted = false
+  }, { flush: 'sync' })
+
+  // `creatable` turned on after the options were normalized: index the existing ones once
+  watch(() => props.creatable, (creatable) => {
+    if (!creatable) return
+    const labels = new Set<string>()
+    for (const id in forest.nodeMap) {
+      if (!forest.nodeMap[id].isFallbackNode) labels.add(labelKey(forest.nodeMap[id].label))
+    }
+    forest.labelIndex = labels
+    forest.labelIndexVersion++
   })
 
   // ============================================================================
@@ -546,6 +612,9 @@ export function useTreeselect(
     showCountOnSearchComputed,
     hasBranchNodes,
     shouldFlattenOptions,
+    createQuery,
+    canCreate,
+    createRow,
 
     // Node methods
     getNode,
@@ -587,12 +656,16 @@ export function useTreeselect(
     highlightPrevOption: menu.highlightPrevOption,
     highlightNextOption: menu.highlightNextOption,
     highlightLastOption: menu.highlightLastOption,
+    isFirstOptionCurrent: menu.isFirstOptionCurrent,
+    isLastOptionCurrent: menu.isLastOptionCurrent,
 
     // Search
     handleLocalSearch,
     handleRemoteSearch,
     getRemoteSearchEntry: remoteSearch.getRemoteSearchEntry,
     resetSearchQuery,
+    create,
+    highlightCreateRow,
 
     // Async
     loadRootOptions,

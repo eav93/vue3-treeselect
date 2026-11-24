@@ -12,6 +12,7 @@ export const ko: TreeselectTexts = {
   clearAllText: '모두 지우기',
   clearValueText: '지우기',
   limitText: count => `외 ${count}개`,
+  createText: query => `"${query}" 만들기`,
 }
 
 export default ko

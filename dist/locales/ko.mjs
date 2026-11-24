@@ -10,7 +10,8 @@ var e = {
 	retryTitle: "클릭하여 다시 시도",
 	clearAllText: "모두 지우기",
 	clearValueText: "지우기",
-	limitText: (e) => `외 ${e}개`
+	limitText: (e) => `외 ${e}개`,
+	createText: (e) => `"${e}" 만들기`
 };
 //#endregion
 export { e as default, e as ko };

@@ -10,7 +10,8 @@ var e = {
 	retryTitle: "Nhấp để thử lại",
 	clearAllText: "Xóa tất cả",
 	clearValueText: "Xóa giá trị",
-	limitText: (e) => `và ${e} mục khác`
+	limitText: (e) => `và ${e} mục khác`,
+	createText: (e) => `Tạo "${e}"`
 };
 //#endregion
 export { e as default, e as vi };

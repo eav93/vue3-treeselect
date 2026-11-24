@@ -12,6 +12,7 @@ export const pt: TreeselectTexts = {
   clearAllText: 'Limpar tudo',
   clearValueText: 'Limpar valor',
   limitText: count => `e mais ${count}`,
+  createText: query => `Criar "${query}"`,
 }
 
 export default pt

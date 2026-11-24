@@ -10,7 +10,8 @@ var e = {
 	retryTitle: "Tekrar denemek için tıklayın",
 	clearAllText: "Tümünü temizle",
 	clearValueText: "Değeri temizle",
-	limitText: (e) => `ve ${e} tane daha`
+	limitText: (e) => `ve ${e} tane daha`,
+	createText: (e) => `"${e}" oluştur`
 };
 //#endregion
 export { e as default, e as tr };

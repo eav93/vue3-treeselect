@@ -89,6 +89,13 @@ export interface TreeselectProps {
     clearAllText?: string;
     /** Clear search input after selecting */
     clearOnSelect?: boolean;
+    /**
+     * Offer to create an option from the search query when no option has exactly that label: a row in
+     * the menu (also Enter when nothing is found) emits `create` with the query, the parent adds the option
+     */
+    creatable?: boolean;
+    /** Text of the create row */
+    createText?: (query: string) => string;
     /** Title for clear value button */
     clearValueText?: string;
     /** Close the menu after selecting (multi-select) */
@@ -202,6 +209,7 @@ export interface TreeselectEmits {
     (e: 'select', node: any, instanceId: string | number): void;
     (e: 'deselect', node: any, instanceId: string | number): void;
     (e: 'search-change', query: string, instanceId: string | number): void;
+    (e: 'create', query: string, instanceId: string | number): void;
     (e: 'open', instanceId: string | number): void;
     (e: 'close', value: any, instanceId: string | number): void;
 }

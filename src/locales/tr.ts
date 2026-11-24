@@ -12,6 +12,7 @@ export const tr: TreeselectTexts = {
   clearAllText: 'Tümünü temizle',
   clearValueText: 'Değeri temizle',
   limitText: count => `ve ${count} tane daha`,
+  createText: query => `"${query}" oluştur`,
 }
 
 export default tr

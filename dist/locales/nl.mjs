@@ -10,7 +10,8 @@ var e = {
 	retryTitle: "Klik om opnieuw te proberen",
 	clearAllText: "Alles wissen",
 	clearValueText: "Waarde wissen",
-	limitText: (e) => `en nog ${e}`
+	limitText: (e) => `en nog ${e}`,
+	createText: (e) => `"${e}" aanmaken`
 };
 //#endregion
 export { e as default, e as nl };

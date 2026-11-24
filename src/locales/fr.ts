@@ -12,6 +12,7 @@ export const fr: TreeselectTexts = {
   clearAllText: 'Tout effacer',
   clearValueText: 'Effacer la valeur',
   limitText: count => `et ${count} de plus`,
+  createText: query => `Créer « ${query} »`,
 }
 
 export default fr

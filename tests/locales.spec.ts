@@ -74,6 +74,7 @@ describe('locale', () => {
       const texts = (await import(`../src/locales/${code}.ts`))[code]
       expect(Object.keys(texts).sort(), code).toEqual(keys)
       expect(texts.limitText(3), code).toContain('3')
+      expect(texts.createText('Qq'), code).toContain('Qq')
     }
   })
 })

@@ -12,6 +12,7 @@ export const uk: TreeselectTexts = {
   clearAllText: 'Очистити все',
   clearValueText: 'Очистити',
   limitText: count => `і ще ${count}`,
+  createText: query => `Додати «${query}»`,
 }
 
 export default uk

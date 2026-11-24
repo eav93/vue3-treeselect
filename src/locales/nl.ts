@@ -12,6 +12,7 @@ export const nl: TreeselectTexts = {
   clearAllText: 'Alles wissen',
   clearValueText: 'Waarde wissen',
   limitText: count => `en nog ${count}`,
+  createText: query => `"${query}" aanmaken`,
 }
 
 export default nl

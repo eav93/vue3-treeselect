@@ -12,6 +12,7 @@ export const ro: TreeselectTexts = {
   clearAllText: 'Șterge tot',
   clearValueText: 'Șterge valoarea',
   limitText: count => `și încă ${count}`,
+  createText: query => `Creează „${query}”`,
 }
 
 export default ro

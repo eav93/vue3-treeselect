@@ -59,6 +59,7 @@ declare const __VLS_base: import('vue').DefineComponent<TreeselectProps, {
     "update:modelValue": (value: any, instanceId: string | number) => any;
     deselect: (node: any, instanceId: string | number) => any;
     "search-change": (searchQuery: string, instanceId: string | number) => any;
+    create: (query: string, instanceId: string | number) => any;
     open: (instanceId: string | number) => any;
 }, string, import('vue').PublicProps, Readonly<TreeselectProps> & Readonly<{
     onClose?: ((value: any, instanceId: string | number) => any) | undefined;
@@ -66,6 +67,7 @@ declare const __VLS_base: import('vue').DefineComponent<TreeselectProps, {
     "onUpdate:modelValue"?: ((value: any, instanceId: string | number) => any) | undefined;
     onDeselect?: ((node: any, instanceId: string | number) => any) | undefined;
     "onSearch-change"?: ((searchQuery: string, instanceId: string | number) => any) | undefined;
+    onCreate?: ((query: string, instanceId: string | number) => any) | undefined;
     onOpen?: ((instanceId: string | number) => any) | undefined;
 }>, {
     placeholder: string;
@@ -79,6 +81,7 @@ declare const __VLS_base: import('vue').DefineComponent<TreeselectProps, {
     clearAllText: string;
     clearValueText: string;
     limitText: (count: number) => string;
+    createText: (query: string) => string;
     flat: boolean;
     options: import('../types').TreeselectOptions;
     autoSelectAncestors: boolean;
@@ -103,6 +106,7 @@ declare const __VLS_base: import('vue').DefineComponent<TreeselectProps, {
     cacheOptions: boolean;
     clearable: boolean;
     clearOnSelect: boolean;
+    creatable: boolean;
     closeOnSelect: boolean;
     defaultExpandLevel: number;
     defaultOptions: boolean | import('../types').TreeselectOptions;

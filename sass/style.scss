@@ -133,6 +133,9 @@ $treeselect-error-icon-bg: $md-red-600 !default;
 $treeselect-tip-color: $md-grey-600 !default;
 $treeselect-tip-font-size: $treeselect-font-size-sm !default;
 $treeselect-retry-text-color: $md-light-blue-600 !default;
+// Row "Create …" (`creatable`)
+$treeselect-create-text-color: $treeselect-retry-text-color !default;
+$treeselect-create-icon-bg: $treeselect-retry-text-color !default;
 
 // Size of the check / minus mark, centered in the checkbox (e.g. 100% to fill the checkbox)
 $treeselect-checkbox-icon-width: 10px !default;
@@ -367,6 +370,8 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
   @include -treeselect-var(error-icon-bg, $treeselect-error-icon-bg);
   @include -treeselect-var(tip-color, $treeselect-tip-color);
   @include -treeselect-var(retry-text-color, $treeselect-retry-text-color);
+  @include -treeselect-var(create-text-color, $treeselect-create-text-color);
+  @include -treeselect-var(create-icon-bg, $treeselect-create-icon-bg);
 }
 
 // Branch arrows point to the start of the row: `-1` mirrors them (`--vue-treeselect-arrow-direction`
@@ -1104,6 +1109,58 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
 
   .vue-treeselect--single & {
     padding-inline-start: var(--_ts-padding);
+  }
+}
+
+// Row "Create …" above the options (`creatable`)
+.vue-treeselect__create {
+  @include row;
+  @include clickable;
+
+  color: var(--_ts-create-text-color);
+}
+
+// highlighted by keyboard or hover, like `.vue-treeselect__option--highlight`
+.vue-treeselect__create--highlight {
+  background: var(--_ts-option-bg-highlight);
+}
+
+.vue-treeselect__create-text {
+  @include wide-cell;
+
+  font-weight: 600;
+}
+
+.vue-treeselect__icon-create {
+  @include icon;
+  @include rounded;
+
+  position: relative;
+  width: $treeselect-icon-size;
+  height: $treeselect-icon-size;
+  background: var(--_ts-create-icon-bg);
+
+  // plus: horizontal and vertical stroke
+  &::before,
+  &::after {
+    display: block;
+    position: absolute;
+    content: "";
+    background: #fff;
+  }
+
+  &::before {
+    width: 6px;
+    height: 2px;
+    left: 3px;
+    top: 5px;
+  }
+
+  &::after {
+    width: 2px;
+    height: 6px;
+    left: 5px;
+    top: 3px;
   }
 }
 

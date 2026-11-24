@@ -12,6 +12,7 @@ export const sv: TreeselectTexts = {
   clearAllText: 'Rensa alla',
   clearValueText: 'Rensa värde',
   limitText: count => `och ${count} till`,
+  createText: query => `Skapa "${query}"`,
 }
 
 export default sv

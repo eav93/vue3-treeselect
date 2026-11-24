@@ -12,6 +12,7 @@ export const cs: TreeselectTexts = {
   clearAllText: 'Vymazat vše',
   clearValueText: 'Vymazat hodnotu',
   limitText: count => `a dalších ${count}`,
+  createText: query => `Vytvořit „${query}“`,
 }
 
 export default cs

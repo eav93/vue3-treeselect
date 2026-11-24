@@ -10,7 +10,8 @@ var e = {
 	retryTitle: "انقر لإعادة المحاولة",
 	clearAllText: "مسح الكل",
 	clearValueText: "مسح القيمة",
-	limitText: (e) => `و ${e} أخرى`
+	limitText: (e) => `و ${e} أخرى`,
+	createText: (e) => `إنشاء "${e}"`
 };
 //#endregion
 export { e as ar, e as default };

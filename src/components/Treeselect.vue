@@ -62,6 +62,8 @@ const props = withDefaults(defineProps<TreeselectProps>(), {
   joinValues: false,
   limit: Infinity,
   limitText: undefined,
+  creatable: false,
+  createText: undefined,
   locale: undefined,
   loadingText: undefined,
   matchKeys: () => ['label'],
@@ -107,6 +109,7 @@ const emit = defineEmits<{
   'open': [instanceId: string | number]
   'close': [value: any, instanceId: string | number]
   'search-change': [searchQuery: string, instanceId: string | number]
+  'create': [query: string, instanceId: string | number]
 }>()
 
 defineSlots<{
@@ -240,6 +243,7 @@ const appLocale = inject(TREESELECT_LOCALE, null)
 const TEXT_PROPS = [
   'placeholder', 'noResultsText', 'noOptionsText', 'noChildrenText', 'loadingText',
   'searchPromptText', 'retryText', 'retryTitle', 'clearAllText', 'clearValueText', 'limitText',
+  'createText',
 ] as const
 
 /**

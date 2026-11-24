@@ -1,5 +1,5 @@
 import { reactive, shallowReactive, toRaw } from 'vue'
-import { warning } from '@/utils'
+import { labelKey, warning } from '@/utils'
 import { NODE_ENV } from '@/utils/env'
 import {
   NO_PARENT_NODE,
@@ -190,6 +190,7 @@ export function useNodeNormalization(
       // Only top-level fields are reactive: children/ancestors/count/raw stay plain
       const normalized = shallowReactive(plain) as NormalizedNode
       nodeMap[id] = normalized
+      if (props.creatable) forest.labelIndex.add(labelKey(normalized.label))
 
       if (isBranch) {
         const isLoaded = Array.isArray(children)
@@ -264,6 +265,8 @@ export function useNodeNormalization(
       const leafNodes = normalizedOptions.filter(option => option.isLeaf)
       normalizedOptions = branchNodes.concat(leafNodes)
     }
+
+    if (props.creatable) forest.labelIndexVersion++
 
     return normalizedOptions
   }

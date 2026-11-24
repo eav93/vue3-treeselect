@@ -12,6 +12,7 @@ export const vi: TreeselectTexts = {
   clearAllText: 'Xóa tất cả',
   clearValueText: 'Xóa giá trị',
   limitText: count => `và ${count} mục khác`,
+  createText: query => `Tạo "${query}"`,
 }
 
 export default vi

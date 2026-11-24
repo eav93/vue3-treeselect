@@ -28,6 +28,12 @@ export interface ForestState {
   selectedNodeIds: NodeId[]
   /** Map of selected node IDs for O(1) lookup */
   selectedNodeMap: Record<NodeId, true>
+  /**
+   * Labels of the options (`labelKey`), only with `creatable`: is there an option with the search query
+   * as its label, without scanning the tree. Plain set, `labelIndexVersion` changes when it is filled
+   */
+  labelIndex: Set<string>
+  labelIndexVersion: number
 }
 
 /**

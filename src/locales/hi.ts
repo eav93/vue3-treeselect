@@ -12,6 +12,7 @@ export const hi: TreeselectTexts = {
   clearAllText: 'सभी हटाएँ',
   clearValueText: 'मान हटाएँ',
   limitText: count => `और ${count} अन्य`,
+  createText: query => `"${query}" बनाएँ`,
 }
 
 export default hi

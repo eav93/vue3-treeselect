@@ -12,6 +12,7 @@ export const he: TreeselectTexts = {
   clearAllText: 'נקה הכול',
   clearValueText: 'נקה ערך',
   limitText: count => `ועוד ${count}`,
+  createText: query => `צור "${query}"`,
 }
 
 export default he

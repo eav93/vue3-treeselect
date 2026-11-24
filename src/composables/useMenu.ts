@@ -252,6 +252,17 @@ export function useMenu(options: {
     if (row) setCurrentHighlightedOption(row.node)
   }
 
+  /** The highlighted option is the first / last option of the menu (navigation to the create row) */
+  const isFirstOptionCurrent = (): boolean => {
+    const current = currentRow()
+    return current !== null && findOptionRow(current.index - 1, -1) === null
+  }
+
+  const isLastOptionCurrent = (): boolean => {
+    const current = currentRow()
+    return current !== null && findOptionRow(current.index + 1, 1) === null
+  }
+
   /**
    * Highlight last option
    */
@@ -400,6 +411,8 @@ export function useMenu(options: {
     highlightPrevOption,
     highlightNextOption,
     highlightLastOption,
+    isFirstOptionCurrent,
+    isLastOptionCurrent,
     saveMenuScrollPosition,
     restoreMenuScrollPosition,
   }

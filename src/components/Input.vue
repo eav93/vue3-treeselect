@@ -201,6 +201,51 @@ const onCompositionEnd = (evt: CompositionEvent): void => {
   handleValueChange()
 }
 
+/** Enter without `creatable`: select the highlighted option (if shown) */
+const selectHighlightedOption = (): void => {
+  if (treeselect.menu.current === null) return
+  const current = treeselect.getNode(treeselect.menu.current)
+  if (!current) return
+  // The highlighted option may be hidden by the current search
+  if (!treeselect.shouldShowOptionInMenu(current)) return
+  if (current.isBranch && props.disableBranchNodes) return
+  treeselect.select(current)
+}
+
+/**
+ * Enter with `creatable`: the text typed but not searched yet (debounce) is searched first; async — nothing
+ * until the results for this query are loaded (the highlighted option may be from the previous query).
+ * Then the highlighted create row creates, the highlighted option is selected, nothing to select creates.
+ */
+const handleCreatableEnter = async (): Promise<void> => {
+  if (value.value !== treeselect.trigger.searchQuery) {
+    debouncedCallback.cancel()
+    updateSearchQuery()
+    await nextTick()
+  }
+
+  const query = treeselect.trigger.searchQuery
+  if (!treeselect.menu.isOpen || value.value !== query) return
+  if (props.async) {
+    const entry = treeselect.getRemoteSearchEntry()
+    if (!entry.isLoaded || entry.isLoading) return
+  }
+
+  if (treeselect.createRow.isHighlighted) {
+    treeselect.create()
+    return
+  }
+
+  const current = treeselect.menu.current === null ? null : treeselect.getNode(treeselect.menu.current)
+  if (current && treeselect.shouldShowOptionInMenu(current)) {
+    if (current.isBranch && props.disableBranchNodes) return
+    treeselect.select(current)
+    return
+  }
+
+  treeselect.create()
+}
+
 const onKeyDown = (evt: KeyboardEvent): void => {
   const key = evt.key
 
@@ -227,13 +272,11 @@ const onKeyDown = (evt: KeyboardEvent): void => {
     }
     case KEYS.ENTER: {
       evt.preventDefault()
-      if (treeselect.menu.current === null) return
-      const current = treeselect.getNode(treeselect.menu.current)
-      if (!current) return
-      // The highlighted option may be hidden by the current search
-      if (!treeselect.shouldShowOptionInMenu(current)) return
-      if (current.isBranch && props.disableBranchNodes) return
-      treeselect.select(current)
+      if (props.creatable) {
+        void handleCreatableEnter()
+      } else {
+        selectHighlightedOption()
+      }
       break
     }
     case KEYS.ESCAPE: {
@@ -271,7 +314,17 @@ const onKeyDown = (evt: KeyboardEvent): void => {
     }
     case KEYS.ARROW_UP: {
       evt.preventDefault()
-      treeselect.highlightPrevOption()
+      if (treeselect.canCreate.value && !treeselect.hasVisibleOptions.value) {
+        // the create row is the only row
+        treeselect.highlightCreateRow()
+      } else if (treeselect.createRow.isHighlighted) {
+        // from the create row (above the options) to the last option
+        treeselect.highlightLastOption()
+      } else if (treeselect.canCreate.value && (treeselect.menu.current === null || treeselect.isFirstOptionCurrent())) {
+        treeselect.highlightCreateRow()
+      } else {
+        treeselect.highlightPrevOption()
+      }
       break
     }
     case KEYS.ARROW_RIGHT: {
@@ -286,7 +339,15 @@ const onKeyDown = (evt: KeyboardEvent): void => {
     }
     case KEYS.ARROW_DOWN: {
       evt.preventDefault()
-      treeselect.highlightNextOption()
+      if (treeselect.canCreate.value && !treeselect.hasVisibleOptions.value) {
+        treeselect.highlightCreateRow()
+      } else if (treeselect.createRow.isHighlighted) {
+        treeselect.highlightFirstOption()
+      } else if (treeselect.canCreate.value && treeselect.isLastOptionCurrent()) {
+        treeselect.highlightCreateRow()
+      } else {
+        treeselect.highlightNextOption()
+      }
       break
     }
     case KEYS.DELETE: {

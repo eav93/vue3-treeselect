@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.8.0
+
+- `creatable`: a search query that no option has as its label (trimmed, case-insensitive) shows a
+  row `Create "…"` above the options; clicking it, Enter when nothing is found, or Enter on the row
+  reached with the arrows emits `create` (query, instance id) and clears the search. The parent
+  adds the option. In async mode the row appears only after the search for the query succeeded.
+  Labels are indexed during normalization: no tree scan per keystroke, nothing indexed without
+  `creatable`. Text `createText` (prop and every locale), colors `--vue-treeselect-create-text-color`
+  and `--vue-treeselect-create-icon-bg`. See README, "Creating options".
+  With `creatable`, Enter right after typing searches the whole typed text first, and in async mode
+  does nothing until the results of the query are loaded. Without `creatable` Enter is unchanged.
+- Tests: the `mousedown reaches the parent elements (#454)` test no longer fails at random (the
+  click happened within the millisecond of mounting).
+
 ## 0.7.0
 
 Performance (measured in Chrome, 11k expanded rows unless noted; see `npm run bench:browser` and

@@ -10,7 +10,8 @@ var e = {
 	retryTitle: "Klikněte pro nový pokus",
 	clearAllText: "Vymazat vše",
 	clearValueText: "Vymazat hodnotu",
-	limitText: (e) => `a dalších ${e}`
+	limitText: (e) => `a dalších ${e}`,
+	createText: (e) => `Vytvořit „${e}“`
 };
 //#endregion
 export { e as cs, e as default };

@@ -10,7 +10,8 @@ var e = {
 	retryTitle: "Klicka för att försöka igen",
 	clearAllText: "Rensa alla",
 	clearValueText: "Rensa värde",
-	limitText: (e) => `och ${e} till`
+	limitText: (e) => `och ${e} till`,
+	createText: (e) => `Skapa "${e}"`
 };
 //#endregion
 export { e as default, e as sv };

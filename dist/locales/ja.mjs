@@ -10,7 +10,8 @@ var e = {
 	retryTitle: "クリックして再試行",
 	clearAllText: "すべてクリア",
 	clearValueText: "クリア",
-	limitText: (e) => `他 ${e} 件`
+	limitText: (e) => `他 ${e} 件`,
+	createText: (e) => `「${e}」を作成`
 };
 //#endregion
 export { e as default, e as ja };

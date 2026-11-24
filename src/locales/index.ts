@@ -16,6 +16,7 @@ export interface TreeselectTexts {
   clearAllText: string
   clearValueText: string
   limitText: (count: number) => string
+  createText: (query: string) => string
 }
 
 /**
@@ -35,6 +36,7 @@ export const en: TreeselectTexts = {
   clearAllText: 'Clear all',
   clearValueText: 'Clear value',
   limitText: count => `and ${count} more`,
+  createText: query => `Create "${query}"`,
 }
 
 /**

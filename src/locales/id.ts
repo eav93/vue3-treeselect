@@ -12,6 +12,7 @@ export const id: TreeselectTexts = {
   clearAllText: 'Hapus semua',
   clearValueText: 'Hapus nilai',
   limitText: count => `dan ${count} lainnya`,
+  createText: query => `Buat "${query}"`,
 }
 
 export default id

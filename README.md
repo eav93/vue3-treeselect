@@ -61,7 +61,7 @@ A UMD build is available as `dist/vue3-treeselect.umd.js` (global `Vue3Treeselec
 ## Differences from vue-treeselect
 
 - `v-model` uses `modelValue` / `update:modelValue`. All events (`update:modelValue`, `select`,
-  `deselect`, `open`, `close`, `search-change`) get the instance id as the last argument.
+  `deselect`, `open`, `close`, `search-change`, `create`) get the instance id as the last argument.
 - Slots: `option-label` (`{ node, shouldShowCount, count, labelClassName, countClassName }`),
   `value-label` (`{ node }`), `before-list`, `after-list`.
 - `loadOptions` may return a promise; for `ASYNC_SEARCH` the resolved value is used as the options.
@@ -76,6 +76,7 @@ A UMD build is available as `dist/vue3-treeselect.umd.js` (global `Vue3Treeselec
   | `virtualScroll` | `false` | Render only the options in the visible part of the menu. Rows must have a fixed height. |
   | `optionHeight` | measured | Row height in px for `virtualScroll`. |
   | `searchDebounceDelay` | `200` | Debounce delay of the search input in ms. |
+  | `creatable` | `false` | Offer to create an option from the search query, see [Creating options](#creating-options). |
 
 - Methods available on the component ref: `openMenu`, `closeMenu`, `toggleMenu`, `toggleExpanded`,
   `select`, `clear`, `removeLastValue`, `getValue`, `getNode`, `isSelected`, `focusInput`,
@@ -86,6 +87,40 @@ A UMD build is available as `dist/vue3-treeselect.umd.js` (global `Vue3Treeselec
 - The menu is a flat list: `.vue-treeselect__list-item` rows are indented with
   `.vue-treeselect__indent-level-N` classes instead of being nested, and options hidden by
   a search are not rendered.
+
+## Creating options
+
+With `creatable`, a search query that no option has as its label (trimmed, case-insensitive) shows
+a row `Create "…"` above the options. Clicking it — or Enter when nothing is found — emits `create`
+with the trimmed query and clears the search; the menu stays open. The component does not add
+anything itself: the parent adds the option to `options` (and its id to `modelValue` to select it).
+
+```vue
+<Treeselect v-model="value" :options="options" multiple creatable @create="create" />
+
+<script setup>
+const create = async (title) => {
+  const category = await api.createCategory(title) // the backend may return an existing one
+  if (!options.value.some(option => option.id === category.id)) {
+    options.value = [...options.value, { id: category.id, label: category.title }]
+  }
+  if (!value.value.includes(category.id)) value.value = [...value.value, category.id]
+}
+</script>
+```
+
+- Keyboard: the row is reached with ArrowUp from the first option and ArrowDown from the last one,
+  Enter on it creates. With matching options Enter selects the highlighted option, as without
+  `creatable`; Enter right after typing first searches the whole typed text, and in async mode it
+  waits for the results of the query (it does nothing while they load). Without `creatable` Enter
+  works as before.
+- Async search (`async`): the row appears once the search for the query has succeeded and its
+  response has no option with that label — not while loading and not after a loading error. Only
+  the loaded options are compared, so check uniqueness on the backend as well.
+- Labels are indexed while the options are normalized (also lazily loaded children), so the check
+  does not scan the tree on each keystroke; without `creatable` nothing is indexed.
+- Text: `createText` (prop or locale text; English `Create "…"`, Russian `Добавить «…»`). Colors:
+  `--vue-treeselect-create-text-color`, `--vue-treeselect-create-icon-bg`.
 
 ## Localization
 
@@ -141,7 +176,8 @@ including the texts of an imported locale:
 ```
 
 The text props (`placeholder`, `noResultsText`, `noOptionsText`, `noChildrenText`, `loadingText`,
-`searchPromptText`, `retryText`, `retryTitle`, `clearAllText`, `clearValueText`, `limitText`)
+`searchPromptText`, `retryText`, `retryTitle`, `clearAllText`, `clearValueText`, `limitText`,
+`createText`)
 take precedence over the locale, so `placeholder` can still be set per component. Order of
 precedence: text prop → `locale` prop → app-wide locale → English.
 

@@ -23,6 +23,8 @@ export function useForestState(
     checkedStateMap: shallowReactive(createMap<CheckedState>()),
     selectedNodeIds: initialSelectedNodeIds,
     selectedNodeMap: shallowReactive(createMap<true>()),
+    labelIndex: new Set(),
+    labelIndexVersion: 0,
   })
 
   // Non-reactive bookkeeping mirrors of the reactive maps above

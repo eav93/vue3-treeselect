@@ -10,7 +10,8 @@ var e = {
 	retryTitle: "לחצו כדי לנסות שוב",
 	clearAllText: "נקה הכול",
 	clearValueText: "נקה ערך",
-	limitText: (e) => `ועוד ${e}`
+	limitText: (e) => `ועוד ${e}`,
+	createText: (e) => `צור "${e}"`
 };
 //#endregion
 export { e as default, e as he };

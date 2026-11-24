@@ -24,6 +24,7 @@ export { isPromise } from './isPromise'
 export { once } from './once'
 export { noop } from './noop'
 export { createMap } from './createMap'
+export { labelKey } from './labelKey'
 
 // ========================
 // Other Utilities

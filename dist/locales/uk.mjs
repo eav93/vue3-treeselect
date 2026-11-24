@@ -10,7 +10,8 @@ var e = {
 	retryTitle: "Натисніть, щоб повторити",
 	clearAllText: "Очистити все",
 	clearValueText: "Очистити",
-	limitText: (e) => `і ще ${e}`
+	limitText: (e) => `і ще ${e}`,
+	createText: (e) => `Додати «${e}»`
 };
 //#endregion
 export { e as default, e as uk };

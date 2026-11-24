@@ -12,6 +12,7 @@ export const ru: TreeselectTexts = {
   clearAllText: 'Очистить всё',
   clearValueText: 'Очистить',
   limitText: count => `и ещё ${count}`,
+  createText: query => `Добавить «${query}»`,
 }
 
 export default ru

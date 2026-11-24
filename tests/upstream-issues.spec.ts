@@ -20,6 +20,7 @@ import {
   mountTs,
   openMenu,
   settle,
+  sleep,
   typeSearch,
   valueLabels,
   visibleOptionIds,
@@ -220,6 +221,9 @@ describe('mouse & focus', () => {
     const w = mount(defineComponent({
       setup: () => () => h('div', { onMousedown: spy }, [h(Treeselect, { options: fruits() })]),
     }), { attachTo: document.body })
+    // Vue skips a listener for events stamped no later than its attachment: mounting and clicking within
+    // the same millisecond would make the parent's handler skip the event, not the component
+    await sleep(2)
     await leftClick(w.element.querySelector('.vue-treeselect__control')!)
     expect(spy).toHaveBeenCalled()
     w.unmount()

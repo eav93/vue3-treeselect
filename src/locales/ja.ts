@@ -12,6 +12,7 @@ export const ja: TreeselectTexts = {
   clearAllText: 'すべてクリア',
   clearValueText: 'クリア',
   limitText: count => `他 ${count} 件`,
+  createText: query => `「${query}」を作成`,
 }
 
 export default ja

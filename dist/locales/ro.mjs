@@ -10,7 +10,8 @@ var e = {
 	retryTitle: "Clic pentru a reîncerca",
 	clearAllText: "Șterge tot",
 	clearValueText: "Șterge valoarea",
-	limitText: (e) => `și încă ${e}`
+	limitText: (e) => `și încă ${e}`,
+	createText: (e) => `Creează „${e}”`
 };
 //#endregion
 export { e as default, e as ro };

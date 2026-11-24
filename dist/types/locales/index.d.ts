@@ -15,6 +15,7 @@ export interface TreeselectTexts {
     clearAllText: string;
     clearValueText: string;
     limitText: (count: number) => string;
+    createText: (query: string) => string;
 }
 /**
  * A locale: (partial) texts, or the code of a registered locale (`'en'` is built in)

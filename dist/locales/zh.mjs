@@ -10,7 +10,8 @@ var e = {
 	retryTitle: "点击重试",
 	clearAllText: "清除全部",
 	clearValueText: "清除",
-	limitText: (e) => `及其他 ${e} 项`
+	limitText: (e) => `及其他 ${e} 项`,
+	createText: (e) => `创建“${e}”`
 };
 //#endregion
 export { e as default, e as zh };

@@ -12,6 +12,7 @@ export const zh: TreeselectTexts = {
   clearAllText: '清除全部',
   clearValueText: '清除',
   limitText: count => `及其他 ${count} 项`,
+  createText: query => `创建“${query}”`,
 }
 
 export default zh
