@@ -68,6 +68,9 @@ A UMD build is available as `dist/vue3-treeselect.umd.js` (global `Vue3Treeselec
 - Selecting a branch never selects its disabled descendants, at any depth.
 - After a search the first match is highlighted (Enter selects it), and the options can change
   during a search.
+- Enter right after typing selects from the whole typed text: the text not searched yet because
+  of the debounce is searched first. In async mode Enter does nothing while the results of the
+  query load (the options shown are still those of the previous query).
 - Works with SSR (`appendToBody` included) and `<KeepAlive>`; slots and props are typed.
 - New props:
 
@@ -111,9 +114,7 @@ const create = async (title) => {
 
 - Keyboard: the row is reached with ArrowUp from the first option and ArrowDown from the last one,
   Enter on it creates. With matching options Enter selects the highlighted option, as without
-  `creatable`; Enter right after typing first searches the whole typed text, and in async mode it
-  waits for the results of the query (it does nothing while they load). Without `creatable` Enter
-  works as before.
+  `creatable` (see Enter in [Differences](#differences-from-vue-treeselect)).
 - Async search (`async`): the row appears once the search for the query has succeeded and its
   response has no option with that label — not while loading and not after a loading error. Only
   the loaded options are compared, so check uniqueness on the backend as well.
@@ -187,6 +188,10 @@ Available locales (`@eav93/vue3-treeselect/locales/<code>`): `ar`, `cs`, `de`, `
 a parent element, the menu follows it (also with `appendToBody`).
 
 With the UMD build (no bundler) there are no locale files: pass your texts as an object.
+
+A code that is not registered (`locale="ru"` without `registerLocale('ru', ru)`) falls back to
+English; development builds warn about it once per code. Passing the imported texts
+(`app.provide(TREESELECT_LOCALE, ru)`) needs no registration.
 
 ## Customizing styles
 

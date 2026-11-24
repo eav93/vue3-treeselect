@@ -9,8 +9,13 @@
   Labels are indexed during normalization: no tree scan per keystroke, nothing indexed without
   `creatable`. Text `createText` (prop and every locale), colors `--vue-treeselect-create-text-color`
   and `--vue-treeselect-create-icon-bg`. See README, "Creating options".
-  With `creatable`, Enter right after typing searches the whole typed text first, and in async mode
-  does nothing until the results of the query are loaded. Without `creatable` Enter is unchanged.
+- Fix: Enter right after typing selected the highlighted option of the previous query (the text
+  not searched yet because of the debounce, also right after the leading edge of the debounce
+  before the search had run): the whole typed text is searched first.
+- Fix: in async mode Enter selected an option of the previous query while the results of the
+  new one were loading; it now does nothing until they are loaded.
+- A locale code that is not registered (`locale="ru"` without `registerLocale`) falls back to
+  English with a warning (development builds, once per code); it used to be silent.
 - Tests: the `mousedown reaches the parent elements (#454)` test no longer fails at random (the
   click happened within the millisecond of mounting).
 

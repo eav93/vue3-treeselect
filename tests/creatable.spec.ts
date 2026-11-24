@@ -255,7 +255,7 @@ describe('creatable', () => {
     expect(createRow()).not.toBeNull()
   })
 
-  it('without creatable, Enter right after typing behaves as before (no search flush)', async () => {
+  it('without creatable, Enter right after typing selects from the whole typed text, not the debounced one', async () => {
     const w = mountModel({ options, searchDebounceDelay: 200, multiple: true, modelValue: [] })
     await openMenu(w)
     await typeSearch(w, 'x')
@@ -265,7 +265,50 @@ describe('creatable', () => {
     input.dispatchEvent(new Event('input', { bubbles: true }))
     await keyDown(w, 'Enter')
     await settle()
+    expect(valueLabels(w)).toEqual(['Banana'])
+    expect(w.emitted('create')).toBeUndefined()
+  })
+
+  it('Enter with nothing pending selects at once, before a parent blurs the input on keydown', async () => {
+    const value = ref<number[]>([])
+    const w = mount(defineComponent({
+      setup: () => () => h('div', { onKeydown: () => (document.activeElement as HTMLElement | null)?.blur() }, [
+        h(Treeselect, { options, multiple: true, modelValue: value.value, 'onUpdate:modelValue': (v: number[]) => { value.value = v } }),
+      ]),
+    }), { attachTo: document.body })
+    const ts = w.findComponent(Treeselect) as any
+    await openMenu(ts)
+    await typeSearch(ts, 'ban')
+    getInput(ts).focus()
+    await keyDown(ts, 'Enter')
+    await settle()
+    expect(value.value).toEqual([2])
+    w.unmount()
+  })
+
+  it('without creatable, async: Enter while the new query loads does not select a stale option', async () => {
+    const DELAY = 80
+    const w = mountModel({
+      async: true,
+      multiple: true,
+      modelValue: [],
+      defaultOptions: [{ id: 1, label: 'Apple' }, { id: 2, label: 'Banana' }],
+      loadOptions({ action, searchQuery, callback }: any) {
+        if (action === 'ASYNC_SEARCH') setTimeout(() => callback(null, [{ id: 2, label: 'Banana' }].filter(o => o.label.startsWith(searchQuery))), DELAY)
+      },
+    })
+    await openMenu(w)
+    expect(highlightedId()).toBe('1')
+    await typeSearch(w, 'Ban')
+    await keyDown(w, 'Enter')
+    await settle()
     expect(valueLabels(w)).toEqual([])
+
+    await sleep(DELAY + 20)
+    await settle()
+    await keyDown(w, 'Enter')
+    await settle()
+    expect(valueLabels(w)).toEqual(['Banana'])
   })
 
   it('async: Enter while the new query loads neither selects a stale option nor creates', async () => {

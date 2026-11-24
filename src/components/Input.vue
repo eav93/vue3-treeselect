@@ -201,31 +201,13 @@ const onCompositionEnd = (evt: CompositionEvent): void => {
   handleValueChange()
 }
 
-/** Enter without `creatable`: select the highlighted option (if shown) */
-const selectHighlightedOption = (): void => {
-  if (treeselect.menu.current === null) return
-  const current = treeselect.getNode(treeselect.menu.current)
-  if (!current) return
-  // The highlighted option may be hidden by the current search
-  if (!treeselect.shouldShowOptionInMenu(current)) return
-  if (current.isBranch && props.disableBranchNodes) return
-  treeselect.select(current)
-}
-
 /**
- * Enter with `creatable`: the text typed but not searched yet (debounce) is searched first; async — nothing
- * until the results for this query are loaded (the highlighted option may be from the previous query).
- * Then the highlighted create row creates, the highlighted option is selected, nothing to select creates.
+ * Enter: the highlighted create row creates (`creatable`), the highlighted option is selected, nothing
+ * to select creates (`creatable`, else no-op). Async — nothing while the results of the query load (the
+ * options shown are still those of the previous query).
  */
-const handleCreatableEnter = async (): Promise<void> => {
-  if (value.value !== treeselect.trigger.searchQuery) {
-    debouncedCallback.cancel()
-    updateSearchQuery()
-    await nextTick()
-  }
-
-  const query = treeselect.trigger.searchQuery
-  if (!treeselect.menu.isOpen || value.value !== query) return
+const enter = (): void => {
+  if (!treeselect.menu.isOpen) return
   if (props.async) {
     const entry = treeselect.getRemoteSearchEntry()
     if (!entry.isLoaded || entry.isLoading) return
@@ -237,6 +219,7 @@ const handleCreatableEnter = async (): Promise<void> => {
   }
 
   const current = treeselect.menu.current === null ? null : treeselect.getNode(treeselect.menu.current)
+  // The highlighted option may be hidden by the current search
   if (current && treeselect.shouldShowOptionInMenu(current)) {
     if (current.isBranch && props.disableBranchNodes) return
     treeselect.select(current)
@@ -244,6 +227,24 @@ const handleCreatableEnter = async (): Promise<void> => {
   }
 
   treeselect.create()
+}
+
+/**
+ * The text typed but not searched yet (debounce) is searched first, and a pending search is awaited:
+ * the highlighted option of the previous query is not selected. With nothing pending Enter acts at
+ * once (before the event bubbles to parents that might blur the input).
+ */
+const handleEnter = (): void => {
+  if (value.value !== treeselect.trigger.searchQuery) {
+    debouncedCallback.cancel()
+    updateSearchQuery()
+  }
+  if (!treeselect.isSearchPending()) return enter()
+
+  const query = treeselect.trigger.searchQuery
+  void nextTick(() => {
+    if (treeselect.trigger.searchQuery === query && value.value === query) enter()
+  })
 }
 
 const onKeyDown = (evt: KeyboardEvent): void => {
@@ -272,11 +273,7 @@ const onKeyDown = (evt: KeyboardEvent): void => {
     }
     case KEYS.ENTER: {
       evt.preventDefault()
-      if (props.creatable) {
-        void handleCreatableEnter()
-      } else {
-        selectHighlightedOption()
-      }
+      handleEnter()
       break
     }
     case KEYS.ESCAPE: {

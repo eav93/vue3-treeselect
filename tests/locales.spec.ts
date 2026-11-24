@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, h } from 'vue'
 import { mount } from '@vue/test-utils'
 import { TREESELECT_LOCALE, en, registerLocale, resolveLocale } from '@/locales'
@@ -33,6 +33,15 @@ describe('locale', () => {
     expect(resolveLocale('ru').placeholder).toBe(ru.placeholder)
     expect(resolveLocale('ru-RU').placeholder).toBe(ru.placeholder)
     expect(placeholder(mountTs({ options, locale: 'ru' }))).toBe('Выберите...')
+  })
+
+  it('an unregistered code warns once that English is used', () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    resolveLocale('pl-PL')
+    resolveLocale('pl-PL')
+    expect(error).toHaveBeenCalledTimes(1)
+    expect(String(error.mock.calls[0].join(' '))).toContain("'@eav93/vue3-treeselect/locales/pl'")
+    error.mockRestore()
   })
 
   it('unknown codes fall back to English', () => {

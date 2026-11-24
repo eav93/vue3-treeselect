@@ -533,7 +533,13 @@ export function useTreeselect(
     rootOptionsStates.isLoaded = Array.isArray(props.options)
   }, { deep: true, immediate: true })
 
+  // The query the search has run for: a changed query is searched by the watcher below, and until it
+  // has run the options and the highlight are those of the previous query (Enter waits for it)
+  let searchedQuery = trigger.searchQuery
+  const isSearchPending = (): boolean => searchedQuery !== trigger.searchQuery
+
   watch(() => trigger.searchQuery, () => {
+    searchedQuery = trigger.searchQuery
     if (props.async) {
       handleRemoteSearch()
     } else {
@@ -664,6 +670,7 @@ export function useTreeselect(
     handleRemoteSearch,
     getRemoteSearchEntry: remoteSearch.getRemoteSearchEntry,
     resetSearchQuery,
+    isSearchPending,
     create,
     highlightCreateRow,
 

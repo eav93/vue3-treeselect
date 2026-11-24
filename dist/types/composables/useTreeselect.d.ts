@@ -89,6 +89,7 @@ export declare function useTreeselect(props: TreeselectProps, emit: TreeselectEm
     handleRemoteSearch: () => void;
     getRemoteSearchEntry: () => import('../types').RemoteSearchEntry;
     resetSearchQuery: () => void;
+    isSearchPending: () => boolean;
     create: () => void;
     highlightCreateRow: () => void;
     loadRootOptions: () => void;
