@@ -121,7 +121,9 @@ describe('styles', () => {
   it('a long selected label wraps inside the control instead of widening it', () => {
     const css = compile()
     expect(rule(css, '.vue-treeselect__multi-value-item-container')).toContain('max-width: 100%')
-    expect(rule(css, '.vue-treeselect__multi-value-label')).toContain('overflow-wrap: anywhere')
+    // the own rule of the label, not the one shared with `.vue-treeselect__value-remove`
+    const label = css.slice(css.lastIndexOf('.vue-treeselect__multi-value-label {'))
+    expect(label.slice(0, label.indexOf('}'))).toContain('overflow-wrap: anywhere')
   })
 
   it('option blocks skip rendering outside the viewport unless disabled', () => {
