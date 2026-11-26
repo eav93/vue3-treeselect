@@ -317,7 +317,8 @@ describe('row blocks', () => {
     expect(rendered()).toBe(244)
     expect(chunks().length).toBeGreaterThan(1)
     const first = chunks()[0] as HTMLElement
-    expect(first.style.containIntrinsicSize).toBe(`auto ${first.children.length * 20}px`)
+    expect(first.style.containIntrinsicHeight).toBe(`auto ${first.children.length * 20}px`)
+    expect(first.style.containIntrinsicWidth).toBe('')
     expect((findOption('r0-0')!.parentElement as HTMLElement).style.getPropertyValue('--level')).toBe('1')
   })
 

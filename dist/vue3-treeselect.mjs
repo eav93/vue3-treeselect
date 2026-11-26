@@ -1599,7 +1599,7 @@ var Wt = d({
 		let t = Q();
 		return () => f("div", {
 			class: "vue-treeselect__list-chunk",
-			style: { containIntrinsicSize: `auto ${e.rows.length * e.rowHeight}px` }
+			style: { containIntrinsicHeight: `auto ${e.rows.length * e.rowHeight}px` }
 		}, e.rows.map((e) => Ut(e, t)));
 	}
 }), Gt = 100, Kt = 150, qt = 8, Jt = 32, Yt = 3, Xt = 100, Zt = 25, Qt = 200, $t = 3e3, en = 1e3, tn = /* @__PURE__ */ d({

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.1
+
+- Fix: the menu became wider than the control, up to thousands of pixels, once a branch with
+  more than ~100 rows was expanded. A block of rows outside the visible part of the menu reported
+  its estimated height as its width as well (`contain-intrinsic-size` with one value sets both),
+  so it now sets `contain-intrinsic-height` only.
+- The menu is as wide as the control (`left: 0; right: 0`): it no longer changes width when a
+  branch with longer labels is expanded. Long labels are truncated with an ellipsis.
+
 ## 0.8.0
 
 - `creatable`: a search query that no option has as its label (trimmed, case-insensitive) shows a

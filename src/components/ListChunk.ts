@@ -50,7 +50,9 @@ export default defineComponent({
 
     return () => h('div', {
       class: 'vue-treeselect__list-chunk',
-      style: { containIntrinsicSize: `auto ${props.rows.length * props.rowHeight}px` },
+      // height only: one value of `contain-intrinsic-size` sets the width as well, and an off-screen block
+      // as wide as it is tall stretches the menu (it is as wide as its content)
+      style: { containIntrinsicHeight: `auto ${props.rows.length * props.rowHeight}px` },
     }, props.rows.map(row => renderRow(row, treeselect)))
   },
 })

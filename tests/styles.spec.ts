@@ -112,6 +112,12 @@ describe('styles', () => {
     expect(css).toBe(compile())
   })
 
+  it('the menu is as wide as the control, not as its longest label', () => {
+    const menu = rule(compile(), '.vue-treeselect__menu')
+    expect(menu).toContain('left: 0')
+    expect(menu).toContain('right: 0')
+  })
+
   it('option blocks skip rendering outside the viewport unless disabled', () => {
     const css = compile()
     expect(rule(css, '.vue-treeselect__list-chunk')).toContain('content-visibility: var(--vue-treeselect-option-content-visibility, auto)')
