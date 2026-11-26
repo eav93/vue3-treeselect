@@ -118,6 +118,12 @@ describe('styles', () => {
     expect(menu).toContain('right: 0')
   })
 
+  it('a long selected label wraps inside the control instead of widening it', () => {
+    const css = compile()
+    expect(rule(css, '.vue-treeselect__multi-value-item-container')).toContain('max-width: 100%')
+    expect(rule(css, '.vue-treeselect__multi-value-label')).toContain('overflow-wrap: anywhere')
+  })
+
   it('option blocks skip rendering outside the viewport unless disabled', () => {
     const css = compile()
     expect(rule(css, '.vue-treeselect__list-chunk')).toContain('content-visibility: var(--vue-treeselect-option-content-visibility, auto)')

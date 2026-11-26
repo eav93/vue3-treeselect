@@ -577,6 +577,9 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
 
 .vue-treeselect__multi-value-item-container {
   display: inline-block;
+  // a long label wraps inside the control instead of widening it (and the page)
+  max-width: 100%;
+  box-sizing: border-box;
   padding-top: var(--_ts-padding);
   padding-inline-end: var(--_ts-padding);
   vertical-align: top;
@@ -657,6 +660,7 @@ $treeselect-checkbox-disabled-indeterminate-image: null !default;
 
 .vue-treeselect__multi-value-label {
   white-space: pre-line;
+  overflow-wrap: anywhere;
   user-select: none;
 }
 

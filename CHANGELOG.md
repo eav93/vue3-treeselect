@@ -8,6 +8,8 @@
   so it now sets `contain-intrinsic-height` only.
 - The menu is as wide as the control (`left: 0; right: 0`): it no longer changes width when a
   branch with longer labels is expanded. Long labels are truncated with an ellipsis.
+- Fix: in `multiple` mode a selected label without spaces (a URL, a long word) stuck out of the
+  control and widened the page; it wraps inside the control now.
 
 ## 0.8.0
 
