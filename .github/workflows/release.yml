@@ -1,0 +1,60 @@
+# Release: push a tag `vX.Y.Z` (the version in package.json) — the package is published to npm
+# and a GitHub release is created with the notes of that version from CHANGELOG.md.
+#
+# npm authenticates with Trusted Publishing (OIDC, no token): on npmjs.com, package settings →
+# Trusted Publisher → GitHub Actions, repository eav93/vue3-treeselect, workflow `release.yml`.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write # GitHub release
+  id-token: write # npm Trusted Publishing and provenance
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      # Trusted Publishing needs npm 11.5.1 or newer
+      - run: npm install -g npm@latest
+
+      - run: npm ci
+
+      - name: The tag matches package.json
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::tag $GITHUB_REF_NAME, package.json $version"
+            exit 1
+          fi
+
+      # prepublishOnly runs the type check, the tests and the build. A version published by hand
+      # is skipped, so the release is still created.
+      - name: Publish to npm
+        run: |
+          name="$(node -p "require('./package.json').name")"
+          if npm view "$name@${GITHUB_REF_NAME#v}" version >/dev/null 2>&1; then
+            echo "$name@${GITHUB_REF_NAME#v} is already on npm"
+          else
+            npm publish
+          fi
+
+      - name: GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          awk -v heading="## ${GITHUB_REF_NAME#v}" '$0 == heading { found = 1; next } /^## / { found = 0 } found' CHANGELOG.md > notes.md
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release edit "$GITHUB_REF_NAME" --notes-file notes.md
+          else
+            gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file notes.md
+          fi
